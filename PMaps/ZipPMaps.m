@@ -1,0 +1,36 @@
+clear; clc;
+
+StartDirectory = fullfile(pwd,'..','..');
+
+SubjectList = [...
+    '02';...
+    '03';...
+    '04';...
+    '07';...
+    '08';...
+    '09';...
+    '11';...
+    '12';...
+    '13';...
+    '15';...
+    '16'
+    ];
+
+for SubjInd = 1:size(SubjectList,1)
+    
+    SubjID = SubjectList(SubjInd,:)
+    
+    SubjectFolder = fullfile(StartDirectory, 'Subjects_Data', ['Subject_' SubjID]);
+    
+    AnalysisFolder = fullfile(SubjectFolder, 'PMap');
+    
+    cd(AnalysisFolder)
+    ImgLs = dir('rrw*.nii');
+        
+    for iROI=1:numel(ImgLs)
+       disp(ImgLs(iROI).name)
+       gzip(ImgLs(iROI).name)
+       delete(ImgLs(iROI).name)
+    end
+    
+end
