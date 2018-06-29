@@ -1,0 +1,76 @@
+clear; clc
+
+spm_get_defaults;
+global defaults %#ok<NUSED>
+
+flags = struct(...
+    'sep', [4 2 1 0.8 0.4] , ...
+    'params',  [0 0 0  0 0 0], ...
+    'cost_fun', 'nmi', ...
+    'tol', [repmat(0.001, 1, 3), repmat(0.0005, 1, 3), repmat(0.005, 1, 3), repmat(0.0005, 1, 3)], ...
+    'fwhm', [5,5], ...
+    'graphics', ~spm('CmdLine'));
+
+% StartDirectory = fullfile(pwd, '..','..', '..');
+StartDirectory = '/media/rxg243/BackUp2/AV_Integration_7T_2';
+cd (StartDirectory)
+
+SubjectList = [...
+    '02';...
+    '03';...
+    '04';...
+    '06';...
+    '07';...
+    '08';...
+    '09';...
+    '11';...
+    '12';...
+    '13';...
+    '14';...
+    '15';...
+    '16'
+    ];
+NbSub = size(SubjectList,1);
+
+
+for SubjInd = 7 %1:size(SubjectList,1)
+    
+    SubjID = SubjectList(SubjInd,:)
+    
+    SubjectFolder = fullfile(StartDirectory, 'Subjects_Data', ['Subject_' SubjID]);
+    
+    
+    Img2Process = {};
+    TargetScan = []; %#ok<NASGU>
+    SourceScan = []; %#ok<NASGU>
+    
+    
+    TargetScan = dir(fullfile(SubjectFolder, 'Structural', 'CBS', ...
+        '*_bound.nii'));
+    
+    TargetScan = fullfile(SubjectFolder, 'Structural', 'CBS', ...
+        TargetScan.name);
+    
+    
+    cd(fullfile(SubjectFolder, 'Transfer2'))
+    
+    SourceScan = dir(fullfile(SubjectFolder, 'Transfer2',...
+        'meanu2S*.nii'));
+    SourceScan = fullfile(SubjectFolder, 'Transfer2',...
+        SourceScan.name);
+    
+%     tmp = dir('beta_*.nii');
+%     for FileInd = 1:length(tmp)
+%         Img2Process{end+1,1} = fullfile(SubjectFolder, 'Transfer', tmp(FileInd).name); %#ok<SAGROW>
+%     end
+    
+%     Img2Process{end+1,1} = fullfile(SubjectFolder, 'Transfer', 'mask.nii');
+    
+    SourceScan
+    Img2Process
+    
+    spm_coreg_reorient_save(TargetScan,SourceScan,Img2Process,flags);
+    
+end
+
+cd(StartDirectory)
