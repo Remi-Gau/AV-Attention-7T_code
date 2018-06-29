@@ -1,0 +1,76 @@
+%%
+clear; clc
+
+
+ROIs = {...
+    'rrw_pA22c_BrainTome.nii', 1 ; ...
+    'rrw_pA22r_BrainTome.nii', 2 ; ...
+    'rrw_pA41-42_BrainTome.nii', 3 ; ...
+    };
+
+SubjectList = [...
+    '02';...
+    '03';...
+    '04';...
+%     '06';...
+    '07';...
+    '08';...
+    '09';...
+    '11';...
+    '12';...
+    '13';...
+%     '14';...
+    '15';...
+    '16'
+    ];
+%  Root folder definition
+StartDirectory = fullfile(pwd, '..', '..');
+
+for SubjInd = size(SubjectList,1)-1
+    
+    SubjID = SubjectList(SubjInd,:) %#ok<NOPTS>
+    
+    SubjectFolder = fullfile(StartDirectory, 'Subjects_Data', ['Subject_' SubjID]);
+    
+    AnalysisFolder = fullfile(SubjectFolder, 'Transfer', 'ROI');
+    
+    
+    
+    %% Creates one volume summing up all the  ROIs
+    cd(AnalysisFolder);
+    
+    tmp = spm_vol(ROIs{1,1});
+    HDR = struct(...
+         'fname',   ['ALL_STGs_Subject_' SubjID '.nii'], ... 
+        'dim',     tmp.dim,...
+        'dt',      [spm_type('float32') spm_platform('bigend')],...
+        'mat',     tmp.mat,...
+        'pinfo',   [1 0 0]',...
+        'descrip', 'All ROIs');
+    
+    VOL = zeros(tmp.dim);
+    clear tmp
+    
+    for iROI = 1:size(ROIs,1)
+        
+        VolROI = spm_read_vols(spm_vol(ROIs{iROI,1}));
+        VolROI(isnan(VolROI))= 0;
+        VolROI = logical(VolROI);
+        
+        if any(VolROI(VolROI)==logical(VOL(VolROI)))
+            tmp = VOL(VolROI);
+            tmp = tmp(tmp~=0);
+            warning('ROI overlap: %i voxels', length(tmp))
+            
+        end
+        
+        VOL(VolROI) = ROIs{iROI,2};
+        
+        clear tmp
+        
+    end
+    
+    spm_write_vol(HDR, VOL);
+    
+    cd (StartDirectory)
+end
