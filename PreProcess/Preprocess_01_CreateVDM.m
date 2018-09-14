@@ -1,3 +1,5 @@
+% Creates a voxel displacement map starting with the fieldmap
+
 clear 
 clc
 
@@ -5,7 +7,7 @@ spm_jobman('initcfg')
 spm_get_defaults;
 global defaults %#ok<NUSED>
 
-%  Folders definitions
+% Folders definitions
 % RootFolder = fullfile(pwd, '..', '..');
 RootFolder = '/media/rxg243/BackUp2/AV_Integration_7T_2';
 
@@ -17,7 +19,7 @@ RootFolder = '/media/rxg243/BackUp2/AV_Integration_7T_2';
 % Bandwidth Per Pixel Phase Encode = 15.873
 
 
-%% According to Robert Trampel
+%% According to R. Trampel
 
 % For distortion correction: ignore Partial Fourrier and references lines
 % BaseResolution/iPAT = PELines
@@ -49,7 +51,8 @@ SubjectList = [...
     '16'
     ];
 
-
+% List the number of folders for each subject.
+% Som subject's had fewer sessions
 FoldersNames = {...
     1:4;...
     1:4;...
@@ -66,10 +69,11 @@ FoldersNames = {...
     1:4;...
     };
 
+% List the field map folders
 FM_FolderList = {'01';'02'};
 
 
-for SubjInd = 9:size(SubjectList,1)
+for SubjInd = 1:size(SubjectList,1)
     
     matlabbatch = {};
     
@@ -79,18 +83,21 @@ for SubjInd = 9:size(SubjectList,1)
     
     NiftiFolder = fullfile(SubjectFolder, 'Nifti', 'NoMoCo');
     
-    TargetFile=dir(fullfile(NiftiFolder,'01','S*_iPAT4_6_8_48sli_TE25_0p75_Te25.nii'));
+    TargetFile = dir(fullfile(NiftiFolder,'01','S*_iPAT4_6_8_48sli_TE25_0p75_Te25.nii'));
     TargetFile = fullfile(NiftiFolder,'01',TargetFile.name);
     
     FM_Folder = fullfile(SubjectFolder, 'FieldMap');
     
     NbFM = numel(FoldersNames{SubjInd})/2;
     
+    % for each field map
     for FM_Ind = 1:NbFM
         
         cd(fullfile(FM_Folder,FM_FolderList{FM_Ind}))
         
-        %% Coregister to the first image of the first run        
+        %% Coregister to the first image of the first run  
+        % This is required as the VDM will be applied after realignement
+        % that gets the very first image as reference
         TEMP = dir('S*_DeltaTE1p02ms_Te6.nii');        
         matlabbatch{end+1}.spm.spatial.coreg.estimate.source{1} = ...
             fullfile(FM_Folder,FM_FolderList{FM_Ind},[TEMP.name ',1']);

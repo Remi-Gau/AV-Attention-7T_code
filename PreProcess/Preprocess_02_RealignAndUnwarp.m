@@ -1,4 +1,6 @@
 function Preprocess_02_RealignAndUnwarp
+% Realigns and unwarp the EPI 
+
 clear; clc
 
 spm_jobman('initcfg')
@@ -43,7 +45,7 @@ FoldersNames = {...
     1:4;...
     };
 
-
+% This cells keeps track of which VDM to apply to which run
 FieldMaps = {...
     [1 1 2 2];... %02
     [1 1 2 2];... %03
@@ -76,7 +78,7 @@ parfor SubjInd = 1:size(SubjectList,1)
     NbRuns = length( FoldersNames{SubjInd});
     
     
-    %% ---------------------------  %
+    %  ---------------------------  %
     %      UNWARP & REALIGN         %
     %  ---------------------------  %
     
@@ -90,6 +92,7 @@ parfor SubjInd = 1:size(SubjectList,1)
         
         TEMP = [];
         
+        % lists the EPI images
         cd(fullfile(NiftiSourceFolder, sprintf('%2.2d', FoldersNames{SubjInd}(RunInd))))
         TEMP = dir('S1*iPAT4_6_8_48sli_TE25_0p75_Te25.nii');
         TEMP = spm_vol(TEMP.name);
@@ -100,8 +103,10 @@ parfor SubjInd = 1:size(SubjectList,1)
         
         cd(fullfile(FieldmapsFolder, sprintf('%2.2d', FieldMaps{SubjInd}(RunInd))))
         TEMP=dir('vdm*.nii');
-%         matlabbatch{1,1}.spm.spatial.realignunwarp.data(1,RunInd).pmscan = {[fullfile(pwd,TEMP.name) ',1']};
-                matlabbatch{1,1}.spm.spatial.realignunwarp.data(1,RunInd).pmscan = {''};
+        matlabbatch{1,1}.spm.spatial.realignunwarp.data(1,RunInd).pmscan = {''};
+        
+        % uncomment the following line if you want to apply the VDM
+        %         matlabbatch{1,1}.spm.spatial.realignunwarp.data(1,RunInd).pmscan = {[fullfile(pwd,TEMP.name) ',1']};
         
     end
     

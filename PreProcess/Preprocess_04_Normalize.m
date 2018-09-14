@@ -1,4 +1,8 @@
 function Preprocess_04_Normalize
+% Normalize EPI images
+% This is moslty to run a traditional group level analysis to have a look
+% at the activations
+
 clear 
 clc
 
@@ -61,6 +65,7 @@ for SubjInd = 1:size(SubjectList,1)
     
     matlabbatch{1}.spm.spatial.normalise.write.subj.def{1} = fullfile(SubjectFolder, 'FFX', 'Structural', 'y_UNI.nii');
     
+    % List the images for each run and the mean image 
     for RunInd=1:NbRuns
         
         cd(fullfile(NiftiSourceFolder, sprintf('%2.2d', FoldersNames{SubjInd}(RunInd))))

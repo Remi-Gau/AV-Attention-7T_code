@@ -1,4 +1,7 @@
 function Preprocess_05_Smooth
+% Smooths the EPI images
+% This is moslty to run a traditional group level analysis to have a look
+% at the activations
 
 clear
 clc
@@ -62,6 +65,7 @@ for SubjInd = 1:size(SubjectList,1)
     matlabbatch = {};
     
     matlabbatch{1}.spm.spatial.smooth.data = {};
+    % List the images for each run
     for RunInd=1:NbRuns
         
         cd(fullfile(NiftiSourceFolder, sprintf('%2.2d', FoldersNames{SubjInd}(RunInd))))

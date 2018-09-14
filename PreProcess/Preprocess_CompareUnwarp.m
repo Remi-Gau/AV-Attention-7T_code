@@ -1,3 +1,7 @@
+% A small script that tries to estiame the difference of doing the realign
+% with and witouth the field map. Also tries to estimate the change in
+% smoothness between the 2.
+
 clear; clc;
 
 % StartDirectory = fullfile(pwd, '..','..', '..');

@@ -1,4 +1,6 @@
 function Preprocess_03_ApplyVDM
+% Only applies the voxel displacement map
+
 clear; clc
 
 spm_jobman('initcfg')
@@ -76,9 +78,9 @@ for SubjInd = 2:size(SubjectList,1)
     NbRuns = length( FoldersNames{SubjInd});
     
     
-    %% ---------------------------  %
-    %      UNWARP & REALIGN         %
-    %  ---------------------------  %
+    %  ---------------  %
+    %      APPLY VDM    %
+    %  ---------------  %
     
     tic
     

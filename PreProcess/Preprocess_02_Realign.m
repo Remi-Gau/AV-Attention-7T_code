@@ -1,4 +1,6 @@
 function Preprocess_02_Realign
+% Only estimate the realignement of the EPI
+
 clear; clc
 
 spm_jobman('initcfg')
@@ -6,7 +8,7 @@ spm_get_defaults;
 global defaults %#ok<NUSED>
 
 
-%  Folders definitions
+% Folders definitions
 % RootFolder = fullfile(pwd, '..', '..');
 RootFolder = '/media/rxg243/BackUp2/AV_Integration_7T_2';
 
@@ -56,14 +58,15 @@ for SubjInd = 1:size(SubjectList,1)
     NbRuns = length( FoldersNames{SubjInd});
     
     
-    %% ---------------------------  %
-    %      UNWARP & REALIGN         %
+    %  ---------------------------  %
+    %           REALIGN             %
     %  ---------------------------  %
     
     tic
     
     matlabbatch = {};
     
+    % List the images for each run
     for RunInd=1:NbRuns
         
         RunInd
@@ -72,7 +75,6 @@ for SubjInd = 1:size(SubjectList,1)
         
         cd(fullfile(NiftiSourceFolder, sprintf('%2.2d', FoldersNames{SubjInd}(RunInd))))
         TEMP = dir('S1*iPAT4_6_8_48sli_TE25_0p75_Te25.nii');
-%         copyfile(TEMP.name, ['bu_' TEMP.name])
         
         TEMP = spm_vol(TEMP.name);
         

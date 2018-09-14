@@ -1,3 +1,7 @@
+% Reorients the mean image from each session to the upsample high resolution T1 
+% using the transformation matrix kept in the mat files from the previously
+% applied manual and SPM coregistrations
+
 clear; clc;
 
 % StartDirectory = fullfile(pwd, '..','..', '..');
@@ -53,6 +57,7 @@ for SubjInd = 2:size(SubjectList,1)
     matlabbatch = {};
     Files2Reorient = {};
     
+     % List the mean images from each run
     for RunInd=1:NbRuns
         cd(fullfile(NiftiSourceFolder, sprintf('%2.2d', FoldersNames{SubjInd}(RunInd))))
         MeanFile = dir('mean_session*.nii');
@@ -60,6 +65,8 @@ for SubjInd = 2:size(SubjectList,1)
     end
     
     cd(AnalysisFolder)
+    
+    % applies the reorientation from the manual (mancoreg) coregistration first
     ReorientFiles = dir('ReorientMatrix_*.mat');
     for iFile = 1:numel(ReorientFiles)
         load(fullfile(AnalysisFolder, ReorientFiles(iFile).name))
@@ -68,6 +75,7 @@ for SubjInd = 2:size(SubjectList,1)
         matlabbatch{end}.spm.util.reorient.prefix = '';
     end
     
+    % applies the reorientation from the SPM coregistration second
     CoregFiles = dir('CoregMatrix_*.mat');
     for iFile = 1:numel(CoregFiles)
         load(fullfile(AnalysisFolder, CoregFiles(iFile).name))

@@ -1,4 +1,7 @@
-%%
+% Coregister the mean image to the bias corrected structural and applies it
+% to the EPI images
+% This is moslty to run a traditional group level analysis to have a look
+% at the activations
 clear
 clc
 
@@ -57,6 +60,7 @@ for SubjInd = 1:size(SubjectList,1)
     
     NiftiSourceFolder = fullfile(SubjectFolder, 'Nifti', 'NoMoCo');
     
+    % identify target image
     matlabbatch{1}.spm.spatial.coreg.estimate.ref = {fullfile(SubjectFolder, 'FFX_bu', 'Structural', 'mUNI.nii')};
     
     NbRuns = length( FoldersNames{SubjInd});
@@ -66,11 +70,13 @@ for SubjInd = 1:size(SubjectList,1)
         
         cd(fullfile(NiftiSourceFolder, sprintf('%2.2d', FoldersNames{SubjInd}(RunInd))))
         
+        % identify source image
         if RunInd==1
             TEMP = dir('meanuS*.nii');
             matlabbatch{1}.spm.spatial.coreg.estimate.source = {fullfile(NiftiSourceFolder, '01', TEMP.name)};
         end
         
+        % list unwarped images
         TEMP = dir('uS*.nii');
         TEMP = spm_vol(TEMP.name);
         
@@ -95,4 +101,5 @@ end
 
 cd(StartFolder)
 
+% to check if it went well
 spm_check_registration

@@ -1,3 +1,5 @@
+% Reslice to .4mm the each session mean image
+
 clear; clc;
 
 % StartDirectory = fullfile(pwd, '..','..', '..');
@@ -53,6 +55,7 @@ for SubjInd = 1:size(SubjectList,1)
     matlabbatch = {};
     Files2Reslice = {};
     
+    % List the mean images from each run
     for RunInd=1:NbRuns
         cd(fullfile(NiftiSourceFolder, sprintf('%2.2d', FoldersNames{SubjInd}(RunInd))))
         MeanFile = dir('mean_session*.nii');
