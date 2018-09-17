@@ -328,45 +328,45 @@ for iToPlot = 1%:2
             
             [rho,slope]=CorRegRaster(Profiles,DesMat,iToPlot,X_sort);
             
-            % plot main raster
-%             subplot(1,3,2:3)
-%             if iROI==4
-%                 PlotRectangle(NbLayers,10,1,0)
-%             end
-%             set(gca,'tickdir', 'out', 'xtick', [],'xticklabel', [], ...
-%                 'ytick', [],'yticklabel', [])
-            subplot(1,3,2:3)
-            hold on
-            colormap(ColorMap);
-            
-            imagesc(mean(imgaussfilt(Profiles,[size(Profiles,1)/100 .0001]),3), CLIM)
-            axis([0.5 6.5 0 size(Profiles,1)])
-            
-            set(gca,'tickdir', 'out', 'xtick', [],'xticklabel', [], ...
-                'ytick', [],'yticklabel', [])
-            
-            % plot sorting raster
-%             subplot(1,3,1)
+%             % plot main raster
+% %             subplot(1,3,2:3)
 % %             if iROI==4
 % %                 PlotRectangle(NbLayers,10,1,0)
 % %             end
+% %             set(gca,'tickdir', 'out', 'xtick', [],'xticklabel', [], ...
+% %                 'ytick', [],'yticklabel', [])
+%             subplot(1,3,2:3)
+%             hold on
+%             colormap(ColorMap);
+%             
+%             imagesc(mean(imgaussfilt(Profiles,[size(Profiles,1)/100 .0001]),3), CLIM)
+%             axis([0.5 6.5 0 size(Profiles,1)])
+%             
 %             set(gca,'tickdir', 'out', 'xtick', [],'xticklabel', [], ...
 %                 'ytick', [],'yticklabel', [])
-            subplot(1,3,1)
-            hold on
-            colormap(ColorMap);
-            imagesc(mean(imgaussfilt(Sorting_Raster,[size(Sorting_Raster,1)/100 .0001]),3), CLIM2)
-            axis([0.5 6.5 0 size(Profiles,1)])
-            set(gca,'tickdir', 'out', 'xtick', [],'xticklabel', [], ...
-                'ytick', [],'yticklabel', [])
-            
-            % plot sorting value
-            ax = gca;
-            YLabel = [];
-            PlotSortedValues(ax, X_sort, NbBin, Profiles, YLabel, 1, [], [], 0)
-            set(gca,'fontsize', 20)
-            
-            % plot regression coefficient
+%             
+%             % plot sorting raster
+% %             subplot(1,3,1)
+% % %             if iROI==4
+% % %                 PlotRectangle(NbLayers,10,1,0)
+% % %             end
+% %             set(gca,'tickdir', 'out', 'xtick', [],'xticklabel', [], ...
+% %                 'ytick', [],'yticklabel', [])
+%             subplot(1,3,1)
+%             hold on
+%             colormap(ColorMap);
+%             imagesc(mean(imgaussfilt(Sorting_Raster,[size(Sorting_Raster,1)/100 .0001]),3), CLIM2)
+%             axis([0.5 6.5 0 size(Profiles,1)])
+%             set(gca,'tickdir', 'out', 'xtick', [],'xticklabel', [], ...
+%                 'ytick', [],'yticklabel', [])
+%             
+%             % plot sorting value
+%             ax = gca;
+%             YLabel = [];
+%             PlotSortedValues(ax, X_sort, NbBin, Profiles, YLabel, 1, [], [], 0)
+%             set(gca,'fontsize', 20)
+%             
+%             % plot regression coefficient
 %                         subplot(1,4,4)
 %                         ax = gca;
 %                         axis off
@@ -374,15 +374,15 @@ for iToPlot = 1%:2
 %                             [0.9 1.6 -0.1 0.5], ToPermute)
 %                         set(gca,'tickdir', 'out', 'xtick', [],'xticklabel', [], 'fontsize',10,'yaxislocation', 'right')
             
-%             SavedTxt = fullfile(FigureFolder,'Attention', ...
-%                 ['Raster_' ToPlot{iToPlot} '_CV_' ROI(iROI).name '_' NameSwitch{iCdt} '_f(A).csv']);
-%             PrintTableCorrCoeff(SavedTxt, ROI(iROI).name, ToPlot{iToPlot}, NameSwitch{iCdt}, slope, ToPermute)
-%             
+            SavedTxt = fullfile(FigureFolder,'Attention', ...
+                ['Raster_' ToPlot{iToPlot} '_CV_' ROI(iROI).name '_' NameSwitch{iCdt} '_f(A).csv']);
+            PrintTableCorrCoeff(SavedTxt, ROI(iROI).name, ToPlot{iToPlot}, NameSwitch{iCdt}, slope, ToPermute)
             
             
-            % print
-            print(gcf, fullfile(FigureFolder,'Attention', ...
-                ['Raster_' ToPlot{iToPlot} '_CV_' ROI(iROI).name '_' NameSwitch{iCdt} '.tif']), '-dtiff')
+            
+%             % print
+%             print(gcf, fullfile(FigureFolder,'Attention', ...
+%                 ['Raster_' ToPlot{iToPlot} '_CV_' ROI(iROI).name '_' NameSwitch{iCdt} '.tif']), '-dtiff')
             
         end
         
@@ -410,45 +410,44 @@ end
 
 
 %% Grp level  ; raster CrossMod = f(Percentile of V stim)
-% close all
-% mkdir(fullfile(FigureFolder,'CrossSensory'));
-% Name = {'AV-A';'AV-V'};
-% 
-% 
-% iRoiGrp = 1;
-% 
-% for iToPlot = 1:2
-%     
-%     for iCdt = 1:2
-%         
-%         for iROI = 1:4
-%             
-%             if iROI==1
-%                 CLIM = [-0.2 0.2];
-%                 CLIM2 = CLIM*1.5;
-%             else
-%                 CLIM = [-0.8 0.8];
-%                 CLIM2 = CLIM;
-%             end
-%             
+close all
+mkdir(fullfile(FigureFolder,'CrossSensory'));
+Name = {'AV-A';'AV-V'};
+
+
+iRoiGrp = 1;
+
+for iToPlot = 1:2
+    
+    for iCdt = 1:2
+        
+        for iROI = 1:4
+            
+            if iROI==1
+                CLIM = [-0.2 0.2];
+                CLIM2 = CLIM*1.5;
+            else
+                CLIM = [-0.8 0.8];
+                CLIM2 = CLIM;
+            end
+            
 %             figure('name', ToPlot{iToPlot}, 'Position', FigDim, 'Color', [1 1 1], 'Visible', Visibility);
-%             
-%             NbBin = MinVert(strcmp(ROI(iROI).name,{MinVert.name}')).MinVert;
-%             
-%             clear X_sort Profiles Sorting_Raster
-%             
-%             for iSubj = 1:size(All_X_sort_Cross,1)
-%                 Sorting_Raster(:,:,iSubj) = All_Profiles_A{iSubj,iToPlot,2,iROI};
-%                 X_sort(iSubj,:) = All_X_sort_Cross_A{iSubj,iToPlot,iCdt,iROI};
-%                 Profiles(:,:,iSubj) = All_Profiles_Cross_A{iSubj,iToPlot,iCdt,iROI};
-%             end
-%             
-%             X_sort = X_sort(Subj2Include,:);
-%             Profiles = Profiles(:,:,Subj2Include);
-%             
-%             [rho,slope]=CorRegRaster(Profiles,DesMat,iToPlot,X_sort);
-%             
-%             
+            
+            NbBin = MinVert(strcmp(ROI(iROI).name,{MinVert.name}')).MinVert;
+            
+            clear X_sort Profiles Sorting_Raster
+            
+            for iSubj = 1:size(All_X_sort_Cross,1)
+                Sorting_Raster(:,:,iSubj) = All_Profiles_A{iSubj,iToPlot,2,iROI};
+                X_sort(iSubj,:) = All_X_sort_Cross_A{iSubj,iToPlot,iCdt,iROI};
+                Profiles(:,:,iSubj) = All_Profiles_Cross_A{iSubj,iToPlot,iCdt,iROI};
+            end
+            
+            X_sort = X_sort(Subj2Include,:);
+            Profiles = Profiles(:,:,Subj2Include);
+            
+            [rho,slope]=CorRegRaster(Profiles,DesMat,iToPlot,X_sort);
+            
 %             % plot main raster
 %             subplot(1,3,2:3)
 %             PlotRectangle(NbLayers,10,1,0)
@@ -490,19 +489,19 @@ end
 %             %             PlotCorrCoeff(ax, slope, ToPlot{iToPlot}, 0, 0, ax.Position(3), ax.Position(4), ...
 %             %                 [0.9 1.6 -0.1 0.5], ToPermute)
 %             %             set(gca,'tickdir', 'out', 'xtick', [],'xticklabel', [], 'fontsize',10,'yaxislocation', 'right')
-%             
-%             
-%             SavedTxt = fullfile(FigureFolder,'CrossSensory', ...
-%                 ['GrpLvl_Raster_' Name{iCdt} '_fA_Final_' ToPlot{iToPlot} '_CV_' ROI(iROI).name '.csv']);
-%             PrintTableCorrCoeff(SavedTxt, ROI(iROI).name, ToPlot{iToPlot}, [Name{iCdt} '_fA'], slope, ToPermute)
-%             
-%             
-% %             print(gcf, fullfile(FigureFolder,'CrossSensory', ...
-% %                 ['GrpLvl_Raster_' Name{iCdt} '_fV_Final_' ToPlot{iToPlot} '_CV_' ROI(iROI).name '.tif']), '-dtiff')
-%             
-%         end
-%         
-%     end
-%     
-%     
-% end
+            
+            
+            SavedTxt = fullfile(FigureFolder,'CrossSensory', ...
+                ['GrpLvl_Raster_' Name{iCdt} '_fA_Final_' ToPlot{iToPlot} '_CV_' ROI(iROI).name '.csv']);
+            PrintTableCorrCoeff(SavedTxt, ROI(iROI).name, ToPlot{iToPlot}, [Name{iCdt} '_fA'], slope, ToPermute)
+            
+            
+%             print(gcf, fullfile(FigureFolder,'CrossSensory', ...
+%                 ['GrpLvl_Raster_' Name{iCdt} '_fV_Final_' ToPlot{iToPlot} '_CV_' ROI(iROI).name '.tif']), '-dtiff')
+            
+        end
+        
+    end
+    
+    
+end

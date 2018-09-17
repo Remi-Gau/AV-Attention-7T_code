@@ -45,8 +45,11 @@ for i=1:size(DATA.Betas,2)
     fprintf (fid, '%f,',P(i));
     end
     
-    fprintf (fid, '%f,',abs(nanmean(DATA.Betas(:,i))/nanstd(DATA.Betas(:,i))));
+    % Print effect size
+    CI = bootci(1000,{@(x) Unbiased_ES(x), DATA.Betas(:,i)},'alpha',0.05,'type','bca');
+    fprintf (fid, '[,%f,-,%f,]',CI(1),CI(2));
     fprintf (fid, ',');
+  
 end
 
 fprintf (fid, '\n');
@@ -54,3 +57,10 @@ fprintf (fid, '\n');
 
 end
 
+function du = Unbiased_ES(grp_data)
+% from DOI 10.1177/0013164404264850
+d = mean(grp_data)/std(grp_data);
+nu = length(grp_data)-1;
+G = gamma(nu/2)/(sqrt(nu/2)*gamma((nu-1)/2));
+du = d*G;
+end

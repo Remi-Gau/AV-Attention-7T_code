@@ -548,7 +548,7 @@ print(gcf, fullfile(FigureFolder,['Fig2_activations_and_deactivations_' MedianSu
 close all
 clear DATA
 
-DATA.WithSubj = 0%PlotSubjects;
+DATA.WithSubj = 0;%PlotSubjects;
 
 DATA.Scatter = Scatter;
 DATA.WithPerm = 0;
