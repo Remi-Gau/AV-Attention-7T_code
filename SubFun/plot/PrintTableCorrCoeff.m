@@ -50,6 +50,9 @@ end
 
 function du = Unbiased_ES(grp_data)
 % from DOI 10.1177/0013164404264850
+% THE EFFECTS OF NONNORMAL DISTRIBUTIONS ON CONFIDENCE INTERVALS AROUND THE 
+% STANDARDIZED MEAN DIFFERENCE: BOOTSTRAP AND PARAMETRIC CONFIDENCE INTERVALS 
+% KEN KELLEY
 d = mean(grp_data)/std(grp_data);
 nu = length(grp_data)-1;
 G = gamma(nu/2)/(sqrt(nu/2)*gamma((nu-1)/2));
