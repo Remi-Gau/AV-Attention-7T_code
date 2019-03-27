@@ -9,11 +9,7 @@ NbBlocks = 3;
 Median = 1;
 
 StartFolder = fullfile(pwd, '..', '..', '..');
-cd(StartFolder)
 addpath(genpath(fullfile(StartFolder, 'SubFun')))
-
-FigureFolder = fullfile(StartFolder, 'Figures', 'ProfilesSurface', strcat(num2str(NbLayers), '_layers'));
-[~,~,~] = mkdir(FigureFolder);
 
 suffix = {...
     '_stim-A_att-A';...
@@ -31,6 +27,80 @@ suffix = [repmat('_block-', NbRuns*NbCdt*NbBlocks, 1) suffix];
 tmp = repmat(1:4, NbBlocks, 1);
 suffix = [repmat(num2str(tmp(:)), NbCdt, 1) suffix];
 suffix = [repmat('_run-', NbRuns*NbCdt*NbBlocks, 1) suffix];
+
+% Creates the following 
+%     'run-1_block-1_stim-A_att-A '
+%     'run-1_block-2_stim-A_att-A '
+%     'run-1_block-3_stim-A_att-A '
+%     'run-2_block-1_stim-A_att-A '
+%     'run-2_block-2_stim-A_att-A '
+%     'run-2_block-3_stim-A_att-A '
+%     'run-3_block-1_stim-A_att-A '
+%     'run-3_block-2_stim-A_att-A '
+%     'run-3_block-3_stim-A_att-A '
+%     'run-4_block-1_stim-A_att-A '
+%     'run-4_block-2_stim-A_att-A '
+%     'run-4_block-3_stim-A_att-A '
+%     'run-1_block-1_stim-V_att-A '
+%     'run-1_block-2_stim-V_att-A '
+%     'run-1_block-3_stim-V_att-A '
+%     'run-2_block-1_stim-V_att-A '
+%     'run-2_block-2_stim-V_att-A '
+%     'run-2_block-3_stim-V_att-A '
+%     'run-3_block-1_stim-V_att-A '
+%     'run-3_block-2_stim-V_att-A '
+%     'run-3_block-3_stim-V_att-A '
+%     'run-4_block-1_stim-V_att-A '
+%     'run-4_block-2_stim-V_att-A '
+%     'run-4_block-3_stim-V_att-A '
+%     'run-1_block-1_stim-AV_att-A'
+%     'run-1_block-2_stim-AV_att-A'
+%     'run-1_block-3_stim-AV_att-A'
+%     'run-2_block-1_stim-AV_att-A'
+%     'run-2_block-2_stim-AV_att-A'
+%     'run-2_block-3_stim-AV_att-A'
+%     'run-3_block-1_stim-AV_att-A'
+%     'run-3_block-2_stim-AV_att-A'
+%     'run-3_block-3_stim-AV_att-A'
+%     'run-4_block-1_stim-AV_att-A'
+%     'run-4_block-2_stim-AV_att-A'
+%     'run-4_block-3_stim-AV_att-A'
+%     'run-1_block-1_stim-A_att-V '
+%     'run-1_block-2_stim-A_att-V '
+%     'run-1_block-3_stim-A_att-V '
+%     'run-2_block-1_stim-A_att-V '
+%     'run-2_block-2_stim-A_att-V '
+%     'run-2_block-3_stim-A_att-V '
+%     'run-3_block-1_stim-A_att-V '
+%     'run-3_block-2_stim-A_att-V '
+%     'run-3_block-3_stim-A_att-V '
+%     'run-4_block-1_stim-A_att-V '
+%     'run-4_block-2_stim-A_att-V '
+%     'run-4_block-3_stim-A_att-V '
+%     'run-1_block-1_stim-V_att-V '
+%     'run-1_block-2_stim-V_att-V '
+%     'run-1_block-3_stim-V_att-V '
+%     'run-2_block-1_stim-V_att-V '
+%     'run-2_block-2_stim-V_att-V '
+%     'run-2_block-3_stim-V_att-V '
+%     'run-3_block-1_stim-V_att-V '
+%     'run-3_block-2_stim-V_att-V '
+%     'run-3_block-3_stim-V_att-V '
+%     'run-4_block-1_stim-V_att-V '
+%     'run-4_block-2_stim-V_att-V '
+%     'run-4_block-3_stim-V_att-V '
+%     'run-1_block-1_stim-AV_att-V'
+%     'run-1_block-2_stim-AV_att-V'
+%     'run-1_block-3_stim-AV_att-V'
+%     'run-2_block-1_stim-AV_att-V'
+%     'run-2_block-2_stim-AV_att-V'
+%     'run-2_block-3_stim-AV_att-V'
+%     'run-3_block-1_stim-AV_att-V'
+%     'run-3_block-2_stim-AV_att-V'
+%     'run-3_block-3_stim-AV_att-V'
+%     'run-4_block-1_stim-AV_att-V'
+%     'run-4_block-2_stim-AV_att-V'
+%     'run-4_block-3_stim-AV_att-V'
 
 
 ROIs = {...
@@ -55,34 +125,25 @@ SubjectList = [...
 
 NbSubject = size(SubjectList,1);
 
-DesMat = (1:NbLayers)-mean(1:NbLayers);
-DesMat = [ones(NbLayers,1) DesMat' (DesMat.^2)'];
-% DesMat = [ones(NbLayers,1) DesMat'];
-DesMat = spm_orth(DesMat);
-
 
 %%
 for iROI = 1:length(ROIs)
     AllSubjects_Data(iROI) = struct(...
         'name', ROIs{iROI}, ...
-        'DATA', nan(NbLayers,6,NbSubject), ...
-        'VertexCount', nan(NbSubject,NbLayers+1),...
-        'Differential', struct('Blocks', struct('DATA', cell(1))));
+        'DATA', []);
 end
 
 %% Gets data for each subject
 for SubjInd = 1:NbSubject
-    
-    cd(StartFolder)
-    
+
     SubjID = SubjectList(SubjInd,:);
     
     fprintf(['\n\n  Processing subject : ' SubjID '\n\n'])
     
     SubjectFolder = fullfile(StartFolder, 'Subjects_Data', ['Subject_' SubjID], ...
         'Results', 'Profiles', 'Surfaces');
-    
-    
+
+
     for iROI=1:size(ROIs,1)
         
         File2Load = fullfile(SubjectFolder,...
@@ -90,21 +151,32 @@ for SubjInd = 1:NbSubject
         
         if ~exist(File2Load, 'file')
             error('File %s is missing.', File2Load)
+            
         else
             
             load(File2Load, 'Data_ROI')
-
+            
             if isfield(Data_ROI, 'LayerMean')
-                %% Compute main effect for each block
+                
+                % Extract data for each layer / condition / block
                 if Median
                     Data = Data_ROI.LayerMedian(2:end-1,:,:);
                 else
                     Data = Data_ROI.LayerMean(2:end-1,:,:); %#ok<*UNRCH>
                 end
-              Data = reshape(Data, [size(Data,2) * size(Data,3), size(Data,1)]);
-              AllSubjects_Data(iROI).DATA{SubjInd} = Data;
                 
+                % Reshape to match the 'suffix' organization 
+                Data = shiftdim(Data,1);
+                Data = reshape(Data, [size(Data,1) * size(Data,2), size(Data,3)]);
+                Data = fliplr(Data);
+                
+                AllSubjects_Data(iROI).DATA = cat(1, ...
+                    AllSubjects_Data(iROI).DATA, ...
+                    Data);
+
             end
+            
+
             
         end
         
@@ -115,5 +187,20 @@ for SubjInd = 1:NbSubject
 end
 
 clear SubjInd ROI_Ind
+
+prefix = repmat(cellstr(SubjectList)',[size(suffix,1), 1]);
+prefix = [repmat('sub-', ) char(A(:)) ];
+
+
+%                 Data = mat2cell(Data, ones(size(Data,1),1), ones(1,size(Data,2)));
+%                 
+%                 cat(2, cellstr(suffix), Data)
+%             csvwrite(fullfile(Results_Folder, [FileName '.csv']), ...
+%                 Features_ROI)
+%             
+%             fid = fopen (SavedTxt, 'w');
+%             for iRow = 1:size(suffix,1)
+%                 fprintf (fid, '%s,', Legends{i});
+%             end
 
 cd(StartFolder)
