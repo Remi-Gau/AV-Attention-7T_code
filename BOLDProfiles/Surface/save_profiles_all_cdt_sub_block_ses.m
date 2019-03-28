@@ -1,4 +1,4 @@
-%% saves each subject profile for each block and condition to a CSV file
+%% saves each all subjects profile for all blocks and conditions to a CSV file
 
 clear; close all; clc;
 
@@ -8,8 +8,9 @@ NbCdt = 6;
 NbBlocks = 3;
 Median = 1;
 
-StartFolder = fullfile(pwd, '..', '..', '..');
-addpath(genpath(fullfile(StartFolder, 'SubFun')))
+DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
+CodeFolder = 'D:\github\AV-Attention-7T_code';
+Results_Folder = fullfile(DataFolder, 'DataToExport');
 
 suffix = {...
     '_stim-A_att-A';...
@@ -19,16 +20,31 @@ suffix = {...
     '_stim-V_att-V';...
     '_stim-AV_att-V';...
     };
-suffix = repmat(suffix', NbRuns*NbBlocks, 1);
-suffix = suffix(:);
-suffix =  char(suffix);
-suffix = [repmat(num2str((1:3)'), NbRuns*NbCdt, 1) suffix];
-suffix = [repmat('_block-', NbRuns*NbCdt*NbBlocks, 1) suffix];
-tmp = repmat(1:4, NbBlocks, 1);
-suffix = [repmat(num2str(tmp(:)), NbCdt, 1) suffix];
-suffix = [repmat('_run-', NbRuns*NbCdt*NbBlocks, 1) suffix];
 
-% Creates the following 
+SubjectList = [...
+    '02';...
+    '03';...
+    '04';...
+    '07';...
+    '08';...
+    '09';...
+    '11';...
+    '12';...
+    '13';...
+    '15';...
+    '16'
+    ];
+
+ROIs = {...
+    'A1';...
+    'PT';...
+    'V1';...
+    'V2-3'};
+
+%% Set things
+addpath(genpath(fullfile(CodeFolder, 'SubFun')))
+
+% Creates the following
 %     'run-1_block-1_stim-A_att-A '
 %     'run-1_block-2_stim-A_att-A '
 %     'run-1_block-3_stim-A_att-A '
@@ -101,32 +117,19 @@ suffix = [repmat('_run-', NbRuns*NbCdt*NbBlocks, 1) suffix];
 %     'run-4_block-1_stim-AV_att-V'
 %     'run-4_block-2_stim-AV_att-V'
 %     'run-4_block-3_stim-AV_att-V'
-
-
-ROIs = {...
-    'A1';...
-    'PT';...
-    'V1';...
-    'V2-3'};
-
-SubjectList = [...
-    '02';...
-    '03';...
-    '04';...
-    '07';...
-    '08';...
-    '09';...
-    '11';...
-    '12';...
-    '13';...
-    '15';...
-    '16'
-    ];
+suffix = repmat(suffix', NbRuns*NbBlocks, 1);
+suffix = suffix(:);
+suffix =  char(suffix);
+suffix = [repmat(num2str((1:3)'), NbRuns*NbCdt, 1) suffix];
+suffix = [repmat('_block-', NbRuns*NbCdt*NbBlocks, 1) suffix];
+tmp = repmat(1:4, NbBlocks, 1);
+suffix = [repmat(num2str(tmp(:)), NbCdt, 1) suffix];
+suffix = [repmat('_run-', NbRuns*NbCdt*NbBlocks, 1) suffix];
 
 NbSubject = size(SubjectList,1);
 
 
-%%
+% init var
 for iROI = 1:length(ROIs)
     AllSubjects_Data(iROI) = struct(...
         'name', ROIs{iROI}, ...
@@ -135,15 +138,15 @@ end
 
 %% Gets data for each subject
 for SubjInd = 1:NbSubject
-
+    
     SubjID = SubjectList(SubjInd,:);
     
     fprintf(['\n\n  Processing subject : ' SubjID '\n\n'])
     
-    SubjectFolder = fullfile(StartFolder, 'Subjects_Data', ['Subject_' SubjID], ...
+    SubjectFolder = fullfile(DataFolder, 'Subjects_Data', ['Subject_' SubjID], ...
         'Results', 'Profiles', 'Surfaces');
-
-
+    
+    
     for iROI=1:size(ROIs,1)
         
         File2Load = fullfile(SubjectFolder,...
@@ -165,7 +168,7 @@ for SubjInd = 1:NbSubject
                     Data = Data_ROI.LayerMean(2:end-1,:,:); %#ok<*UNRCH>
                 end
                 
-                % Reshape to match the 'suffix' organization 
+                % Reshape to match the 'suffix' organization
                 Data = shiftdim(Data,1);
                 Data = reshape(Data, [size(Data,1) * size(Data,2), size(Data,3)]);
                 Data = fliplr(Data);
@@ -173,34 +176,48 @@ for SubjInd = 1:NbSubject
                 AllSubjects_Data(iROI).DATA = cat(1, ...
                     AllSubjects_Data(iROI).DATA, ...
                     Data);
-
+                
+                clear Data Data_ROI
+                
             end
-            
-
             
         end
         
-        clear Data_ROIs SubROI_Ind Data_ROI
+        clear File2Load
         
     end
     
+    clear iROI
+    
 end
 
-clear SubjInd ROI_Ind
+%% saves the data
 
+% creates a label for each row
 prefix = repmat(cellstr(SubjectList)',[size(suffix,1), 1]);
-prefix = [repmat('sub-', ) char(A(:)) ];
+prefix = char(prefix(:));
+prefix = [repmat('sub-', [size(prefix,1), 1] ) prefix ];
 
+labels = [prefix repmat(suffix, [NbSubject, 1])];
 
-%                 Data = mat2cell(Data, ones(size(Data,1),1), ones(1,size(Data,2)));
-%                 
-%                 cat(2, cellstr(suffix), Data)
-%             csvwrite(fullfile(Results_Folder, [FileName '.csv']), ...
-%                 Features_ROI)
-%             
-%             fid = fopen (SavedTxt, 'w');
-%             for iRow = 1:size(suffix,1)
-%                 fprintf (fid, '%s,', Legends{i});
-%             end
-
-cd(StartFolder)
+for iROI = 1:numel(AllSubjects_Data)
+    
+    FileName = ['group_data-surf_ROI-', AllSubjects_Data(iROI).name, ...
+        '_hs-both'];
+    
+    Data = AllSubjects_Data(iROI).DATA;
+    
+    % save to .mat
+    save(fullfile(Results_Folder, [FileName '.mat']), ...
+        'Data', 'labels')
+    
+    % save to .csv
+    fid = fopen (fullfile(Results_Folder, [FileName '.csv']), 'w');
+    for iRow = 1:size(labels,1)
+        fprintf (fid, '%s,', labels(iRow,:));
+        fprintf (fid, '%f,', Data(iRow,:));
+        fprintf (fid, '\n');
+    end
+    fclose (fid);
+    
+end
