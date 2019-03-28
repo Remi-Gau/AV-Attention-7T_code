@@ -9,7 +9,6 @@ NbBlocks = 3;
 Median = 1;
 
 DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
-CodeFolder = 'D:\github\AV-Attention-7T_code';
 Results_Folder = fullfile(DataFolder, 'DataToExport');
 
 suffix = {...
@@ -42,8 +41,6 @@ ROIs = {...
     'V2-3'};
 
 %% Set things
-addpath(genpath(fullfile(CodeFolder, 'SubFun')))
-
 % Creates the following
 %     'run-1_block-1_stim-A_att-A '
 %     'run-1_block-2_stim-A_att-A '
