@@ -10,7 +10,7 @@ DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
 Results_Folder = fullfile(DataFolder, 'DataToExport');
 
 % addpath(genpath(fullfile(CodeFolder, 'SubFun')))
-% Get_dependencies('D:\Dropbox')
+% Get_dependencies('D:')
 
 SubjectList = [...
     '02';...
