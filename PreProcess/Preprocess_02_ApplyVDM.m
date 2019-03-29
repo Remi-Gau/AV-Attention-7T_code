@@ -1,4 +1,4 @@
-function Preprocess_03_ApplyVDM
+function Preprocess_02_ApplyVDM
 % Only applies the voxel displacement map
 
 clear; clc
