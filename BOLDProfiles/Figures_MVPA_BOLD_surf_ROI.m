@@ -1,3 +1,5 @@
+
+
 clc; clear; close all;
 
 PlotSubjects = 1;
@@ -7,13 +9,19 @@ NbLayers = 6;
 NbLayersMVPA = 6;
 
 
-StartDirectory=fullfile(pwd, '..','..');
-addpath(genpath(fullfile(StartDirectory, 'SubFun')))
+CodeFolder = '/home/remi/github/AV-Attention-7T_code';
+addpath(genpath(fullfile(CodeFolder, 'SubFun')))
 
-% SourceFolder = fullfile('/media/rxg243/BackUp2/AV_Integration_7T_2/Results/Profiles/Surfaces');
-SourceFolder = fullfile(StartDirectory, 'Figures', 'ProfilesSurface', strcat(num2str(NbLayers), '_layers'));
+% Get_dependencies('/home/rxg243/Dropbox/')
+% Get_dependencies('D:\Dropbox')
+Get_dependencies('/home/remi')
 
-FigureFolder = fullfile(StartDirectory, 'Figures', strcat(num2str(NbLayers+2), '_layers'));
+% SourceFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
+SourceFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
+
+DataFolder = fullfile(SourceFolder, 'Figures', 'ProfilesSurface', strcat(num2str(NbLayers), '_layers'));
+
+FigureFolder = fullfile(SourceFolder, 'Figures', strcat(num2str(NbLayers+2), '_layers'));
 
 
 Median = 1;
@@ -67,7 +75,7 @@ end
 %% Get data for BOLD
 % 1 A against baseline irrespective of attention
 % 2 V against baseline irrespective of attention
-load(fullfile(SourceFolder, 'Data_BOLD_WholeROI.mat'), 'AllSubjects_Data')
+load(fullfile(DataFolder, 'Data_BOLD_WholeROI.mat'), 'AllSubjects_Data')
 
 
 % A against baseline & V against baseline
@@ -205,7 +213,7 @@ for SubjInd = 1:size(SubjectList,1)
                 'SVM_' Analysis(iSVM).name...
                 '_ROI_' ROIs{iROI} SaveSufix];
             
-            load(fullfile(StartDirectory, 'Subjects_Data', ['Subject_' SubjID],  'Transfer', 'SVM', Save_vol));
+            load(fullfile(SourceFolder, 'Subjects_Data', ['Subject_' SubjID],  'Transfer', 'SVM', Save_vol));
             
             CV = Results.session(end).rand.perm.CV;
 
@@ -276,7 +284,7 @@ iROI = 1;
 DATA.Legend{1} = 'Param. est. [a u]';
 DATA.Legend{2} = char({'V vs. Baseline';'';'A1'});
 DATA.Data = BOLD_SubjectsData(:,iCond,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA, DATA.OneSideTTest)
 
@@ -286,7 +294,7 @@ iCond = 2;
 iROI = 2;
 DATA.Legend{2} = 'PT';
 DATA.Data = BOLD_SubjectsData(:,iCond,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA, DATA.OneSideTTest)
 
@@ -296,7 +304,7 @@ iCond = 1;
 iROI = 3;
 DATA.Legend{2} = char({'A vs. Baseline';'';'V1'});
 DATA.Data = BOLD_SubjectsData(:,iCond,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA, DATA.OneSideTTest)
 
@@ -306,7 +314,7 @@ iCond = 1;
 iROI = 4;
 DATA.Legend{2} = 'V2-3';
 DATA.Data = BOLD_SubjectsData(:,iCond,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA, DATA.OneSideTTest)
 
@@ -352,7 +360,7 @@ iROI = 1;
 DATA.Legend{1} = 'Param. est. [a u]';
 DATA.Legend{2} = char({'V vs. Baseline';'';'A1'});
 DATA.Data = BOLD_SubjectsData(:,iCond,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA, DATA.OneSideTTest)
 
@@ -362,7 +370,7 @@ iCond = 1;
 iROI = 2;
 DATA.Legend{2} = 'PT';
 DATA.Data = BOLD_SubjectsData(:,iCond,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA, DATA.OneSideTTest)
 
@@ -372,7 +380,7 @@ iCond = 2;
 iROI = 3;
 DATA.Legend{2} =  char({'A vs. Baseline';'';'V1'});
 DATA.Data = BOLD_SubjectsData(:,iCond,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA, DATA.OneSideTTest)
 
@@ -382,7 +390,7 @@ iCond = 2;
 iROI = 4;
 DATA.Legend{2} = 'V2-3';
 DATA.Data = BOLD_SubjectsData(:,iCond,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA, DATA.OneSideTTest)
 
@@ -431,7 +439,7 @@ iROI = 1;
 DATA.Legend{1} = 'Param. est. [a u]';
 DATA.Legend{2} = char({'AV VS A';'';'A1'});
 DATA.Data = BOLD_SubjectsData(:,iCond,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA)
 
@@ -441,7 +449,7 @@ iCond = 5;
 iROI = 2;
 DATA.Legend{2} = 'PT';
 DATA.Data = BOLD_SubjectsData(:,iCond,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA)
 
@@ -452,7 +460,7 @@ iCond = 6;
 iROI = 3;
 DATA.Legend{2} = char({'AV VS A';'';'V1'});
 DATA.Data = BOLD_SubjectsData(:,iCond,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA)
 
@@ -462,7 +470,7 @@ iCond = 6;
 iROI = 4;
 DATA.Legend{2} = 'V2-3';
 DATA.Data = BOLD_SubjectsData(:,iCond,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA)
 
@@ -487,7 +495,7 @@ iSVM = 1;
 iROI = 1;
 DATA.Legend{2} = '';
 DATA.Data = MVPA_SubjectsData(:,iSVM,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA)
 
@@ -497,7 +505,7 @@ iSVM = 1;
 iROI = 2;
 DATA.Legend{2} = '';
 DATA.Data = MVPA_SubjectsData(:,iSVM,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA)
 
@@ -507,7 +515,7 @@ iSVM = 2;
 iROI = 3;
 DATA.Legend{2} = '';
 DATA.Data = MVPA_SubjectsData(:,iSVM,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA)
 
@@ -517,7 +525,7 @@ iSVM = 2;
 iROI = 4;
 DATA.Legend{2} = '';
 DATA.Data = MVPA_SubjectsData(:,iSVM,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA)
 
@@ -567,7 +575,7 @@ iROI = 1;
 DATA.Legend{1} = 'Param. est. [a u]';
 DATA.Legend{2} = char({'A vs. V att';'';'A1'});
 DATA.Data = BOLD_SubjectsData(:,iCond,iROI)*-1;
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA, DATA.OneSideTTest)
 
@@ -578,7 +586,7 @@ iCond = 7;
 iROI = 2;
 DATA.Legend{2} = 'PT';
 DATA.Data = BOLD_SubjectsData(:,iCond,iROI)*-1;
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA, DATA.OneSideTTest)
 
@@ -589,7 +597,7 @@ iCond = 7;
 iROI = 3;
 DATA.Legend{2} = char({'A vs. V att';'';'V1'});
 DATA.Data = BOLD_SubjectsData(:,iCond,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA, DATA.OneSideTTest)
 
@@ -600,7 +608,7 @@ iCond = 7;
 iROI = 4;
 DATA.Legend{2} = 'V2-3';
 DATA.Data = BOLD_SubjectsData(:,iCond,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA, DATA.OneSideTTest)
 
@@ -629,7 +637,7 @@ iROI = 1;
 DATA.Legend{1} = 'Accuracy';
 DATA.Legend{2} = '';
 DATA.Data = MVPA_SubjectsData(:,iSVM,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA)
 
@@ -639,7 +647,7 @@ iSVM = 3;
 iROI = 2;
 DATA.Legend{2} = '';
 DATA.Data = MVPA_SubjectsData(:,iSVM,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA)
 
@@ -649,7 +657,7 @@ iSVM = 3;
 iROI = 3;
 DATA.Legend{2} = '';
 DATA.Data = MVPA_SubjectsData(:,iSVM,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA)
 
@@ -659,7 +667,7 @@ iSVM = 3;
 iROI = 4;
 DATA.Legend{2} = '';
 DATA.Data = MVPA_SubjectsData(:,iSVM,iROI);
-% PlotROIForFig(DATA)
+PlotROIForFig(DATA)
 
 Print2TableROI(fid, ROIs, iROI, DATA)
 
