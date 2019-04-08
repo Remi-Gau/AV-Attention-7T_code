@@ -28,7 +28,7 @@ Many extra matlab functions from github and the mathwork file exchange are neede
 |---------------------------------------------------------------------------------------------------------------------------------------------------|--------------|----------------------------|
 | [Matlab](https://www.mathworks.com/products/matlab.html)                                                                                          | 2016a        |                            |
 | SPM12                                                                                                                                             | v6685        | preprocessing, GLM, ...    |
-| [SPM-RG](https://github.com/Remi-Gau/SPM-RG)                                                                                                      | N/A          | manual coregistration      |
+| [SPM-RG](https://github.com/Remi-Gau/SPM-RG)                                                                                                      | NA          | manual coregistration      |
 | [nansuite](https://fr.mathworks.com/matlabcentral/fileexchange/6837-nan-suite)                                                                    | V1.0.0       |                            |
 | [distributionPlot](https://fr.mathworks.com/matlabcentral/fileexchange/23661-violin-plots-for-plotting-multiple-distributions-distributionplot-m) | v1.15.0      | violin plots for matlab    |
 | [plotSpread](https://fr.mathworks.com/matlabcentral/fileexchange/37105-plot-spread-points-beeswarm-plot)                                          | v1.2.0       | plot datta spread          |
