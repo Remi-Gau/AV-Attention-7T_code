@@ -22,19 +22,18 @@ Results_Folder = fullfile(DataFolder, 'DataToExport');
 PlotSubjects = 1; % can be switched off (0) to no plot subject
 
 % figure 3
-% this will plot some extra contrast that are not in the paper (e.g AV-V
-% for A1).
-Cdt2Choose(1).name = '[AV VS A]_{att A, att V}';
-Cdt2Choose(2).name = '[AV VS V]_{att A, att V}';
+% Cdt2Choose(1).name = '[AV VS A]_{att A, att V}';
+% Cdt2Choose(end).filename = 'Astim-vs-AVstim';
+% Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
+% Cdt2Choose(2).name = '[AV VS V]_{att A, att V}';
+% Cdt2Choose(end).filename = 'Vstim-vs-AVstim';
+% Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
 
 % figure 4
-% this will plot the results of A1 and PT upside down ([Att_V-Att_A] instead of ...
-% [Att_A-Att_V]) compare to the figures in the paper
-Cdt2Choose(3).name = '[Att_A VS Att_V]_{A, V, AV}';
+Cdt2Choose(1).name = '[Att_A VS Att_V]_{A, V, AV}';
+Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
+Cdt2Choose(end).filename = 'AAtt-vs-VAtt';
 
-AAtt-vs-VAtt
-Astim-vs-AVstim
-Astim-vs-AVstim
 
 Transparent = 1;
 Switch = 1;
@@ -62,6 +61,23 @@ SubjectList = [...
     '16'
     ];
 
+
+% variable to read data file
+delimiter = ',';
+endRow = 800;
+
+% Format for each line of text:
+%   column1: text (%s)
+%	column2: double (%f)
+%   column3: double (%f)
+%	column4: double (%f)
+%   column5: double (%f)
+%	column6: double (%f)
+%   column7: double (%f)
+% For more information, see the TEXTSCAN documentation.
+formatSpec = '%s%f%f%f%f%f%f%[^\n\r]';
+
+
 % Design matrix for laminar GLM
 DesMat = (1:NbLayers)-mean(1:NbLayers);
 % DesMat = [ones(NbLayers,1) DesMat' (DesMat.^2)']; % in case we want a
@@ -74,7 +90,7 @@ NbSubj = size(SubjectList,1);
 
 % create permutations for exact sign permutation test
 for iSubj=1:NbSubj
-    sets{iSubj} = [-1 1];
+    sets{iSubj} = [-1 1]; %#ok<SAGROW>
 end
 [a, b, c, d, e, f, g, h, i, j, k] = ndgrid(sets{:}); clear sets
 ToPermute = [a(:), b(:), c(:), d(:), e(:), f(:), g(:), h(:), i(:), j(:), k(:)];
@@ -82,90 +98,59 @@ clear a b c d e f g h i j k
 
 NbROI = size(ROIs,1);
 
-
 for iROI = 1:NbROI
     
     ROI_name = ROIs{iROI};
-    
-    %% get data
-    % Initialize variables.
-    filename = fullfile(Results_Folder, ...
-        ['group_data-surf_ROI-' ...
-        ROI_name '_hs-both.csv']);
-    
-    group_decoding_data-surf_ROI-A1_Classification-Astim-vs-AVstim_hs-both
-    
-    delimiter = ',';
-    endRow = 800;
-    
-    % Format for each line of text:
-    %   column1: text (%s)
-    %	column2: double (%f)
-    %   column3: double (%f)
-    %	column4: double (%f)
-    %   column5: double (%f)
-    %	column6: double (%f)
-    %   column7: double (%f)
-    % For more information, see the TEXTSCAN documentation.
-    formatSpec = '%s%f%f%f%f%f%f%[^\n\r]';
-    
-    % Open the text file.
-    fileID = fopen(filename,'r');
-    
-    % Read columns of data according to the format.
-    dataArray = textscan(fileID, formatSpec, endRow, 'Delimiter', delimiter, ...
-        'TextType', 'string', 'ReturnOnError', false, 'EndOfLine', '\r\n');
-    
-    % Close the text file.
-    fclose(fileID);
-    
-    
-    % Allocate imported array to column variable names
-    RowName = dataArray{:, 1};
-    Data = dataArray{:, 2};
-    Data(:,2) = dataArray{:, 3};
-    Data(:,3) = dataArray{:, 4};
-    Data(:,4) = dataArray{:, 5};
-    Data(:,5) = dataArray{:, 6};
-    Data(:,6) = dataArray{:, 7};
-    
-    clearvars filename delimiter endRow formatSpec fileID dataArray ans;
-    
-    % Subject vectors (one column for each subj)
-    SubjVec = false(size(RowName,1), NbSubj);
-    for iSubj = 1:NbSubj
-        SubjVec(:, iSubj) = contains(RowName, ['sub-' SubjectList(iSubj,:)]);
-    end
-    clear iSubj
-    
-    
-    %% does the math for each contrast
-    for iCdt_2_plot = 5:numel(Cdt2Choose)
+
+    for iCdt_2_plot = 1:numel(Cdt2Choose)
         
-        stim = Cdt2Choose(iCdt_2_plot).cdt;
+        %% get data
+        filename = fullfile(Results_Folder, ...
+            ['group_decoding_data-surf_ROI-' ...
+            ROI_name '_Classification-' ...
+            Cdt2Choose(iCdt_2_plot).filename...
+            '_hs-both.csv']);
         
+        % Open the text file.
+        fileID = fopen(filename,'r');
+        
+        % Read columns of data according to the format.
+        dataArray = textscan(fileID, formatSpec, endRow, 'Delimiter', delimiter, ...
+            'TextType', 'string', 'ReturnOnError', false, 'EndOfLine', '\r\n');
+        
+        % Close the text file.
+        fclose(fileID);
+        
+        
+        % Allocate imported array to column variable names
+        RowName = dataArray{:, 1};
+        Data = dataArray{:, 2};
+        Data(:,2) = dataArray{:, 3};
+        Data(:,3) = dataArray{:, 4};
+        Data(:,4) = dataArray{:, 5};
+        Data(:,5) = dataArray{:, 6};
+        Data(:,6) = dataArray{:, 7};
+        
+        Data = fliplr(Data);
+        
+        clearvars filename fileID dataArray
+        
+        % Subject vectors (one column for each subj)
+        SubjVec = false(size(RowName,1), NbSubj);
+        for iSubj = 1:NbSubj
+            SubjVec(:, iSubj) = contains(RowName, ['sub-' SubjectList(iSubj,:)]);
+        end
+        clear iSubj
+        
+        
+        %% does the math for each contrast
         for iSubj = 1:NbSubj
             
-            Subj_Data = nan(NbRuns*NbBlocks, NbLayers, numel(stim));
+            Subj_Data = nan(NbRuns*NbBlocks, NbLayers); %#ok<NASGU>
             
             % get data for that subject
-            for iCdt = 1:numel(stim)
-                Rows2Choose = [SubjVec(:, iSubj), CdtVec(:, stim(iCdt))];
-                Rows2Choose = all(Rows2Choose, 2);
-                Subj_Data(:, :, iCdt) = Data(Rows2Choose, :);
-            end
-            
-            % in case we have to contrast between conditions 
-            switch numel(stim)
-                case 2
-                case 4
-                Subj_Data = Subj_Data(:, :, 3:4) - Subj_Data(:, :, 1:2);
-                case 6
-                Subj_Data = Subj_Data(:, :, 4:6) - Subj_Data(:, :, 1:3);
-            end
-            
-            % mean across condition
-            Subj_Data = mean(Subj_Data,3);
+            Rows2Choose = SubjVec(:, iSubj);
+            Subj_Data = Data(Rows2Choose, :);
             
             % mean profile for that subject
             All_Subjs_Profile(iSubj, :) = mean(Subj_Data, 1); %#ok<SAGROW>
@@ -175,7 +160,7 @@ for iROI = 1:NbROI
             
             % regorganize data
             Subj_Data=Subj_Data';
-            Subj_Data = Subj_Data(:);
+            Subj_Data = Subj_Data(:)-.5;
             
             [B,~,~] = glmfit(X, Subj_Data, 'normal', 'constant', 'off');
             
@@ -188,7 +173,7 @@ for iROI = 1:NbROI
         DATA.FontSize = FontSize;
         DATA.Transparent = Transparent;
         DATA.YLabel = 'Param. est. [a u]';
-        DATA.MVPA = 0;
+        DATA.MVPA = 1;
         DATA.PlotInset = 0;
         
         

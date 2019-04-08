@@ -82,6 +82,21 @@ suffix = {...
     '_stim-AV_att-V';...
     };
 
+% variable to read data file
+delimiter = ',';
+endRow = 800;
+
+% Format for each line of text:
+%   column1: text (%s)
+%	column2: double (%f)
+%   column3: double (%f)
+%	column4: double (%f)
+%   column5: double (%f)
+%	column6: double (%f)
+%   column7: double (%f)
+% For more information, see the TEXTSCAN documentation.
+formatSpec = '%s%f%f%f%f%f%f%[^\n\r]';
+
 
 % Design matrix for laminar GLM
 DesMat = (1:NbLayers)-mean(1:NbLayers);
@@ -113,21 +128,7 @@ for iROI = 1:NbROI
     filename = fullfile(Results_Folder, ...
         ['group_data-surf_ROI-' ...
         ROI_name '_hs-both.csv']);
-    
-    delimiter = ',';
-    endRow = 800;
-    
-    % Format for each line of text:
-    %   column1: text (%s)
-    %	column2: double (%f)
-    %   column3: double (%f)
-    %	column4: double (%f)
-    %   column5: double (%f)
-    %	column6: double (%f)
-    %   column7: double (%f)
-    % For more information, see the TEXTSCAN documentation.
-    formatSpec = '%s%f%f%f%f%f%f%[^\n\r]';
-    
+
     % Open the text file.
     fileID = fopen(filename,'r');
     
@@ -148,7 +149,7 @@ for iROI = 1:NbROI
     Data(:,5) = dataArray{:, 6};
     Data(:,6) = dataArray{:, 7};
     
-    clearvars filename delimiter endRow formatSpec fileID dataArray ans;
+    clearvars filename fileID dataArray
     
     % Condition vectors (one column for each cdt)
     CdtVec = false(size(RowName,1), NbCdt);
@@ -166,7 +167,7 @@ for iROI = 1:NbROI
     
     
     %% does the math for each contrast
-    for iCdt_2_plot = 5:numel(Cdt2Choose)
+    for iCdt_2_plot = 1:numel(Cdt2Choose)
         
         stim = Cdt2Choose(iCdt_2_plot).cdt;
         
