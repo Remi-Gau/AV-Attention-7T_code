@@ -66,6 +66,8 @@ set(gca,'color', 'none', 'tickdir', 'out', 'xtick', [0 0.45 .9],'xticklabel',  {
     'ytick', [],'yticklabel', [], ...
     'ticklength', [0.00001 0], 'fontsize', 7)
 
+t=xlabel('% Cortical depth');
+set(t,'fontsize', 10);
 
 end
 
