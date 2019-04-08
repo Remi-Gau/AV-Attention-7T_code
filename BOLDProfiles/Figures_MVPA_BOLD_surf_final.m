@@ -1,3 +1,7 @@
+% script used to plot the figures for the paper
+% needs refactoring
+
+
 clc; clear; close all;
 
 PlotSubjects = 0;
@@ -7,14 +11,19 @@ NbLayers = 6;
 NbLayersMVPA = 6;
 
 
-StartDirectory=fullfile(pwd, '..','..');
-addpath(genpath(fullfile(StartDirectory, 'AV-Attention-7T_code', 'SubFun')))
+CodeFolder = '/home/remi/github/AV-Attention-7T_code';
+addpath(genpath(fullfile(CodeFolder, 'SubFun')))
+
 % Get_dependencies('/home/rxg243/Dropbox/')
-Get_dependencies('D:\Dropbox')
+% Get_dependencies('D:\Dropbox')
+Get_dependencies('/home/remi')
 
-SourceFolder = fullfile(StartDirectory, 'Figures', 'ProfilesSurface', strcat(num2str(NbLayers), '_layers'));
+% SourceFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
+SourceFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
 
-FigureFolder = fullfile(StartDirectory, 'Figures', strcat(num2str(NbLayers+2), '_layers'));
+DataFolder = fullfile(SourceFolder, 'Figures', 'ProfilesSurface', strcat(num2str(NbLayers), '_layers'));
+
+FigureFolder = fullfile(CodeFolder, 'Figures', strcat(num2str(NbLayers+2), '_layers'));
 mkdir(FigureFolder)
 
 Median = 1;
@@ -67,7 +76,7 @@ end
 %% Get data for BOLD
 % 1 A against baseline irrespective of attention
 % 2 V against baseline irrespective of attention
-load(fullfile(SourceFolder, strcat('Data_Surf', MedianSufix ,'_Block_QuadGLM_', num2str(NbLayers), '_Layers', '.mat')), 'AllSubjects_Data')
+load(fullfile(DataFolder, strcat('Data_Surf', MedianSufix ,'_Block_QuadGLM_', num2str(NbLayers), '_Layers', '.mat')), 'AllSubjects_Data')
 
 % A against baseline & V against baseline
 Target=1;
@@ -75,8 +84,6 @@ for iCond = 9:10
     for iROI=1:length(AllSubjects_Data)
         Include = find(AllSubjects_Data(iROI).Include);
         tmp = squeeze(AllSubjects_Data(iROI).MainEffects.Blocks.Beta.DATA(:,iCond,Include))';
-%         [~,P] = ttest(tmp);
-%         All_P(iROI,:,Target) = P;
         BOLD_SubjectsBetas(:,iROI,1:size(tmp,2),Target) = tmp;
         
         for iSubj = 1:length(Include)
@@ -99,8 +106,6 @@ for iCond = 7:8
     for iROI=1:length(AllSubjects_Data)
         Include = find(AllSubjects_Data(iROI).Include);
         tmp = squeeze(AllSubjects_Data(iROI).BiVSUni.Blocks.Beta.DATA(:,iCond,Include))';
-%         [~,P] = ttest(tmp);
-%         All_P(iROI,:,Target) = P;
         BOLD_SubjectsBetas(:,iROI,1:size(tmp,2),Target) = tmp;
         
         for iSubj = 1:length(Include)
@@ -117,8 +122,6 @@ for iCond = 2
     for iROI=1:length(AllSubjects_Data)
         Include = find(AllSubjects_Data(iROI).Include);
         tmp = squeeze(AllSubjects_Data(iROI).Differential.Blocks.MainEffects.Beta.DATA(:,iCond,Include))';
-%         [~,P] = ttest(tmp);
-%         All_P(iROI,:,Target) = P;
         BOLD_SubjectsBetas(:,iROI,1:size(tmp,2),Target) = tmp;
         
         for iSubj = 1:length(Include)
@@ -137,8 +140,6 @@ for iCond = 9:11
     for iROI=1:length(AllSubjects_Data)
         Include = find(AllSubjects_Data(iROI).Include);
         tmp = squeeze(AllSubjects_Data(iROI).Differential.Blocks.Beta.DATA(:,iCond,Include))';
-%         [~,P] = ttest(tmp);
-%         All_P(iROI,:,Target) = P;
         BOLD_SubjectsBetas(:,iROI,1:size(tmp,2),Target) = tmp;
         
         for iSubj = 1:length(Include)
@@ -160,8 +161,6 @@ clear AllSubjects_Data temp iROI
 
 
 %% Get Data for MVPA
-cd(SourceFolder)
-
 Analysis(1) = struct('name', 'A Stim VS AV Stim');
 Analysis(end+1) = struct('name', 'V Stim VS AV Stim');
 Analysis(end+1) = struct('name', 'A Att VS V Att');
@@ -242,7 +241,7 @@ for SubjInd = 1:size(SubjectList,1)
                 'SVM_' Analysis(iSVM).name...
                 '_ROI_' ROIs{iROI} SaveSufix];
             
-            load(fullfile(StartDirectory, 'Subjects_Data', ['Subject_' SubjID],  'Transfer', 'SVM', Save_vol));
+            load(fullfile(SourceFolder, 'Subjects_Data', ['Subject_' SubjID],  'Transfer', 'SVM', Save_vol));
             
             CV = Results.session(end).rand.perm.CV;
             
@@ -273,9 +272,6 @@ end
 for iSVM = 1:numel(Analysis)
     for iROI=1:numel(ROIs)
         tmp = squeeze(SubjectsBetas(logical(Include(:,iROI)),iSVM,iROI,:));
-%         [~,P] = ttest(tmp);
-%         All_P(iROI,:,iSVM) = P;
-        
         MVPA_SubjectsBetas(:,iROI,1:size(tmp,2),iSVM) = tmp;
     end
 end
@@ -576,7 +572,6 @@ print(gcf, fullfile(FigureFolder,['Fig1_Activations' MedianSufix '.tif']), '-dti
 
 
 %% Plot Cross Modal Influence
-close all
 clear DATA
 
 DATA.WithSubj = PlotSubjects;
@@ -791,14 +786,12 @@ print(gcf, fullfile(FigureFolder,['Fig3_CrossModalInfluence' MedianSufix '.tif']
 
 
 %% Plot attention effects for type of stimulus
-close all
-
 Stim = {'All', 'A', 'V', 'AV'};
 
 BOLD_Cdtion = 5:8;
 MVPA_Cdtion = 3:6;
 
-for iStim = 2:3
+for iStim = 1
     
     clear DATA
     
@@ -1011,16 +1004,15 @@ for iStim = 2:3
 
 end
 
+return
 
 %% Plot attention effects for type of stimulus act/deact
-close all
-
 Stim = {'All', 'A', 'V', 'AV'};
 
 BOLD_Cdtion = 5:8;
 MVPA_Cdtion = 3:6;
 
-for iStim = 2:3
+for iStim = 1
     
     clear DATA
     
@@ -1056,16 +1048,6 @@ for iStim = 2:3
     DATA.OneSideTTest = {'both' 'both' 'both'};
     
     
-    fprintf (fid, 'BOLD profile\n');
-    for i=1:length(Legends1)
-        fprintf (fid, '%s,', Legends1{i});
-    end
-    fprintf (fid, '\n');
-    for i=1:length(Legends2)
-        fprintf (fid, '%s,', Legends2{i});
-    end
-    fprintf (fid, '\n');
-    
     % V1 Act
     subplot(2,2,1)
     PlotRectangle(NbLayers,Fontsize,Switch)
@@ -1077,16 +1059,8 @@ for iStim = 2:3
     DATA.Color =  [ 0 0 0];
     DATA.Betas = squeeze(BOLD_SubjectsBetas(:,iROI,1:2,iCond));
     DATA.Thresholds = 0.05*ones(1,size(DATA.Betas,2));
-    
     PlotProfileAndBetas(DATA)
-    
-    %     ax = subplot(4,2,3);
-    %     axis('off')
-%     DATA.ax = ax.Position;
-    DATA.YLabelInset = 1;
-    DATA.ToPermute = ToPermute;
-    % PlotInsetFinal(DATA)
-
+   
     
     % V2-3 act
     subplot(2,2,2)
@@ -1100,15 +1074,7 @@ for iStim = 2:3
     DATA.Betas = squeeze(BOLD_SubjectsBetas(:,iROI,1:2,iCond));
     DATA.Thresholds = 0.05*ones(1,size(DATA.Betas,2));
     PlotProfileAndBetas(DATA)
-    
-    %     ax = subplot(4,2,4);
-    %     axis('off')
-%     DATA.ax = ax.Position;
-    DATA.YLabelInset = 0;
-    DATA.ToPermute = ToPermute;
-    % PlotInsetFinal(DATA)
-    
-    
+
     
     % Plot BOLD
     DATA.MVPA = 0;
@@ -1134,14 +1100,7 @@ for iStim = 2:3
     DATA.Betas = squeeze(BOLD_SubjectsBetas(:,iROI,1:2,iCond));
     DATA.Thresholds = 0.05*ones(1,size(DATA.Betas,2));
     PlotProfileAndBetas(DATA)
-    
-    %     ax = subplot(4,2,7);
-    %     axis('off')
-%     DATA.ax = ax.Position;
-    DATA.ToPermute = ToPermute;
-    % PlotInsetFinal(DATA)
 
-    
     % V2-3 deact
     subplot(2,2,4)
     PlotRectangle(NbLayers,Fontsize,Switch)
@@ -1154,13 +1113,6 @@ for iStim = 2:3
     DATA.Betas = squeeze(BOLD_SubjectsBetas(:,iROI,1:2,iCond));
     DATA.Thresholds = 0.05*ones(1,size(DATA.Betas,2));
     PlotProfileAndBetas(DATA)
-    
-    %     ax = subplot(4,2,8);
-    %     axis('off')
-%     DATA.ax = ax.Position;
-    DATA.YLabelInset = 0;
-    DATA.ToPermute = ToPermute;
-    % PlotInsetFinal(DATA)
 
     print(gcf, fullfile(FigureFolder,['Fig4_Attention_Stim_' Stim{iStim} '_ActDeact' MedianSufix '.tif']), '-dtiff')
     
