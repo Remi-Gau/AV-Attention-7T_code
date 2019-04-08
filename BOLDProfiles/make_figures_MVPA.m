@@ -1,4 +1,4 @@
-%% uses CSV files of saved data to plot the data for article
+%% uses CSV files of saved data to plot the data for the article
 
 clear; close all; clc;
 
@@ -19,32 +19,23 @@ DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
 
 Results_Folder = fullfile(DataFolder, 'DataToExport');
 
-% figure 2
-Cdt2Choose(1).name = 'A vs. Baseline';
-Cdt2Choose(end).cdt = [1 4]; % auditory under A and V attention
-Cdt2Choose(end).test_side = {'right' 'right' 'left' 'left'}; %side of permutation test
-Cdt2Choose(2).name = 'V vs. Baseline';
-Cdt2Choose(end).cdt = [2 5];
-Cdt2Choose(end).test_side = {'left' 'left' 'right' 'right'};
+PlotSubjects = 1; % can be switched off (0) to no plot subject
 
 % figure 3
-Cdt2Choose(3).name = '[AV - A]_{att A, att V}';
-Cdt2Choose(end).cdt = [1 4 3 6]; % auditory under A and V attention ; AV under A and V attention ;
-Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'}; %side of permutation test
-Cdt2Choose(4).name = '[AV - V]_{att A, att V}';
-Cdt2Choose(end).cdt = [2 5 3 6]; % visual under A and V attention ; AV under A and V attention ;
-Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
+% this will plot some extra contrast that are not in the paper (e.g AV-V
+% for A1).
+Cdt2Choose(1).name = '[AV VS A]_{att A, att V}';
+Cdt2Choose(2).name = '[AV VS V]_{att A, att V}';
 
 % figure 4
-% this will plot the results of A1 and PT upside down compare to the
-% figures in the paper
-Cdt2Choose(5).name = '[Att_V - Att_A]_{A, V, AV}';
-Cdt2Choose(end).cdt = [1 2 3 4 5 6]; % auditory under A and V attention ; AV under A and V attention ;
-Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'}; %side of permutation test
+% this will plot the results of A1 and PT upside down ([Att_V-Att_A] instead of ...
+% [Att_A-Att_V]) compare to the figures in the paper
+Cdt2Choose(3).name = '[Att_A VS Att_V]_{A, V, AV}';
 
+AAtt-vs-VAtt
+Astim-vs-AVstim
+Astim-vs-AVstim
 
-
-PlotSubjects = 1;
 Transparent = 1;
 Switch = 1;
 FontSize = 12;
@@ -71,18 +62,6 @@ SubjectList = [...
     '16'
     ];
 
-suffix = {...
-    '_stim-A_att-A';...
-    '_stim-V_att-A';...
-    '_stim-AV_att-A';...
-    '_stim-A_att-V';...
-    '_stim-V_att-V';...
-    '_stim-AV_att-V';...
-    };
-
-
-
-
 % Design matrix for laminar GLM
 DesMat = (1:NbLayers)-mean(1:NbLayers);
 % DesMat = [ones(NbLayers,1) DesMat' (DesMat.^2)']; % in case we want a
@@ -93,12 +72,13 @@ DesMat = spm_orth(DesMat);
 
 NbSubj = size(SubjectList,1);
 
+% create permutations for exact sign permutation test
 for iSubj=1:NbSubj
     sets{iSubj} = [-1 1];
 end
-[a, b, c, d, e, f, g, h, i, j, k] = ndgrid(sets{:});
+[a, b, c, d, e, f, g, h, i, j, k] = ndgrid(sets{:}); clear sets
 ToPermute = [a(:), b(:), c(:), d(:), e(:), f(:), g(:), h(:), i(:), j(:), k(:)];
-
+clear a b c d e f g h i j k
 
 NbROI = size(ROIs,1);
 
@@ -112,6 +92,8 @@ for iROI = 1:NbROI
     filename = fullfile(Results_Folder, ...
         ['group_data-surf_ROI-' ...
         ROI_name '_hs-both.csv']);
+    
+    group_decoding_data-surf_ROI-A1_Classification-Astim-vs-AVstim_hs-both
     
     delimiter = ',';
     endRow = 800;
@@ -148,13 +130,6 @@ for iROI = 1:NbROI
     Data(:,6) = dataArray{:, 7};
     
     clearvars filename delimiter endRow formatSpec fileID dataArray ans;
-    
-    % Condition vectors (one column for each cdt)
-    CdtVec = false(size(RowName,1), NbCdt);
-    for iCdt = 1:NbCdt
-        CdtVec(:, iCdt) = contains(RowName, suffix{iCdt});
-    end
-    clear iCdt
     
     % Subject vectors (one column for each subj)
     SubjVec = false(size(RowName,1), NbSubj);
