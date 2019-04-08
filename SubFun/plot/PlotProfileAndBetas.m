@@ -59,8 +59,17 @@ else
     MAX = max(Data(:));
 end
 
-Transparent = DATA.Transparent;
-FontSize =  DATA.FontSize;
+if isfield(DATA, 'Transparent')
+    Transparent = DATA.Transparent;
+else
+    Transparent = 1;
+end
+
+if isfield(DATA, 'FontSize')
+    FontSize = DATA.FontSize;
+else
+    FontSize = 12;
+end
 
 WithSubj = DATA.WithSubj;
 

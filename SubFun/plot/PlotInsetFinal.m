@@ -2,7 +2,11 @@ function PlotInsetFinal(DATA)
 
 ax = DATA.ax;
 
-FontSize = DATA.FontSize;
+if isfield(DATA, 'FontSize')
+    FontSize = DATA.FontSize;
+else
+    FontSize = 12;
+end
 Betas = DATA.Betas;
 ToPermute = DATA.ToPermute;
 
