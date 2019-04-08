@@ -6,6 +6,8 @@ This still needs more commenting and documenting (I am still learning) but do re
 
 A lot of the code is similar to that of the better documented [AVT experiment analysis](https://github.com/Remi-Gau/AVT_analysis).
 
+## Data
+Some of the data is available on the [open science framework project associated to this repo](https://osf.io/7ka5j/). The raw data (in a BIDS compatible format) of this project are available upon request.
 
 ## Dependencies for analysis:
 
