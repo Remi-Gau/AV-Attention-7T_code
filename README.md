@@ -22,9 +22,7 @@ You will need the following softwares to run part of the analysis.
 | cosmetic                                                            |              | A1 ROI delineation                                                   |
 
 
-Many extra matlab functions from github and the mathwork file exchange are needed and are added to the path by the function `code/subfun/Get_dependencies`. Yeah this weird, tiring and cumbersome but that's matlab weirdness for you.
-
-“_And this why we can’t have nice things. Have you heard of [python](http://python.org)._”
+Many extra matlab functions from github and the mathwork file exchange are needed and are added to the path by the function `code/subfun/Get_dependencies`. Yeah this weird, tiring and cumbersome but that's matlab weirdness for you (“_And this why we can’t have nice things. Have you heard of [python](http://python.org)?_”)
 
 | Matlab, toolbox and other dependencies                                                                                                            | Used version | Purpose                    |
 |---------------------------------------------------------------------------------------------------------------------------------------------------|--------------|----------------------------|
