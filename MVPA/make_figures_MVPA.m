@@ -3,9 +3,6 @@
 clear; close all; clc;
 
 NbLayers = 6;
-NbRuns = 4;
-NbCdt = 6;
-NbBlocks = 3;
 
 CodeFolder = '/home/remi/github/AV-Attention-7T_code';
 addpath(genpath(fullfile(CodeFolder, 'SubFun')))
@@ -22,6 +19,8 @@ Results_Folder = fullfile(DataFolder, 'DataToExport');
 PlotSubjects = 1; % can be switched off (0) to no plot subject
 
 % figure 3
+% This will create some extra figures that are not in the paper (e.g AV-A
+% in V1) but that can then act as positive controls
 Cdt2Choose(1).name = '[AV VS A]_{att A, att V}';
 Cdt2Choose(end).filename = 'Astim-vs-AVstim';
 Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
