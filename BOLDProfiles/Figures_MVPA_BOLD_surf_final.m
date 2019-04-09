@@ -4,7 +4,7 @@
 
 clc; clear; close all;
 
-PlotSubjects = 1;
+PlotSubjects = 0;
 Switch = 1;
 
 NbLayers = 6;
@@ -233,7 +233,7 @@ for SubjInd = 1:size(SubjectList,1)
     SubjID = SubjectList(SubjInd,:);
     
     %%
-    for iSVM=3:numel(Analysis)
+    for iSVM=1:numel(Analysis)
         
         for iROI=1:numel(ROIs)
             
