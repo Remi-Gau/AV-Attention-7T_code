@@ -2,11 +2,9 @@ clc; clear; close all;
 
 NbLayersMVPA = 6;
 
-NbRuns = 4;
-NbBlocks = 3;
+% DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
+DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
 
-DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
-% CodeFolder = 'D:\github\AV-Attention-7T_code';
 Results_Folder = fullfile(DataFolder, 'DataToExport');
 
 % addpath(genpath(fullfile(CodeFolder, 'SubFun')))
@@ -102,7 +100,7 @@ SaveSufix = [SaveSufix '_FWHM_' FFX{1} '_Layers_' num2str(NbLayersMVPA+2) '.mat'
 
 
 %% Get Data for MVPA
-for SubjInd = 1:size(SubjectList,1)
+for SubjInd = 1:NbSubject
     
     SubjID = SubjectList(SubjInd,:);
     
@@ -145,22 +143,7 @@ end
 
 %% saves the data
 
-% creates a label for each row
-suffix = repmat('_CV-', [NbRuns*NbBlocks,1]);
-tmp = repmat(1:NbRuns, [NbBlocks,1]);
-suffix = [suffix num2str(tmp(:))];
-suffix = [suffix repmat('_block-', [NbRuns*NbBlocks,1])];
-tmp = repmat((1:NbBlocks)', [NbRuns,1]);
-suffix = [suffix num2str(tmp)];
-clear tmp
-
-prefix = repmat(cellstr(SubjectList)',[size(suffix,1), 1]);
-prefix = char(prefix(:));
-prefix = [repmat('sub-', [size(prefix,1), 1] ) prefix ];
-
-labels = [prefix repmat(suffix, [NbSubject, 1])];
-clear prefix suffix
-
+NbRuns = 4;
 
 for iSVM=1:size(AllSubjects_Data, 2)
     
@@ -177,9 +160,29 @@ for iSVM=1:size(AllSubjects_Data, 2)
         
         Data = AllSubjects_Data(iROI,iSVM).DATA;
         
+        
+        % creates a label for each row
+        NbBlocks = size(Data,1) / (NbSubject);
+        suffix = repmat('_CV', [size(Data,1), 1]);
+%         tmp = repmat(1:NbRuns, [NbBlocks,1]);
+%         suffix = [suffix num2str(tmp(:))];
+%         suffix = [suffix repmat('_block-', [NbRuns*NbBlocks,1])];
+%         tmp = repmat((1:NbBlocks)', [NbRuns,1]);
+%         suffix = [suffix num2str(tmp)];
+        clear tmp
+        
+        prefix = repmat(cellstr(SubjectList)',[NbBlocks, 1]);
+        prefix = char(prefix(:));
+        prefix = [repmat('sub-', [size(prefix,1), 1] ) prefix ];
+        
+        labels = [prefix suffix];
+        clear prefix suffix
+        
+
         % save to .mat
         save(fullfile(Results_Folder, [FileName '.mat']), ...
             'Data', 'labels')
+        
         
         % save to .csv
         fid = fopen (fullfile(Results_Folder, [FileName '.csv']), 'w');
@@ -189,6 +192,8 @@ for iSVM=1:size(AllSubjects_Data, 2)
             fprintf (fid, '\n');
         end
         fclose (fid);
+        
+        clear Data
     end
     
 end

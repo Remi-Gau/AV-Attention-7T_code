@@ -216,7 +216,6 @@ for iROI = 1:NbROI
         DATA.Transparent = Transparent;
         DATA.YLabel = 'Param. est. [a u]';
         DATA.MVPA = 0;
-        DATA.PlotInset = 0;
         
         
         %% do actual plotting

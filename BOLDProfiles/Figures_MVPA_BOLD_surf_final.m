@@ -4,7 +4,7 @@
 
 clc; clear; close all;
 
-PlotSubjects = 0;
+PlotSubjects = 1;
 Switch = 1;
 
 NbLayers = 6;
@@ -186,8 +186,8 @@ opt.scaling.idpdt = 1;
 Include = repmat(logical(ones(size(SubjectList,1),1)),[1,numel(ROIs)]);
 
 DesMat = (1:NbLayersMVPA)-mean(1:NbLayersMVPA);
-DesMat = [ones(NbLayers,1) DesMat' (DesMat.^2)'];
-% DesMat = [ones(NbLayersMVPA,1) DesMat'];
+% DesMat = [ones(NbLayers,1) DesMat' (DesMat.^2)'];
+DesMat = [ones(NbLayersMVPA,1) DesMat'];
 DesMat = spm_orth(DesMat);
 
 
@@ -233,7 +233,7 @@ for SubjInd = 1:size(SubjectList,1)
     SubjID = SubjectList(SubjInd,:);
     
     %%
-    for iSVM=1:numel(Analysis)
+    for iSVM=3:numel(Analysis)
         
         for iROI=1:numel(ROIs)
             
@@ -315,8 +315,6 @@ close all
 DATA.WithSubj = PlotSubjects;
 
 DATA.Scatter = Scatter;
-DATA.WithPerm = 0;
-DATA.PlotInset = 0;
 DATA.YLabel = 'Param. est. [a u]';
 
 close all
@@ -445,10 +443,9 @@ print(gcf, fullfile(FigureFolder,['Fig2_Deactivations' MedianSufix '.tif']), '-d
 clear DATA
 
 DATA.WithSubj = PlotSubjects;
-
 DATA.Scatter = Scatter;
-DATA.WithPerm = 0;
-DATA.PlotInset = 0;
+ 
+ 
 DATA.YLabel = 'Param. est. [a u]';
 
 close all
@@ -577,8 +574,8 @@ clear DATA
 DATA.WithSubj = PlotSubjects;
 
 DATA.Scatter = Scatter;
-DATA.WithPerm = 0;
-DATA.PlotInset = 0;
+ 
+ 
 DATA.YLabel = 'Param. est. [a u]';
 
 figure('position', FigDim, 'name', 'Cross Modal Influence', 'Color', [1 1 1], 'visible', Visible)
@@ -798,8 +795,8 @@ for iStim = 1
     DATA.WithSubj = PlotSubjects;
     
     DATA.Scatter = Scatter;
-    DATA.WithPerm = 0;
-    DATA.PlotInset = 0;
+     
+     
     DATA.YLabel = 'Param. est. [a u]';
     
     figure('position', FigDim, 'name', 'Attention', 'Color', [1 1 1], 'visible', Visible)
@@ -1019,8 +1016,8 @@ for iStim = 1
     DATA.WithSubj = PlotSubjects;
     
     DATA.Scatter = Scatter;
-    DATA.WithPerm = 0;
-    DATA.PlotInset = 0;
+     
+     
     DATA.YLabel = 'Param. est. [a u]';
     
     figure('position', FigDim, 'name', 'Attention', 'Color', [1 1 1], 'visible', Visible)
