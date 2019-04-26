@@ -1,29 +1,29 @@
+% Computes some basic contrasts for some simple conditions and some basic differential contrasts 
+
 clc; clear;
-
-spm_jobman('initcfg')
-spm_get_defaults;
-global defaults %#ok<NUSED>
-
 
 SubjectList = [...
     '02';...
     '03';...
     '04';...
-    '06';...
+    %     '06';...
     '07';...
     '08';...
     '09';...
     '11';...
     '12';...
     '13';...
-    '14';...
+    %     '14';...
     '15';...
     '16'
     ];
 
 % StartFolder = fullfile(pwd, '..','..');
+% StartFolder = '/media/rxg243/BackUp2/AV_Integration_7T_2';
 
-StartFolder = '/media/rxg243/BackUp2/AV_Integration_7T_2';
+StartFolder = '/media/remi/BackUp2/AV_Integration_7T_2';
+CodeFolder = '/media/remi/BackUp2/AV_Integration_7T_2';
+addpath(fullfile(CodeFolder, 'SubFun'))
 
 Conditions_Names = {...
     'A Stim - Auditory Attention', ...
@@ -50,142 +50,108 @@ for SubjInd = 1:size(SubjectList,1)
     
     SubjectFolder = fullfile(StartFolder, 'Subjects_Data', ['Subject_' SubjID]);
     
-    %         AnalysisFolder = fullfile(SubjectFolder, 'FFX_Block');
-    AnalysisFolder = fullfile(SubjectFolder, 'FFX_Block_Smooth');
+    AnalysisFolder = fullfile(SubjectFolder, 'FFX');
+    %     AnalysisFolder = fullfile(SubjectFolder, 'FFX_Block');
+    %     AnalysisFolder = fullfile(SubjectFolder, 'FFX_Block_Smooth');
     %     AnalysisFolder = fullfile(SubjectFolder, 'FFX_NoSmooth');
+
     
-    
-    cd(AnalysisFolder)
-    
-    load SPM.mat
+    load(fullfile(AnalysisFolder, 'SPM.mat'))
     
     tmp = char(SPM.xX.name');
     tmp(:,1:6)=[];
     B=cellstr(tmp); clear tmp
     
-    %     % SIMPLE CONTRASTS
-    %     TEMP = zeros(1, size(SPM.xX.X,2));
-    %     for CondInd=1:length(Conditions_Names)
-    %
-    %         Contrasts = [Contrasts ; strcmp([Conditions_Names{CondInd} '*bf(1)'], B)']; %#ok<*AGROW>
-    %         ContrastsNames{end+1}=strcat(Conditions_Names{CondInd}, ' > Baseline');  %#ok<*SAGROW>
-    %
-    %         Contrasts = [Contrasts ; -1*strcmp([Conditions_Names{CondInd} '*bf(1)'], B)'];
-    %         ContrastsNames{end+1}=strcat(Conditions_Names{CondInd}, ' < Baseline');
-    %         TEMP(strcmp([Conditions_Names{CondInd} '*bf(1)'], B)) = 1;
-    %     end
     
-    AStim = ~cellfun('isempty',strfind(B,'A Stim'));
-    VStim = ~cellfun('isempty',strfind(B,'V Stim'));
-    AVStim = ~cellfun('isempty',strfind(B,'AV Stim'));
-    
+    % SIMPLE CONTRASTS
+    TEMP = zeros(1, size(SPM.xX.X,2));
+    for CondInd=1:length(Conditions_Names)
+        
+        Contrasts = [Contrasts ; strcmp([Conditions_Names{CondInd} '*bf(1)'], B)']; %#ok<*AGROW>
+        ContrastsNames{end+1}=strcat(Conditions_Names{CondInd}, ' > Baseline');  %#ok<*SAGROW>
+
+    end
+
     TimeDer = ~cellfun('isempty',strfind(B,'*bf(2)'));
     
+    AStim = ~cellfun('isempty',strfind(B,'A Stim'));
+    AStim(TimeDer) = 0;
+    
+    AVStim = ~cellfun('isempty',strfind(B,'AV Stim'));
+    AVStim(TimeDer) = 0;
+    
+    VStim = ~cellfun('isempty',strfind(B,'V Stim'));
+    VStim(AVStim) = 0;
+    VStim(TimeDer) = 0;
+    
+    
+    ContrastsNames{end+1}='A_Stim > Baseline';  %#ok<*SAGROW>
     TEMP = zeros(1, size(SPM.xX.X,2));
     TEMP(AStim) = 1;
-    TEMP(TimeDer)=0;
     Contrasts = [Contrasts ; TEMP];
-    ContrastsNames{end+1}='A_Stim > Baseline';  %#ok<*SAGROW>
-    Contrasts = [Contrasts ; -1*TEMP];
-    ContrastsNames{end+1}='A_Stim < Baseline';
     
-    %     TEMP = zeros(1, size(SPM.xX.X,2));
-    %     TEMP(AVStim) = 1;
-    %     TEMP(TimeDer)=0;
-    %     Contrasts = [Contrasts ; TEMP];
-    %     ContrastsNames{end+1}='AV Stim > Baseline';
-    %     Contrasts = [Contrasts ; -1*TEMP];
-    %     ContrastsNames{end+1}='AV Stim < Baseline';
+    ContrastsNames{end+1}='AV Stim > Baseline';
+    TEMP = zeros(1, size(SPM.xX.X,2));
+    TEMP(AVStim) = 1;
+    Contrasts = [Contrasts ; TEMP];
     
+    ContrastsNames{end+1}='V_Stim > Baseline';
     TEMP = zeros(1, size(SPM.xX.X,2));
     TEMP(VStim) = 1;
-    %     TEMP(AVStim) = 0;
-    TEMP(TimeDer)=0;
     Contrasts = [Contrasts ; TEMP];
-    ContrastsNames{end+1}='V_AV_Stim > Baseline';
-    Contrasts = [Contrasts ; -1*TEMP];
-    ContrastsNames{end+1}='V_AV_Stim < Baseline';
     
-    
+
+
+    % DIFFERENTIAL CONTRASTS
+    ContrastsNames{end+1}='A Stim - A Att > A Stim - V Att';
     TEMP = zeros(1, size(SPM.xX.X,2));
-    TEMP(all([~AVStim VStim],2)) = 1;
-    %     TEMP(AVStim) = 0;
-    TEMP(TimeDer)=0;
+    TEMP(strcmp('A Stim - Auditory Attention*bf(1)', B)) = 1;
+    TEMP(strcmp('A Stim - Visual Attention*bf(1)', B)) = -1;
     Contrasts = [Contrasts ; TEMP];
-    ContrastsNames{end+1}='V_Stim > Baseline';
-    Contrasts = [Contrasts ; -1*TEMP];
-    ContrastsNames{end+1}='V_Stim < Baseline';
     
+    ContrastsNames{end+1}='V Stim - A Att > V Stim - V Att';
+    TEMP = zeros(1, size(SPM.xX.X,2));
+    TEMP(strcmp('V Stim - Auditory Attention*bf(1)', B)) = 1;
+    TEMP(strcmp('V Stim - Visual Attention*bf(1)', B)) = -1;
+    Contrasts = [Contrasts ; TEMP];
     
+    ContrastsNames{end+1}='AV Stim - A Att > AV Stim - V Att';
+    TEMP = zeros(1, size(SPM.xX.X,2));
+    TEMP(strcmp('AV Stim - Auditory Attention*bf(1)', B)) = 1;
+    TEMP(strcmp('AV Stim - Visual Attention*bf(1)', B)) = -1;
+    Contrasts = [Contrasts ; TEMP];
     
-    %     % ALL
-    %     Contrasts = [Contrasts ; TEMP];
-    %     ContrastsNames{end+1}= 'All > Baseline';
-    %
-    %     Contrasts = [Contrasts ; -TEMP];
-    %     ContrastsNames{end+1}= 'All < Baseline';
-    %
-    %
-    %     % DIFFERENTIAL CONTRASTS
-    %     TEMP = zeros(1, size(SPM.xX.X,2));
-    %     TEMP(strcmp('A Stim - Auditory Attention*bf(1)', B)) = 1;
-    %     TEMP(strcmp('A Stim - Visual Attention*bf(1)', B)) = -1;
-    %     Contrasts = [Contrasts ; TEMP];
-    %     ContrastsNames{end+1}='A Stim - A Att > A Stim - V Att';
-    %     Contrasts = [Contrasts ; -1*TEMP];
-    %     ContrastsNames{end+1}='A Stim - V Att > A Stim - A Att';
-    %
-    %     TEMP = zeros(1, size(SPM.xX.X,2));
-    %     TEMP(strcmp('V Stim - Auditory Attention*bf(1)', B)) = 1;
-    %     TEMP(strcmp('V Stim - Visual Attention*bf(1)', B)) = -1;
-    %     Contrasts = [Contrasts ; TEMP];
-    %     ContrastsNames{end+1}='V Stim - A Att > V Stim - V Att';
-    %     Contrasts = [Contrasts ; -1*TEMP];
-    %     ContrastsNames{end+1}='V Stim - V Att > V Stim - A Att';
-    %
-    %     TEMP = zeros(1, size(SPM.xX.X,2));
-    %     TEMP(strcmp('AV Stim - Auditory Attention*bf(1)', B)) = 1;
-    %     TEMP(strcmp('AV Stim - Visual Attention*bf(1)', B)) = -1;
-    %     Contrasts = [Contrasts ; TEMP];
-    %     ContrastsNames{end+1}='AV Stim - A Att > AV Stim - V Att';
-    %     Contrasts = [Contrasts ; -1*TEMP];
-    %     ContrastsNames{end+1}='AV Stim - V Att > AV Stim - A Att';
-    %
-    %     TEMP = zeros(1, size(SPM.xX.X,2));
-    %     TEMP(strcmp('AV Stim - Auditory Attention*bf(1)', B)) = 1;
-    %     TEMP(strcmp('A Stim - Auditory Attention*bf(1)', B)) = -1;
-    %     TEMP(strcmp('V Stim - Auditory Attention*bf(1)', B)) = -1;
-    %     Contrasts = [Contrasts ; TEMP];
-    %     ContrastsNames{end+1}='(AV > A + V) - A Att';
-    %     Contrasts = [Contrasts ; -1*TEMP];
-    %     ContrastsNames{end+1}='(AV < A + V) - A Att';
-    %
-    %     TEMP = zeros(1, size(SPM.xX.X,2));
-    %     TEMP(strcmp('AV Stim - Visual Attention*bf(1)', B)) = 1;
-    %     TEMP(strcmp('A Stim - Visual Attention*bf(1)', B)) = -1;
-    %     TEMP(strcmp('V Stim - Visual Attention*bf(1)', B)) = -1;
-    %     Contrasts = [Contrasts ; TEMP];
-    %     ContrastsNames{end+1}='(AV > A + V) - V Att';
-    %     Contrasts = [Contrasts ; -1*TEMP];
-    %     ContrastsNames{end+1}='(AV < A + V) - V Att';
+
+    ContrastsNames{end+1}='AV > A + V';
+    TEMP = zeros(1, size(SPM.xX.X,2));
+    TEMP(AVStim) = 1;
+    TEMP(VStim) = -1;
+    TEMP(AStim) = -1;
+    Contrasts = [Contrasts ; TEMP];
     
+    ContrastsNames{end+1}='AV - A > 0';
+    TEMP = zeros(1, size(SPM.xX.X,2));
+    TEMP(AVStim) = 1;
+    TEMP(AStim) = -1;
+    Contrasts = [Contrasts ; TEMP];
     
-    %
-    c = Contrasts(1,:);
-    cname = ContrastsNames{1};
-    SPM.xCon = spm_FcUtil('Set', cname, 'T','c', c(:), SPM.xX.xKXs);
+    ContrastsNames{end+1}='AV - V > 0';
+    TEMP = zeros(1, size(SPM.xX.X,2));
+    TEMP(AVStim) = 1;
+    TEMP(VStim) = -1;
+    Contrasts = [Contrasts ; TEMP];
     
-    for i=2:length(ContrastsNames)
-        c = Contrasts(i,:);
-        cname = ContrastsNames{i};
-        SPM.xCon(i) = spm_FcUtil('Set', cname, 'T','c', c(:), SPM.xX.xKXs);
+
+    % set the batch
+    for i=1:length(ContrastsNames)
+        matlabbatch{1}.spm.stats.con.spmmat = {fullfile(AnalysisFolder, 'SPM.mat')};
+        matlabbatch{1}.spm.stats.con.consess{i}.tcon.name = ContrastsNames{i};
+        matlabbatch{1}.spm.stats.con.consess{i}.tcon.weights = double(Contrasts(i,:));
+        matlabbatch{1}.spm.stats.con.consess{i}.tcon.sessrep = 'none';
+        matlabbatch{1}.spm.stats.con.delete = 1;
     end
     
-    spm_contrasts(SPM);
-    
-    clear SPM
-    
-    cd (StartFolder)
+    spm_jobman('run', matlabbatch)
     
     fprintf('\nThe analysis of the subject %s is done.\n\n', SubjID);
     

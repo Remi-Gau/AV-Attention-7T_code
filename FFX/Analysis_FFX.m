@@ -3,32 +3,25 @@ function Analysis_FFX()
 clear 
 clc
 
-spm_jobman('initcfg')
-spm_get_defaults;
-global defaults
-
-defaults.stats.maxmem = 2^29;
-% defaults.mask.thresh    = -1;
-
 % Time Slicing Parameters
 TR = 3;
 HPF = 128;
 ReferenceSlice = 1;
 
-PrefixImages2Select = 'SwURS*.nii';
+PrefixImages2Select = 'swURS*.nii';
 
 SubjectList = [...
     '02';...
     '03';...
     '04';...
-    '06';...
+%     '06';...
     '07';...
     '08';...
     '09';...
     '11';...
     '12';...
     '13';...
-    '14';...
+%     '14';...
     '15';...
     '16'
     ];
@@ -37,14 +30,14 @@ FoldersNames = {...
     1:4;...
     1:4;...
     1:4;...
-    1:2;...
+%     1:2;...
     1:4;...
     1:4;...
     1:4;...
     1:4;...
     1:4;...
     1:4;...
-    1:2;...
+%     1:2;...
     1:4;...
     1:4;...
     };
@@ -70,10 +63,14 @@ IndStart = 5; % first row of data points in txt file
 
 %  Folders definitions
 % StartFolder = fullfile(pwd, '..', '..');
-StartFolder = '/media/rxg243/BackUp2/AV_Integration_7T_2';
+% StartFolder = '/media/rxg243/BackUp2/AV_Integration_7T_2';
+
+StartFolder = '/media/remi/BackUp2/AV_Integration_7T_2';
+CodeFolder = '/home/remi/github/AV-Attention-7T_code';
+addpath(fullfile(CodeFolder, 'SubFun'))
 
 %% Define folders, number of runs, scans per run...
-for SubjInd = 5 %1:size(SubjectList,1)
+for SubjInd = 2:size(SubjectList,1)
     
     tic
     
@@ -106,8 +103,6 @@ for SubjInd = 5 %1:size(SubjectList,1)
     
     fprintf('\nCollects the SOTs.\n\n')
     
-    cd(BehavioralFolder)
-    
     for RunInd = 1:NbRuns
         
         Block_Start = cell(3,2);
@@ -127,12 +122,14 @@ for SubjInd = 5 %1:size(SubjectList,1)
         FileContent = {};
         TEMP = [];
         
-        LogFileList = dir(strcat(...
+        LogFileList = dir(fullfile(BehavioralFolder, strcat(...
             'Logfile_Subject_',  num2str(str2double(SubjID)), ...
-            '_Run_', num2str(FoldersNames{SubjInd}(RunInd)), '*.txt'));
+            '_Run_', num2str(FoldersNames{SubjInd}(RunInd)), '*.txt')));
         disp(LogFileList.name)
-        fid = fopen(fullfile (pwd, LogFileList.name));
-        FileContent = textscan(fid,'%s %s %s %s %s %s %s %s %s %s %s %s', 'delimiter', '\t', 'headerlines', IndStart, 'returnOnError',0);
+        fid = fopen(fullfile (BehavioralFolder, LogFileList.name));
+        FileContent = ...
+            textscan(fid,'%s %s %s %s %s %s %s %s %s %s %s %s', ...
+            'delimiter', '\t', 'headerlines', IndStart, 'returnOnError',0);
         fclose(fid);
         
         
@@ -303,21 +300,17 @@ for SubjInd = 5 %1:size(SubjectList,1)
         
         
     end
-    
-    cd(AnalysisFolder)
-    
-    SaveSOT(All_SOTs, All_Durations)
+
+    SaveSOT(AnalysisFolder, All_SOTs, All_Durations)
     
     fprintf('\nSOTs collected.\n\n')
     
-    %% Specify the batch
-    cd(AnalysisFolder)
-    
+    %% Specify the batch   
     fprintf('\nSpecifying the job\n\n')
     
     matlabbatch ={};
     
-    matlabbatch{1,1}.spm.stats.fmri_spec.dir{1,1} = pwd;
+    matlabbatch{1,1}.spm.stats.fmri_spec.dir{1,1} = AnalysisFolder;
     
     matlabbatch{1,1}.spm.stats.fmri_spec.timing.units = 'secs';
     matlabbatch{1,1}.spm.stats.fmri_spec.timing.RT = TR;
@@ -334,10 +327,15 @@ for SubjInd = 5 %1:size(SubjectList,1)
     
     matlabbatch{1,1}.spm.stats.fmri_spec.mask = {''};
     
+    matlabbatch{1,1}.spm.stats.fmri_spec.mthresh = 0.5;
+    
     matlabbatch{1,1}.spm.stats.fmri_spec.cvi = 'AR(1)';
     
     
     for RunInd = 1:NbRuns
+        
+        RunFolder =  ...
+            fullfile(NiftiSourceFolder, sprintf('%2.2d', FoldersNames{SubjInd}(RunInd)));
         
         IMAGES_ls = {}; 
         Mov_Parameter_ls = {}; 
@@ -345,28 +343,27 @@ for SubjInd = 5 %1:size(SubjectList,1)
         matlabbatch{1,1}.spm.stats.fmri_spec.sess(1,RunInd).multi{1} = '';
         matlabbatch{1,1}.spm.stats.fmri_spec.sess(1,RunInd).regress = struct('name',{},'val',{});
         matlabbatch{1,1}.spm.stats.fmri_spec.sess(1,RunInd).hpf = HPF;
-        
-        % Enter source folder reads the image files
-        cd (fullfile(NiftiSourceFolder, sprintf('%2.2d', FoldersNames{SubjInd}(RunInd))))
-        
+                
         % Lists the images
-        IMAGES_ls = dir(PrefixImages2Select);
-        IMAGES_ls = spm_vol(IMAGES_ls.name);
+        IMAGES_ls = dir(fullfile(RunFolder, PrefixImages2Select));
+        IMAGES_ls = spm_vol(fullfile(RunFolder, IMAGES_ls.name));
+        
         % Names them with their absolute pathnames
         TEMP = {};
         for j = 1:NbVol(RunInd)
-            TEMP{end+1} = [fullfile(pwd, IMAGES_ls(j).fname) ,',', num2str(j)];
+            TEMP{end+1} = [IMAGES_ls(j).fname ,',', num2str(j)];
         end
         matlabbatch{1,1}.spm.stats.fmri_spec.sess(1,RunInd).scans = TEMP';
         
         % Lists the realignement parameters file
-        Mov_Parameter_ls = dir('rp_*.txt');
-        R = load(fullfile(pwd, Mov_Parameter_ls.name));
+        Mov_Parameter_ls = dir(fullfile(RunFolder, 'rp_*.txt'));
+        R = load(fullfile(RunFolder, Mov_Parameter_ls.name));
         R = R(1:NbVol(RunInd),:);
-        SaveRP(R)
+        SaveRP(RunFolder, R)
         
         % Names them with its absolute pathname
-        matlabbatch{1,1}.spm.stats.fmri_spec.sess(1,RunInd).multi_reg{1} = fullfile(pwd, 'rp.mat');
+        matlabbatch{1,1}.spm.stats.fmri_spec.sess(1,RunInd).multi_reg{1} = ...
+        fullfile(RunFolder, 'rp.mat');
         
         ConditionNumber = 1;
         for j = 1:length(Conditions_Names)-2
@@ -388,17 +385,15 @@ for SubjInd = 5 %1:size(SubjectList,1)
     %% fMRI estimation
     fprintf('\nSpecifying and estimating model\n\n')
     matlabbatch{1,end+1}={};
-    matlabbatch{1,end}.spm.stats.fmri_est.spmmat{1,1} = fullfile(AnalysisFolder, 'SPM.mat');     %set the spm file to be estimated
+    matlabbatch{1,end}.spm.stats.fmri_est.spmmat{1,1} = ...
+        fullfile(AnalysisFolder, 'SPM.mat');     %set the spm file to be estimated
     matlabbatch{1,end}.spm.stats.fmri_est.method.Classical = 1;
     
-    cd(AnalysisFolder)
-    delete SPM.mat
-    SaveBatch(SubjID, matlabbatch)
+    delete(fullfile(AnalysisFolder, 'SPM.mat'))
+    SaveBatch(AnalysisFolder, SubjID, matlabbatch)
     
     spm_jobman('run', matlabbatch)
     fprintf('\nThe analysis of the subject %s is done.\n\n', SubjID);
-    
-    cd (StartFolder)
     
     toc
     
@@ -408,16 +403,16 @@ end
 
 end
 
-function SaveSOT(All_SOTs, All_Durations) %#ok<INUSD>
-save ('All_SOTs.mat', 'All_SOTs', 'All_Durations')
+function SaveSOT(AnalysisFolder, All_SOTs, All_Durations)  %#ok<INUSD>
+save (fullfile(AnalysisFolder, 'All_SOTs.mat'), 'All_SOTs', 'All_Durations')
 end
 
-function SaveRP(R) %#ok<INUSD>
-save('rp.mat', 'R')
+function SaveRP(RunFolder, R) %#ok<INUSD>
+save(fullfile(RunFolder, 'rp.mat'), 'R')
 end
 
-function SaveBatch(SubjID, matlabbatch) %#ok<INUSD>
-save (strcat('FFX_Subject_', SubjID, '_jobs'), 'matlabbatch');
+function SaveBatch(AnalysisFolder, SubjID, matlabbatch) %#ok<INUSD>
+save (fullfile(AnalysisFolder, strcat('FFX_Subject_', SubjID, '_jobs')), 'matlabbatch');
 end
 
 
