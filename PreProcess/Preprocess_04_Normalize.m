@@ -41,7 +41,7 @@ FoldersNames = {...
     1:4;...
     };
 
-for SubjInd = 2:size(SubjectList,1)
+for SubjInd = 10:size(SubjectList,1)
     
     SubjID = SubjectList(SubjInd,:)
     
