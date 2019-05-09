@@ -3,6 +3,7 @@
 
 
 data_folder=/media/remi/BackUp2/AV_Integration_7T_2/Subjects_Data/
+dropbox_folder=/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T/Subjects_Data/
 
 clear
 
@@ -13,29 +14,12 @@ for Subject in $Subjects_List;
 do
 
 	echo "\nMoving files files for subject $Subject \n"
-	mv $data_folder/Subject_$Subject/Transfer/Profiles/T1_06_Layers $data_folder/Subject_$Subject/Results/Profiles
-
-	# rm -r $data_folder/Subject_$Subject/Transfer/Profiles
-
-	mkdir $data_folder/Subject_$Subject/Results/SVM
-	mv $data_folder/Subject_$Subject/Transfer/SVM/* $data_folder/Subject_$Subject/Results/SVM
-
-	# rm -r $data_folder/Subject_$Subject/Transfer/SVM
-
-	mkdir $data_folder/Subject_$Subject/ROI
-	mkdir $data_folder/Subject_$Subject/ROI/MNI
-	mkdir $data_folder/Subject_$Subject/ROI/MIPAV
-	mv $data_folder/Subject_$Subject/Transfer/ROI/* $data_folder/Subject_$Subject/ROI
-	mv $data_folder/Subject_$Subject/ROI_MIPAV/* $data_folder/Subject_$Subject/ROI/MIPAV
-	mv $data_folder/Subject_$Subject/ROI_MNI/* $data_folder/Subject_$Subject/ROI/MNI
+	# cp $dropbox_folder/Subject_$Subject/Results/SVC/* $data_folder/Subject_$Subject/Results/SVC/
+	# cp $dropbox_folder/Subject_$Subject/Results/Profiles/Surfaces/* $data_folder/Subject_$Subject/Results/Profiles/Surfaces/
+	# cp $dropbox_folder/Subject_$Subject/ROI/* $data_folder/Subject_$Subject/ROI/
 
 	# rm -r $data_folder/Subject_$Subject/Transfer/ROI
 
-	mv $data_folder/Subject_$Subject/Results/Results/Profiles/Surfaces/* $data_folder/Subject_$Subject/Results/Profiles/Surfaces/
-
-	mv $data_folder/Subject_$Subject/Results/Results/Profiles/Surfaces/Cdtions* $data_folder/Subject_$Subject/Results/Profiles/Surfaces/Cdtions
-
-	mv $data_folder/Subject_$Subject/Transfer/* $data_folder/Subject_$Subject/BetaMapping
 
 	echo "\nCompressing files for subject $Subject \n"
 
@@ -44,22 +28,21 @@ do
 	# tar -zcvf $data_folder/Subject_$Subject/BetaMapping/8Surf/beta_vtk.tar.gz $FileList
 	# rm $FileList
 
-	FileList="$(ls $data_folder/Subject_$Subject/BetaMapping/r4*.nii)"
-	for iFile in $FileList;
-	do
-		gzip -vf $iFile
-	done
+	# FileList="$(ls $data_folder/Subject_$Subject/BetaMapping/r4*.nii)"
+	# for iFile in $FileList;
+	# do
+	# 	gzip -vf $iFile
+	# done
 
 	# tar -jcvf S3rBetaFiles.tar.bz2 $FileList
 	# rm $FileList
-	#
+
 	# FileList="$(ls S6rbeta*.nii)"
 	# echo $FileList
 	# tar -jcvf S6rBetaFiles.tar.bz2 $FileList
 	# rm $FileList
-	#
+
 	# mkdir /media/rxg243/BackUp2/AV_Integration_7T_2/Subjects_Data/Subject_$Subject/UpsampledBetas
 	# mv /data/AV_Integration_2/Subjects_Data/Subject_$Subject/Transfer/S*rBetaFiles.tar.bz2 /media/rxg243/BackUp2/AV_Integration_7T_2/Subjects_Data/Subject_$Subject/UpsampledBetas
-	#
-	#
+
 done
