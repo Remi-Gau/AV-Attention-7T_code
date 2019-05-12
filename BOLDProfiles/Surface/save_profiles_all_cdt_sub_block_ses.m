@@ -9,6 +9,7 @@ NbBlocks = 3;
 Median = 1;
 
 DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
+DataFolder = '/home/remi/Dropbox/PhD/Experiments';
 Results_Folder = fullfile(DataFolder, 'DataToExport');
 
 suffix = {...

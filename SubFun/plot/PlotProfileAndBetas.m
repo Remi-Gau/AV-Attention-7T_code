@@ -179,11 +179,5 @@ title(Name,'fontsize', FontSize)
 
 ax=axis;
 
-
-%% INSETS
-if DATA.PlotInset
-    PlotInset(DATA)
-end
-
 end
 

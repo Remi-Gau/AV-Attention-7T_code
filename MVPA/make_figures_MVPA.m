@@ -3,9 +3,6 @@
 clear; close all; clc;
 
 NbLayers = 6;
-NbRuns = 4;
-NbCdt = 6;
-NbBlocks = 3;
 
 CodeFolder = '/home/remi/github/AV-Attention-7T_code';
 addpath(genpath(fullfile(CodeFolder, 'SubFun')))
@@ -22,15 +19,17 @@ Results_Folder = fullfile(DataFolder, 'DataToExport');
 PlotSubjects = 1; % can be switched off (0) to no plot subject
 
 % figure 3
-% Cdt2Choose(1).name = '[AV VS A]_{att A, att V}';
-% Cdt2Choose(end).filename = 'Astim-vs-AVstim';
-% Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
-% Cdt2Choose(2).name = '[AV VS V]_{att A, att V}';
-% Cdt2Choose(end).filename = 'Vstim-vs-AVstim';
-% Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
+% This will create some extra figures that are not in the paper (e.g AV-A
+% in V1) but that can then act as positive controls
+Cdt2Choose(1).name = '[AV VS A]_{att A, att V}';
+Cdt2Choose(end).filename = 'Astim-vs-AVstim';
+Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
+Cdt2Choose(2).name = '[AV VS V]_{att A, att V}';
+Cdt2Choose(end).filename = 'Vstim-vs-AVstim';
+Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
 
 % figure 4
-Cdt2Choose(1).name = '[Att_A VS Att_V]_{A, V, AV}';
+Cdt2Choose(3).name = '[Att_A VS Att_V]_{A, V, AV}';
 Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
 Cdt2Choose(end).filename = 'AAtt-vs-VAtt';
 
@@ -80,8 +79,7 @@ formatSpec = '%s%f%f%f%f%f%f%[^\n\r]';
 
 % Design matrix for laminar GLM
 DesMat = (1:NbLayers)-mean(1:NbLayers);
-% DesMat = [ones(NbLayers,1) DesMat' (DesMat.^2)']; % in case we want a
-% quadratic component
+% DesMat = [ones(NbLayers,1) DesMat' (DesMat.^2)']; % in case we want a quadratic component
 DesMat = [ones(NbLayers,1) DesMat'];
 DesMat = spm_orth(DesMat);
 
@@ -131,8 +129,6 @@ for iROI = 1:NbROI
         Data(:,5) = dataArray{:, 6};
         Data(:,6) = dataArray{:, 7};
         
-        Data = fliplr(Data);
-        
         clearvars filename fileID dataArray
         
         % Subject vectors (one column for each subj)
@@ -145,9 +141,7 @@ for iROI = 1:NbROI
         
         %% does the math for each contrast
         for iSubj = 1:NbSubj
-            
-            Subj_Data = nan(NbRuns*NbBlocks, NbLayers); %#ok<NASGU>
-            
+              
             % get data for that subject
             Rows2Choose = SubjVec(:, iSubj);
             Subj_Data = Data(Rows2Choose, :);
@@ -160,7 +154,7 @@ for iROI = 1:NbROI
             
             % regorganize data
             Subj_Data=Subj_Data';
-            Subj_Data = Subj_Data(:)-.5;
+            Subj_Data = flipud(Subj_Data(:)-.5);
             
             [B,~,~] = glmfit(X, Subj_Data, 'normal', 'constant', 'off');
             
@@ -174,7 +168,6 @@ for iROI = 1:NbROI
         DATA.Transparent = Transparent;
         DATA.YLabel = 'Param. est. [a u]';
         DATA.MVPA = 1;
-        DATA.PlotInset = 0;
         
         
         %% do actual plotting
@@ -191,7 +184,7 @@ for iROI = 1:NbROI
         
         
         DATA.Name = char({Cdt2Choose(iCdt_2_plot).name ; '' ; ROI_name});
-        DATA.Data = All_Subjs_Profile;
+        DATA.Data = fliplr(All_Subjs_Profile);
         DATA.Betas = SubjectsBetas;
         DATA.Color =  [0 0 0];
         DATA.Thresholds = 0.05*ones(1,size(DATA.Betas,2));

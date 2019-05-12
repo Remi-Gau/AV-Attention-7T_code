@@ -7,9 +7,9 @@ This still needs more commenting and documenting (I am still learning) but do re
 A lot of the code is similar to that of the better documented [AVT experiment analysis](https://github.com/Remi-Gau/AVT_analysis).
 
 ## Data
-Some of the data is available on the [open science framework project associated to this repo](https://osf.io/7ka5j/). The raw data (in a BIDS compatible format) of this project are available upon request.
+Some of the data is available on the [open science framework project associated to this repo](https://osf.io/7ka5j/) as `.mat` or `.csv` files. The raw data (in a BIDS compatible format) of this project are available upon request.
 
-## Dependencies for analysis:
+## Dependencies
 
 You will need the following softwares to run part of the analysis.
 
@@ -22,9 +22,7 @@ You will need the following softwares to run part of the analysis.
 | cosmetic                                                            |              | A1 ROI delineation                                                   |
 
 
-Many extra matlab functions from github and the mathwork file exchange are needed and are added to the path by the function `code/subfun/Get_dependencies`. Yeah this weird, tiring and cumbersome but that's matlab weirdness for you.
-
-“And this why we can’t have nice things. Have you heard of [python](http://python.org).”
+Many extra matlab functions from github and the mathwork file exchange are needed and are added to the path by the function `code/subfun/Get_dependencies`. Yeah this weird, tiring and cumbersome but that's matlab weirdness for you (“_And this why we can’t have nice things. Have you heard of [python](http://python.org)?_”)
 
 | Matlab, toolbox and other dependencies                                                                                                            | Used version | Purpose                    |
 |---------------------------------------------------------------------------------------------------------------------------------------------------|--------------|----------------------------|
@@ -40,7 +38,10 @@ Many extra matlab functions from github and the mathwork file exchange are neede
 | [matlab_for_CBS_tools](https://github.com/Remi-Gau/matlab_for_cbs_tools)                                                                          | NA           | import CBS-tools VTK files |
 | [brain_colours](https://github.com/CPernet/brain_colours)                                                                                         | NA           | brain color maps           |
 
-
+## Reproduce the figures from the paper
+You should be able to reproduce the laminar profile figures from the paper by using the following scripts on the CSV files available on [OSF](https://osf.io/7ka5j/).
+- `BOLDProfiles/make_figures_BOLD.m`
+- `MVPA/make_figures_MVPA.m`
 
 ## Data analysis workflow
 
@@ -52,7 +53,6 @@ I indicate here the different folders where the code is kept. I try to indicate 
 
 **Running subject level GLM: code/ffx/**
 1. `Analysis_FFX_Block.m` : runs the subject level GLM. It must first be run a first time on smoothed images to get an inclusive mask (GLM-mask) that will be used for a second pass.
-
 
 **Preprocessing anatomical: code/cbs/ or sub-xx/code/cbs/**
 `segment-layer.LayoutXML` : high-res segmention and layering using the CBS tools
