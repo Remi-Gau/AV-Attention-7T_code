@@ -4,23 +4,30 @@ clear; close all; clc;
 
 NbLayers = 6;
 
-CodeFolder = '/home/remi/github/AV-Attention-7T_code';
+CodeFolder = 'D:\github\AV-Attention-7T_code';
+DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
+DependenciesFolder = 'D:';
+
+% CodeFolder = '/home/remi/github/AV-Attention-7T_code';
+% DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
+% DependenciesFolder = '/home/remi';
+
 addpath(genpath(fullfile(CodeFolder, 'SubFun')))
 
 FigureFolder = fullfile(CodeFolder, 'Figures', strcat(num2str(NbLayers+2), '_layers'));
 
-Get_dependencies('/home/remi')
-
-% DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
-DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
+Get_dependencies(DependenciesFolder)
 
 Results_Folder = fullfile(DataFolder, 'DataToExport');
 
 PlotSubjects = 1; % can be switched off (0) to no plot subject
 
 % figure 3
+<<<<<<< Updated upstream:MVPA/make_figures_MVPA.m
 % This will create some extra figures that are not in the paper (e.g AV-A
 % in V1) but that can then act as positive controls
+=======
+>>>>>>> Stashed changes:BOLDProfiles/make_figures_MVPA.m
 Cdt2Choose(1).name = '[AV VS A]_{att A, att V}';
 Cdt2Choose(end).filename = 'Astim-vs-AVstim';
 Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
