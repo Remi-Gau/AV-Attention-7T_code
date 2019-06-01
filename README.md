@@ -48,11 +48,11 @@ You should be able to reproduce the laminar profile figures from the paper by us
 I indicate here the different folders where the code is kept. I try to indicate and in which order the scripts (or other manual interventions) have to be  run.
 
 **Preprocessing of EPIs: code/preprocess/**
-1. Preprocess_01_CreateVDM : creates the voxel displacement map using the fieldmap
-2. Preprocess_02_RealignAndUnwarp.m : realign and unwarp the EPIs
+1. `Preprocess_01_CreateVDM.m` : creates the voxel displacement map using the fieldmap
+2. `Preprocess_02_RealignAndUnwarp.m` : realign and unwarp the EPIs
 
 **Running subject level GLM: code/ffx/**
-1. Analysis_FFX_Block.m : runs the subject level GLM. It must first be run a first time on smoothed images to get an inclusive mask (GLM-mask) that will be used for a second pass.
+1. `Analysis_FFX_Block.m` : runs the subject level GLM. It must first be run a first time on smoothed images to get an inclusive mask (GLM-mask) that will be used for a second pass.
 
 **Preprocessing anatomical: code/cbs/ or sub-xx/code/cbs/**
-segment-layer.LayoutXML : high-res segmention and layering using the CBS tools
+`segment-layer.LayoutXML` : high-res segmention and layering using the CBS tools
