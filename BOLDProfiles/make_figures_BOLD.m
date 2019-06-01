@@ -8,49 +8,62 @@ NbCdt = 6;
 NbBlocks = 3;
 
 CodeFolder = '/home/remi/github/AV-Attention-7T_code';
-addpath(genpath(fullfile(CodeFolder, 'SubFun')))
 
-FigureFolder = fullfile(CodeFolder, 'Figures', strcat(num2str(NbLayers+2), '_layers'));
-
-Get_dependencies('/home/remi')
-
+% inputs
 % DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
 DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
-
 Results_Folder = fullfile(DataFolder, 'DataToExport');
 
-PlotSubjects = 1; % can be switched off (0) to no plot subject
+% output folder
+FigureFolder = fullfile(CodeFolder, 'Figures');
+mkdir(FigureFolder)
 
+
+PlotSubjects = 0; % can be switched off (0) to not plot subjects laminar profiles
+
+% this can be used to specify which axis limit to use
+% 0 - (default) no pre-specified limit: use the data from the graph to specify limits
+% 1 - for activations
+% 2 - for deactivations in A1 and PT
+% 3 - for deactivations in V1-2-3
+clim_for_condition = 1;
+
+
+
+
+%%
 % figure 2
-Cdt2Choose(1).name = 'A vs. Baseline';
+%A vs. Baseline
+Cdt2Choose(1).name = '[A-fix]_{Att_A, Att_V}'; 
 Cdt2Choose(end).cdt = [1 4]; % auditory under A and V attention
 Cdt2Choose(end).test_side = {'right' 'right' 'left' 'left'}; %side of permutation test
-Cdt2Choose(2).name = 'V vs. Baseline';
+%V vs. Baseline
+Cdt2Choose(2).name = '[V-fix]_{Att_A, Att_V}'; 
 Cdt2Choose(end).cdt = [2 5];
 Cdt2Choose(end).test_side = {'left' 'left' 'right' 'right'};
 
 % figure 3
 % this will plot some extra contrast that are not in the paper (e.g AV-V
 % for A1).
-Cdt2Choose(3).name = '[AV - A]_{att A, att V}';
-Cdt2Choose(end).cdt = [1 4 3 6]; % auditory under A and V attention ; AV under A and V attention ;
-Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'}; %side of permutation test
-Cdt2Choose(4).name = '[AV - V]_{att A, att V}';
-Cdt2Choose(end).cdt = [2 5 3 6]; % visual under A and V attention ; AV under A and V attention ;
-Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
+% Cdt2Choose(3).name = '[AV - A]_{att A, att V}';
+% Cdt2Choose(end).cdt = [1 4 3 6]; % auditory under A and V attention ; AV under A and V attention ;
+% Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'}; %side of permutation test
+% Cdt2Choose(4).name = '[AV - V]_{att A, att V}';
+% Cdt2Choose(end).cdt = [2 5 3 6]; % visual under A and V attention ; AV under A and V attention ;
+% Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
 
 % figure 4
 % this will plot the results of A1 and PT upside down ([Att_V-Att_A] instead of ...
 % [Att_A-Att_V]) compare to the figures in the paper
-Cdt2Choose(5).name = '[Att_V - Att_A]_{A, V, AV}';
-Cdt2Choose(end).cdt = [1 2 3 4 5 6]; % auditory under A and V attention ; AV under A and V attention ;
-Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'}; %side of permutation test
+% Cdt2Choose(5).name = '[Att_V - Att_A]_{A, V, AV}';
+% Cdt2Choose(end).cdt = [1 2 3 4 5 6]; % auditory under A and V attention ; AV under A and V attention ;
+% Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'}; %side of permutation test
 
 
 Transparent = 1;
 Switch = 1;
 FontSize = 12;
-FigDim = [100 100 700 700];
+FigDim = [100 100 500 500];
 
 ROIs = {...
     'A1';...
@@ -117,6 +130,13 @@ ToPermute = [a(:), b(:), c(:), d(:), e(:), f(:), g(:), h(:), i(:), j(:), k(:)];
 clear a b c d e f g h i j k
 
 NbROI = size(ROIs,1);
+
+% add dependencies
+addpath(genpath(fullfile(CodeFolder, 'SubFun')))
+Get_dependencies('/home/remi')
+
+% get the axis limits to use
+clim = set_clim(clim_for_condition);
 
 
 for iROI = 1:NbROI
@@ -217,6 +237,14 @@ for iROI = 1:NbROI
         DATA.YLabel = 'Param. est. [a u]';
         DATA.MVPA = 0;
         
+        % set plotting limits if specified 
+        if ~isempty(clim)
+            DATA.InsetLim(1,:) = clim.max.inset;
+            DATA.InsetLim(2,:) = clim.min.inset;
+            DATA.MAX = clim.max.profile;
+            DATA.MIN = clim.min.profile;
+        end
+
         
         %% do actual plotting
         
@@ -231,7 +259,7 @@ for iROI = 1:NbROI
         subplot(2, 1, 1)
         
         
-        DATA.Name = char({Cdt2Choose(iCdt_2_plot).name ; '' ; ROI_name});
+        DATA.Name = [ROI_name ' - ' Cdt2Choose(iCdt_2_plot).name];
         DATA.Data = All_Subjs_Profile;
         DATA.Betas = SubjectsBetas;
         DATA.Color =  [0 0 0];
@@ -244,6 +272,10 @@ for iROI = 1:NbROI
         DATA.ax = ax.Position;
         DATA.ToPermute = ToPermute;
         PlotInsetFinal(DATA)
+        
+        % save figure
+        print(gcf, fullfile(FigureFolder, ...
+        [DATA.Name '.tif']), '-dtiff')
         
     end
     
