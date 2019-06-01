@@ -2,7 +2,7 @@
 
 clear; close all; clc;
 
-NbLayers = 6;
+
 
 CodeFolder = '/home/remi/github/AV-Attention-7T_code';
 
@@ -22,6 +22,8 @@ PlotSubjects = 0; % can be switched off (0) to no plot subject
 % 11 - for MVPA
 clim_for_condition = 11;
 
+
+%% define conditions to plot
 % figure 3
 % This will create some extra figures that are not in the paper (e.g AV-A
 % in V1) but that can then act as positive controls
@@ -38,10 +40,14 @@ Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
 Cdt2Choose(end).filename = 'AAtt-vs-VAtt';
 
 
+%% Figures parameters
 Transparent = 1;
 Switch = 1;
 FontSize = 12;
 FigDim = [100 100 500 500];
+
+%% data files parameters
+NbLayers = 6;
 
 ROIs = {...
     'A1';...
@@ -81,13 +87,14 @@ endRow = 800;
 formatSpec = '%s%f%f%f%f%f%f%[^\n\r]';
 
 
-% Design matrix for laminar GLM
+%% Design matrix for laminar GLM
 DesMat = (1:NbLayers)-mean(1:NbLayers);
 % DesMat = [ones(NbLayers,1) DesMat' (DesMat.^2)']; % in case we want a quadratic component
 DesMat = [ones(NbLayers,1) DesMat'];
 DesMat = spm_orth(DesMat);
 
 
+%% get things ready
 NbSubj = size(SubjectList,1);
 
 % create permutations for exact sign permutation test
