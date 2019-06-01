@@ -12,6 +12,10 @@ function clim = set_clim(condition)
 % 1 - for activations
 % 2 - for deactivations in A1 and PT
 % 3 - for deactivations in V1-2-3
+% 4 - for cross modal effects for A1-PT
+% 5 - for cross modal effects for V1-2-3
+% 6 - for attention effects
+% 11 - for MVPA
 
 if nargin<1 || isempty(condition)
     condition = 0;
@@ -38,6 +42,32 @@ switch condition
         clim.max.profile = .1;
         clim.min.inset = [-2 -.5];
         clim.max.inset = [.5 .1];
+    case 4
+        % for cross modal effects for A1-PT
+        clim.min.profile = -.22;
+        clim.max.profile = .6;
+        clim.min.inset = [-1.2 -.3];
+        clim.max.inset = [1.2 .3];
+    case 5
+        % for cross modal effects for V1-2-3
+        clim.min.profile = -.31;
+        clim.max.profile = .1;
+        clim.min.inset = [-1.2 -.3];
+        clim.max.inset = [1.2 .3];
+    case 6
+        % for attention effects
+        clim.min.profile = -.2;
+        clim.max.profile = .5;
+        clim.min.inset = [-2 -.5];
+        clim.max.inset = [.5 .1];
+        
+    case 11
+        % for MVPA
+        clim.min.profile = .45;
+        clim.max.profile = .77;
+        clim.min.inset = [-.2 -.08];
+        clim.max.inset = [.4 .08];
+
 end
 
 end
