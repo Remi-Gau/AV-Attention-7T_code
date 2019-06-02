@@ -1,5 +1,7 @@
+% segment the T1w for each subject
 
-clear all; clc
+
+clear; clc
 
 spm_jobman('initcfg')
 spm_get_defaults;
