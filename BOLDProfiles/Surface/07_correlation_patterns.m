@@ -1,24 +1,42 @@
+% Will compute the spearman rho and plot it for several ROIs 
+% - over all the vertices the whole ROI (all depths included)
+% - for the cst and linear S-parameter
+% - for the different cortical depths
+
+% the correlations computed are the following
+% - 'A_A / A_V'
+% '- AV_A / AV_V'
+% - 'A_A / AV_A'
+% - 'A_V / AV_V'
+% 
+% - '(A+AV)_A vs (A+AV)_V'
+% - 'A_{A+V} vs AV_{A+V}'
+
+% this is not a cross validated analysis
+
 %%
 clc; clear;
 
-StartFolder=fullfile(pwd,'..','..','..');
-addpath(genpath(fullfile(StartFolder, 'SubFun')))
-Get_dependencies('D:\Dropbox\')
+CodeFolder='/home/remi/github/AV-Attention-7T_code';
+addpath(genpath(fullfile(CodeFolder, 'SubFun')))
+Get_dependencies('/home/remi/')
+
+DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
 
 Print=0;
 
-FigureFolder = fullfile(StartFolder,'Figures','Profiles','Surfaces');
+FigureFolder = fullfile(CodeFolder,'Figures');
 
 SubjectList = [...
-        '02';...
-        '03';...
+    '02';...
+    '03';...
     '04';...
     '07';...
     '08';...
     '09';...
     '11';...
     '12';...
-        '13';...
+    '13';...
     '15';...
     '16'
     ];
@@ -56,7 +74,7 @@ for SubjInd = 1:size(SubjectList,1)
     SubjID = SubjectList(SubjInd,:);
     fprintf('Subject %s\n',SubjID)
     
-    SubjectFolder = fullfile(StartFolder, 'Subjects_Data', ['Subject_' SubjID]);
+    SubjectFolder = fullfile(DataFolder, 'Subjects_Data', ['Subject_' SubjID]);
     
     GLM_Folder = fullfile(SubjectFolder, 'FFX_Block');
     
@@ -89,7 +107,8 @@ for SubjInd = 1:size(SubjectList,1)
     
     
     %% Load Vertices of interest for each ROI;
-    load(fullfile(SubjectFolder,'Transfer','ROI',['Subj_' SubjID '_ROI_VertOfInt.mat']), 'ROI', 'NbVertex')
+    load(fullfile(SubjectFolder,'ROI', ...
+        ['Subj_' SubjID '_ROI_VertOfInt.mat']), 'ROI', 'NbVertex')
     
     
     %% Read features
@@ -118,11 +137,11 @@ for SubjInd = 1:size(SubjectList,1)
         FeatureSaveFile = fullfile(Data_Folder,[ 'Subj_' SubjID '_features_' HsSufix 'hs_' ...
             num2str(NbLayers) '_surf.mat']);
         
-%                 InfSurfFile = fullfile(SubjectFolder, 'Structural','CBS', ...
-%                     ['T1_' SubjID '_thresh_clone_transform_strip_clone_transform_bound_mems_' HsSufix 'cr_gm_avg_inf.vtk']);
-%         
-%                 [Vertex,Face,Mapping] = read_vtk(InfSurfFile, 0, 1);
-%                 NbVertices(hs)=size(Vertex,2);
+        %                 InfSurfFile = fullfile(SubjectFolder, 'Structural','CBS', ...
+        %                     ['T1_' SubjID '_thresh_clone_transform_strip_clone_transform_bound_mems_' HsSufix 'cr_gm_avg_inf.vtk']);
+        %
+        %                 [Vertex,Face,Mapping] = read_vtk(InfSurfFile, 0, 1);
+        %                 NbVertices(hs)=size(Vertex,2);
         
         
         %% Load data or extract them
@@ -174,11 +193,11 @@ for SubjInd = 1:size(SubjectList,1)
         
     end
     
-%         if any(NbVertex ~= NbVertices)
-%             NbVertex
-%             NbVertices
-%             error('The number of vertices does not match.')
-%         end
+    %         if any(NbVertex ~= NbVertices)
+    %             NbVertex
+    %             NbVertices
+    %             error('The number of vertices does not match.')
+    %         end
     
     
     Features_lh = nan(NbVertex(1),NbLayers,size(MappingBothHS{1},3));
@@ -233,7 +252,7 @@ for SubjInd = 1:size(SubjectList,1)
             Y = reshape(Y, [size(Y,1)*size(Y,2), size(Y,3)] );
             B1 = pinv(X)*Y;
             
-
+            
             Beta2Sel = [];
             for BlockInd = 1:3
                 Beta2Sel = [Beta2Sel ;find(strcmp(cellstr(BetaNames), ...
@@ -256,15 +275,15 @@ for SubjInd = 1:size(SubjectList,1)
             
             tmp = mean(tmp,3);
             tmp2 = mean(tmp2,3);
-
+            
             for iLayer=1:6
                 RHO_Layer(SubjInd,iCor,iLayer,iROI) = corr(tmp(:,iLayer),tmp2(:,iLayer),'type','Spearman');
             end
-
+            
             RHO(SubjInd,iCor,iROI) = corr(tmp(:),tmp2(:),'type','Spearman');
             
         end
-
+        
     end
     
     cd(Results_Folder)
@@ -280,9 +299,9 @@ close all
 Dim = [0.5 4.5 0.15 .7];
 FigDim = [50 50 1600 650];
 XAxis = {'A_A / A_V'
-     'AV_A / AV_V'
-     'A_A / AV_A'
-     'A_V / AV_V'};
+    'AV_A / AV_V'
+    'A_A / AV_A'
+    'A_V / AV_V'};
 
 SubPlot=1;
 
@@ -290,34 +309,34 @@ figure('name', 'RHO', 'position', FigDim)
 
 for iROI=1:2
     
-subplot(2,4,SubPlot)
-errorbar(1:4,mean(RHO(:,:,iROI)),nansem(RHO(:,:,iROI)), '.k' , 'markersize', 10)
-set(gca, 'xtick', 1:4, 'xticklabel', XAxis, 'fontsize', 8)
-axis(Dim)
-SubPlot=SubPlot+1;
-
-subplot(2,4,SubPlot)
-errorbar(1:4,mean(RHO_cst(:,:,iROI)),nansem(RHO_cst(:,:,iROI)), '.k' , 'markersize', 10)
-set(gca, 'xtick', 1:4, 'xticklabel', XAxis, 'fontsize', 8)
-axis(Dim)
-SubPlot=SubPlot+1;
-
-subplot(2,4,SubPlot)
-errorbar(1:4,mean(RHO_lin(:,:,iROI)),nansem(RHO_lin(:,:,iROI)), '.k' , 'markersize', 10)
-set(gca, 'xtick', 1:4, 'xticklabel', XAxis, 'fontsize', 8)
-axis(Dim)
-SubPlot=SubPlot+1;
-
-subplot(2,4,SubPlot)
-errorbar(repmat(1:6,4,1)'+repmat([0:.1:.3]',1,6)',...
-    squeeze(mean(RHO_Layer(:,:,:,iROI)))',...
-    squeeze(nansem(RHO_Layer(:,:,:,iROI)))', 'marker', '.' , 'markersize', 10)
-set(gca, 'xtick', 1:6, 'xticklabel', 1:6, 'fontsize', 8)
-legend(XAxis, 'Location', 'northwest')
-axis([0.5 6.5 0.15 .65])
-SubPlot=SubPlot+1;
-
-
+    subplot(2,4,SubPlot)
+    errorbar(1:4,mean(RHO(:,:,iROI)),nansem(RHO(:,:,iROI)), '.k' , 'markersize', 10)
+    set(gca, 'xtick', 1:4, 'xticklabel', XAxis, 'fontsize', 8)
+    axis(Dim)
+    SubPlot=SubPlot+1;
+    
+    subplot(2,4,SubPlot)
+    errorbar(1:4,mean(RHO_cst(:,:,iROI)),nansem(RHO_cst(:,:,iROI)), '.k' , 'markersize', 10)
+    set(gca, 'xtick', 1:4, 'xticklabel', XAxis, 'fontsize', 8)
+    axis(Dim)
+    SubPlot=SubPlot+1;
+    
+    subplot(2,4,SubPlot)
+    errorbar(1:4,mean(RHO_lin(:,:,iROI)),nansem(RHO_lin(:,:,iROI)), '.k' , 'markersize', 10)
+    set(gca, 'xtick', 1:4, 'xticklabel', XAxis, 'fontsize', 8)
+    axis(Dim)
+    SubPlot=SubPlot+1;
+    
+    subplot(2,4,SubPlot)
+    errorbar(repmat(1:6,4,1)'+repmat([0:.1:.3]',1,6)',...
+        squeeze(mean(RHO_Layer(:,:,:,iROI)))',...
+        squeeze(nansem(RHO_Layer(:,:,:,iROI)))', 'marker', '.' , 'markersize', 10)
+    set(gca, 'xtick', 1:6, 'xticklabel', 1:6, 'fontsize', 8)
+    legend(XAxis, 'Location', 'northwest')
+    axis([0.5 6.5 0.15 .65])
+    SubPlot=SubPlot+1;
+    
+    
 end
 
 subplot(2,4,1)
@@ -335,7 +354,7 @@ title('Layers')
 
 
 %%
-close all
+% close all
 
 RHO_f = [mean(atanh(RHO(:,1:2,:)),2) mean(atanh(RHO(:,3:4,:)),2)];
 RHO_cst_f = [mean(atanh(RHO_cst(:,1:2,:)),2) mean(atanh(RHO_cst(:,3:4,:)),2)];
@@ -345,7 +364,7 @@ RHO_Layer_f = [mean(atanh(RHO_Layer(:,1:2,:,:)),2) mean(atanh(RHO_Layer(:,3:4,:,
 Dim = [0.5 2.5 0.3 .65];
 FigDim = [50 50 1600 650];
 XAxis = {'(A+AV)_A vs (A+AV)_V'
-     'A_{A+V} vs AV_{A+V}'};
+    'A_{A+V} vs AV_{A+V}'};
 
 SubPlot=1;
 
@@ -353,34 +372,34 @@ figure('name', 'RHO', 'position', FigDim)
 
 for iROI=1:2
     
-subplot(2,4,SubPlot)
-errorbar(1:2,mean(RHO_f(:,:,iROI)),nansem(RHO_f(:,:,iROI)), '.k' , 'markersize', 10)
-set(gca, 'xtick', 1:2, 'xticklabel', XAxis, 'fontsize', 8)
-axis(Dim)
-SubPlot=SubPlot+1;
-
-subplot(2,4,SubPlot)
-errorbar(1:2,mean(RHO_cst_f(:,:,iROI)),nansem(RHO_cst_f(:,:,iROI)), '.k' , 'markersize', 10)
-set(gca, 'xtick', 1:2, 'xticklabel', XAxis, 'fontsize', 8)
-axis(Dim)
-SubPlot=SubPlot+1;
-
-subplot(2,4,SubPlot)
-errorbar(1:2,mean(RHO_lin_f(:,:,iROI)),nansem(RHO_lin_f(:,:,iROI)), '.k' , 'markersize', 10)
-set(gca, 'xtick', 1:2, 'xticklabel', XAxis, 'fontsize', 8)
-axis(Dim)
-SubPlot=SubPlot+1;
-
-subplot(2,4,SubPlot)
-errorbar(repmat(1:6,2,1)'+repmat([0 .1]',1,6)',...
-    squeeze(mean(RHO_Layer_f(:,:,:,iROI)))',...
-    squeeze(nansem(RHO_Layer_f(:,:,:,iROI)))', 'marker', '.' , 'markersize', 10)
-set(gca, 'xtick', 1:6, 'xticklabel', 1:6, 'fontsize', 8)
-legend(XAxis, 'Location', 'northwest')
-axis([0.5 6.5 0.15 .75])
-SubPlot=SubPlot+1;
-
-
+    subplot(2,4,SubPlot)
+    errorbar(1:2,mean(RHO_f(:,:,iROI)),nansem(RHO_f(:,:,iROI)), '.k' , 'markersize', 10)
+    set(gca, 'xtick', 1:2, 'xticklabel', XAxis, 'fontsize', 8)
+    axis(Dim)
+    SubPlot=SubPlot+1;
+    
+    subplot(2,4,SubPlot)
+    errorbar(1:2,mean(RHO_cst_f(:,:,iROI)),nansem(RHO_cst_f(:,:,iROI)), '.k' , 'markersize', 10)
+    set(gca, 'xtick', 1:2, 'xticklabel', XAxis, 'fontsize', 8)
+    axis(Dim)
+    SubPlot=SubPlot+1;
+    
+    subplot(2,4,SubPlot)
+    errorbar(1:2,mean(RHO_lin_f(:,:,iROI)),nansem(RHO_lin_f(:,:,iROI)), '.k' , 'markersize', 10)
+    set(gca, 'xtick', 1:2, 'xticklabel', XAxis, 'fontsize', 8)
+    axis(Dim)
+    SubPlot=SubPlot+1;
+    
+    subplot(2,4,SubPlot)
+    errorbar(repmat(1:6,2,1)'+repmat([0 .1]',1,6)',...
+        squeeze(mean(RHO_Layer_f(:,:,:,iROI)))',...
+        squeeze(nansem(RHO_Layer_f(:,:,:,iROI)))', 'marker', '.' , 'markersize', 10)
+    set(gca, 'xtick', 1:6, 'xticklabel', 1:6, 'fontsize', 8)
+    legend(XAxis, 'Location', 'northwest')
+    axis([0.5 6.5 0.15 .75])
+    SubPlot=SubPlot+1;
+    
+    
 end
 
 subplot(2,4,1)

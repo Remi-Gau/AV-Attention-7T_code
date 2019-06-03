@@ -1,3 +1,8 @@
+% script to show rank of vertices in a given ROI depending on their
+% activation
+% e.g ideally to see if they are all around the cortical representation of
+% the fovea or not
+
 %%
 clc; clear;
 

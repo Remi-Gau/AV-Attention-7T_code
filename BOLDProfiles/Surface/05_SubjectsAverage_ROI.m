@@ -1,3 +1,5 @@
+% average results from all subjects at the whole ROI level
+
 clear; close all; clc;
 
 NbLayers = 6;
