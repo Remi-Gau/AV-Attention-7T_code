@@ -1,5 +1,4 @@
-% plot rasters (and corresponding tables) used for the paper
-% will actually plot some extra
+% print rasters tables used for the paper
 
 close all
 clear

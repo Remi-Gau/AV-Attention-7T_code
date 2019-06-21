@@ -1,138 +1,137 @@
-%%
-% Color map
-X = 0:0.001:1;
-R = 0.237 - 2.13*X + 26.92*X.^2 - 65.5*X.^3 + 63.5*X.^4 - 22.36*X.^5;
-G = ((0.572 + 1.524*X - 1.811*X.^2)./(1 - 0.291*X + 0.1574*X.^2)).^2;
-B = 1./(1.579 - 4.03*X + 12.92*X.^2 - 31.4*X.^3 + 48.6*X.^4 - 23.36*X.^5);
-ColorMap = [R' G' B'];
-clear R G B
+% plot rasters
 
-FigDim = [100, 100, 1000, 1500];
-Visibility = 'on';
+close all
+clear
+clc
 
-StartFolder='/media/rxg243/BackUp2/AV_Integration_7T_2/Scripts/BOLDProfiles/Surface/../../..';
-addpath(genpath(fullfile(StartFolder, 'SubFun')))
 
-FigureFolder = fullfile(StartFolder,'Figures','Profiles','Surfaces');
+CodeFolder = '/home/remi/github/AV-Attention-7T_code';
+addpath(genpath(fullfile(CodeFolder, 'SubFun')))
 
-load(fullfile(StartFolder,'Results','Profiles','Surfaces','Raster_CV.mat'))
+Get_dependencies('/home/remi/')
+
+FigureFolder = fullfile(CodeFolder,'Figures');
+
+DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
+load(fullfile(DataFolder, 'Results', 'Profiles', 'Surfaces', 'Raster_CV.mat'))
 
 Subj2Include = true(11,1);
-% Subj2Include([4 11]) = false;
 
-Color = [...
-    0,0,1;
-    .5,.5,1;
-    1,.5,.5;
-    1,0,0];
-
-ToPlot={'Cst','Lin'};
-
-% ROI_Groups = {1:4;5:8;9:12;13:16;17:20;21:24;25:28};
-% ROI_Groups_names = {'A1-PT-V123';'V123-ActDeact';'A1-PT-A-ActDeact';'V123-A-ActDeact';...
-%     'A1-PT-V-ActDeact';'V123-V-ActDeact';'A1-PT-ActDeact'};
-ROI_Groups = {1:4};
-ROI_Groups_names = {'A1-PT-V123'};
-
-load(fullfile(StartFolder,'Figures','8_layers','MinNbVert.mat'),'MinVert')
-
-NbLayers = 6;
-DesMat = (1:NbLayers)-mean(1:NbLayers);
-DesMat = [ones(NbLayers,1) DesMat' (DesMat.^2)'];
-% DesMat = [ones(NbLayers,1) DesMat'];
-DesMat = spm_orth(DesMat);
-
-
-for iSubj=1:sum(Subj2Include)
+for iSubj = 1:sum(Subj2Include)
     sets{iSubj} = [-1 1];
 end
 [a, b, c, d, e, f, g, h, i, j, k] = ndgrid(sets{:});
 ToPermute = [a(:), b(:), c(:), d(:), e(:), f(:), g(:), h(:), i(:), j(:), k(:)];
-% ToPermute = [];
+
+ToPlot = {'Cst','Lin'};
+
+opt.FigDim = [100, 100, 1000, 1500];
+opt.Visibility = 'on';
+opt.Subj2Include = Subj2Include;
+opt.ToPermute = ToPermute;
+opt.ColorMap = seismic(1000);
+opt.Fontsize = 10;
+
+
+% ROI_Groups = {1:4; 5:8; 9:12; 13:16; 17:20; 21:24; 25:28};
+% ROI_Groups_names = {'A1-PT-V123'; 'V123-ActDeact'; 'A1-PT-A-ActDeact'; 'V123-A-ActDeact';...
+%     'A1-PT-V-ActDeact'; 'V123-V-ActDeact'; 'A1-PT-ActDeact'};
+ROI_Groups = {1:4};
+ROI_Groups_names = {'A1-PT-V123'};
+
+load(fullfile(DataFolder,'Figures','8_layers','MinNbVert.mat'),'MinVert')
+
+
 
 
 %% Grp level  ; raster stim = f(Percentile of V)
 close all
-Cdt =[2 1;2 2;2 3];
-Name={'A','V','AV'};
+Cdt = [2 1; 2 2; 2 3];
+Name = {'A', 'V', 'AV'};
+opt.CLIM = [-4 4];
 
-for iToPlot = 1:numel(ToPlot)
+for iToPlot = 1%:numel(ToPlot)
     
-    for iRoiGrp = 1:numel(ROI_Groups)
+    opt.name = ToPlot{iToPlot};
+    opt.iToPlot = iToPlot;
+    
+    for iRoiGrp = 1%:numel(ROI_Groups)
         
-        figure('name', ToPlot{iToPlot}, 'Position', FigDim, 'Color', [1 1 1], 'Visible', Visibility);
+        plot_raster_fig(All_X_sort_V, All_Profiles_V, Cdt, Name, ROI_Groups{iRoiGrp}, ROI, MinVert, opt)
         
-        for iCdt = 1:3
-            
-            for iROI = ROI_Groups{iRoiGrp}
-                
-                tic
-                
-                NbBin = MinVert(strcmp(ROI(iROI).name,{MinVert.name}')).MinVert;
-                
-                clear X_sort Profiles Sorting_Raster
-                
-                parfor iSubj = 1:size(All_Profiles_V,1)
-                    Sorting_Raster(:,:,iSubj) = All_Profiles_V{iSubj,iToPlot,1,iROI};
-                    X_sort(iSubj,:) = All_X_sort_V{iSubj,iToPlot,iCdt,iROI};
-                    Profiles(:,:,iSubj) = All_Profiles_V{iSubj,iToPlot,iCdt,iROI};
-                end
-                
-                X_sort = X_sort(Subj2Include,:);
-                Profiles = Profiles(:,:,Subj2Include);
-                
-                [rho,slope]=CorRegRaster(Profiles,DesMat,iToPlot,X_sort);
-                
-                subplot(numel(ROI_Groups{iRoiGrp}),3,iCdt+3*(iROI-ROI_Groups{iRoiGrp}(1)))
-                hold on
-                
-                colormap(ColorMap);
-                imagesc(imgaussfilt(mean(Profiles,3),[20 .001]), [-4 4])
-                
-                axis([0.5 6.5 0 size(Profiles,1)])
-                
-                DephLevels = round(linspace(100,0,8));
-                DephLevels([1;end]) = [];
-                set(gca,'color', 'none', 'tickdir', 'out', 'xtick', 1:6,'xticklabel',  DephLevels, ...
-                    'YAxisLocation','right', 'ytick', [],'yticklabel', [], ...
-                    'ticklength', [0.01 0], 'fontsize', 4)
-                
-                t=xlabel('cortical depth');
-                set(t,'fontsize',6)
-                
-                if iROI==ROI_Groups{iRoiGrp}(1)
-                    title([Name{Cdt(iCdt,2)} ' stimulus'])
-                end
-                
-                ax = gca;
-                
-                rho = atanh(rho);
-                PlotCorrCoeff(ax, slope, ToPlot{iToPlot}, .15, .1, .05, .05, [0.9 1.4 -1 1], ToPermute);
-                
-                if iCdt==1
-                    YLabel = sprintf('%s\nPerc %s %s stim',...
-                        strrep(ROI(iROI).name,'_','-'),ToPlot{iToPlot}, Name{Cdt(iCdt,1)});
-                    PlotSortedValues(ax, X_sort, NbBin, Profiles, YLabel, 1, Sorting_Raster, [-4 4])
-                end
-                
-                clear X
-                
-                toc
-                
-            end
-            
-        end
+%         figure('name', ToPlot{iToPlot}, 'Position', FigDim, 'Color', [1 1 1], 'Visible', Visibility);
         
-        mtit(['Percentile V stim - ' ToPlot{iToPlot}], 'fontsize', 14, 'xoff',0,'yoff',.025)
-        
-        print(gcf, fullfile(FigureFolder,'Baseline', ...
-            ['GrpLvl_Raster_Baseline_V_stim_' ToPlot{iToPlot} '_' ...
-            ROI_Groups_names{iRoiGrp} '_CV.tif']), '-dtiff')
+%         for iCdt = 1:3
+%             
+%             for iROI = ROI_Groups{iRoiGrp}
+%                 
+%                 NbBin = MinVert(strcmp(ROI(iROI).name,{MinVert.name}')).MinVert;
+%                 
+%                 clear X_sort Profiles Sorting_Raster
+%                 
+%                 parfor iSubj = 1:size(All_Profiles_V,1)
+%                     Sorting_Raster(:,:,iSubj) = All_Profiles_V{iSubj,iToPlot,1,iROI};
+%                     X_sort(iSubj,:) = All_X_sort_V{iSubj,iToPlot,iCdt,iROI};
+%                     Profiles(:,:,iSubj) = All_Profiles_V{iSubj,iToPlot,iCdt,iROI};
+%                 end
+%                 
+%                 X_sort = X_sort(Subj2Include,:);
+%                 Profiles = Profiles(:,:,Subj2Include);
+%                 
+%                 [rho,slope]=CorRegRaster(Profiles,DesMat,iToPlot,X_sort);
+%                 
+%                 subplot(numel(ROI_Groups{iRoiGrp}),3,iCdt+3*(iROI-ROI_Groups{iRoiGrp}(1)))
+%                 hold on
+%                 
+%                 colormap(ColorMap);
+%                 imagesc(imgaussfilt(mean(Profiles,3),[20 .001]), [-4 4])
+%                 
+%                 axis([0.5 6.5 0 size(Profiles,1)])
+%                 
+%                 DephLevels = round(linspace(100,0,8));
+%                 DephLevels([1;end]) = [];
+%                 set(gca,'color', 'none', 'tickdir', 'out', 'xtick', 1:6,'xticklabel',  DephLevels, ...
+%                     'YAxisLocation','right', 'ytick', [],'yticklabel', [], ...
+%                     'ticklength', [0.01 0], 'fontsize', 4)
+%                 
+%                 t=xlabel('cortical depth');
+%                 set(t,'fontsize',6)
+%                 
+%                 if iROI==ROI_Groups{iRoiGrp}(1)
+%                     title([Name{Cdt(iCdt,2)} ' stimulus'])
+%                 end
+%                 
+%                 ax = gca;
+%                 
+%                 rho = atanh(rho);
+%                 PlotCorrCoeff(ax, slope, ToPlot{iToPlot}, .15, .1, .05, .05, [0.9 1.4 -1 1], ToPermute);
+%                 
+%                 if iCdt==1
+%                     YLabel = sprintf('%s\nPerc %s %s stim',...
+%                         strrep(ROI(iROI).name,'_','-'),ToPlot{iToPlot}, Name{Cdt(iCdt,1)});
+%                     PlotSortedValues(ax, X_sort, NbBin, Profiles, YLabel, 1, Sorting_Raster, [-4 4])
+%                 end
+%                 
+%                 clear X
+%                 
+%                 toc
+%                 
+%             end
+%             
+%         end
+%         
+%         mtit(['Percentile V stim - ' ToPlot{iToPlot}], 'fontsize', 14, 'xoff',0,'yoff',.025)
+%         
+%         print(gcf, fullfile(FigureFolder,'Baseline', ...
+%             ['GrpLvl_Raster_Baseline_V_stim_' ToPlot{iToPlot} '_' ...
+%             ROI_Groups_names{iRoiGrp} '_CV.tif']), '-dtiff')
         
     end
     
 end
 
+
+return
 
 %% Grp level  ; raster stim = f(Percentile of A)
 Cdt =[1 1;1 2;1 3];
