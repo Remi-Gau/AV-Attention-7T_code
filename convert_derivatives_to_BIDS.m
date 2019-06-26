@@ -24,6 +24,13 @@ subs = {...
     '15'
     '16'};
 
+ROIs= {...
+    'A1_surf'
+    'PT_surf_thres'
+    'V1_surf_thres'
+    'V2-3_surf_thres'
+    };
+
 for i_sub = 1:numel(subs)
     
     %% anat SPM
@@ -49,7 +56,7 @@ for i_sub = 1:numel(subs)
         DESTINATION = fullfile( dest_folder, ...
             [strrep(file, pattern, replace) ext] );
         
-        [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION);
+%         [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION);
     end
     
     % transfer .mat
@@ -62,7 +69,7 @@ for i_sub = 1:numel(subs)
         DESTINATION = fullfile( dest_folder, ...
             [strrep(file, pattern, replace) ext] );
         
-        [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION);
+%         [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION);
     end
     
     
@@ -101,7 +108,7 @@ for i_sub = 1:numel(subs)
         DESTINATION = fullfile( dest_folder, ...
             [strrep(file, pattern, replace) ext] );
         
-        [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION);
+%         [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION);
     end
     
     % transfer vtk
@@ -116,7 +123,7 @@ for i_sub = 1:numel(subs)
         DESTINATION = fullfile( dest_folder, ...
             [strrep(file, pattern, replace) ext] );
         
-        [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION);
+%         [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION);
     end
     
     % transfer layering
@@ -134,7 +141,7 @@ for i_sub = 1:numel(subs)
         DESTINATION = fullfile( dest_folder, ...
             [strrep(file, pattern, replace) ext] );
         
-        [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION);
+%         [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION);
     end
     
     % transfer segmentation
@@ -152,8 +159,37 @@ for i_sub = 1:numel(subs)
         DESTINATION = fullfile( dest_folder, ...
             [strrep(file, pattern, replace) ext] );
         
-        [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION);
+%         [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION);
     end
+    
+    % transfer ROIs
+    sub_folder = fullfile(source_folder, ['Subject_' subs{i_sub}], ...
+        'ROI');
+    
+    dest_folder = fullfile(target_folder, 'cbs_tools', ['sub-' subs{i_sub}], ...
+        'roi');
+    
+    mkdir(dest_folder)
+    
+    pattern_1 = '_';
+    pattern_2 = '-';
+    replace = ['sub-' subs{i_sub} '_roi-'];
+    
+    for i_roi = 1:numel(ROIs)
+        
+        SOURCE = spm_select('FPList', sub_folder, ['^' ROIs{i_roi} '.nii$']);
+        
+        [path, file, ext] = spm_fileparts(SOURCE);
+        file = strrep(file, pattern_1, pattern_2);
+        
+        DESTINATION = fullfile( dest_folder, ...
+            [replace file ext] );
+        
+        [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE, DESTINATION)
+    end
+    
+    
+
     
     
     %% fieldmaps
@@ -175,7 +211,7 @@ for i_sub = 1:numel(subs)
         DESTINATION = fullfile( dest_folder, ['ses-' num2str(i_vdm)], ...
             file );
         
-        [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION)
+%         [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION)
     end
     
     
@@ -219,13 +255,13 @@ for i_sub = 1:numel(subs)
         SOURCE = deblank(func_ls(i_func,:));
         DESTINATION = fullfile( dest_folder, ['ses-' ses], 'func',...
             ['UR' file '.nii.gz'] );
-        [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION);
+%         [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION);
         
         % transfer the rp files
         SOURCE = deblank(rp_ls(i_func,:));
         DESTINATION = fullfile( dest_folder, ['ses-' ses], 'func',...
             ['rp' file '.txt'] );
-        [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION);
+%         [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION);
         
     end
     
@@ -236,13 +272,13 @@ for i_sub = 1:numel(subs)
     SOURCE = mean_ls;
     DESTINATION = fullfile( dest_folder, 'ses-1', 'func',...
         ['meanUR' file '.nii'] );
-    [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION);
+%     [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION);
     
     SOURCE = resliced_mean_ls;
     DESTINATION = fullfile( dest_folder, 'ses-1', 'func',...
         ['r4meanUR' file '.nii.gz'] );
     [SUCCESS,MESSAGE,MESSAGEID] = movefile(SOURCE,DESTINATION);
     
-    copyfile(DESTINATION, fullfile(source_folder, ['Subject_' subs{i_sub}], 'BetaMapping'))
+%     copyfile(DESTINATION, fullfile(source_folder, ['Subject_' subs{i_sub}], 'BetaMapping'))
     
 end
