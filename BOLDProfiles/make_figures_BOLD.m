@@ -1,9 +1,10 @@
 %% uses CSV files of saved data to plot the data for the article
+
 clear; close all; clc;
 
 CodeFolder = '/home/remi/github/AV-Attention-7T_code';
 
-% inputs (where the OSF data have been downloaded)
+% inputs (where the OSF data have been downloaded: https://osf.io/63dba/)
 % DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
 DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
 Results_Folder = fullfile(DataFolder, 'DataToExport');

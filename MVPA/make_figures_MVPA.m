@@ -4,7 +4,7 @@ clear; close all; clc;
 
 CodeFolder = '/home/remi/github/AV-Attention-7T_code';
 
-% inputs
+% inputs (where the OSF data have been downloaded: https://osf.io/63dba/)
 % DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
 DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
 
