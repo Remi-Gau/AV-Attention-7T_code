@@ -9,7 +9,7 @@ code_folder = '/home/remi/github/AV-Attention-7T_code';
 addpath(genpath(fullfile('/home/remi/github/spmup')))
 
 derivatives_folder = '/home/remi/Dropbox/BIDS/AV_att/derivatives/';
-raw_folder = '/media/remi/BIDS/AV_Att/rawdata';
+raw_folder = '/home/remi/Dropbox/BIDS/AV_att/rawdata';
 
 output_folder = fullfile(derivatives_folder, 'smpup');
 
@@ -51,19 +51,19 @@ for iSub = 1:NbSub % for each subject
     raw_sub_dir = fullfile(raw_folder, SubLs(iSub).name);
     
     time_series = spm_select('FPListRec', ...
-        fullfile(raw_sub_dir), '^*audiovisualattention.*bold.nii$');
+        raw_sub_dir, '^*audiovisualattention.*bold.nii$');
     
     % unzip if necessary
     if size(time_series,1)<4
         time_series = spm_select('FPListRec', ...
-            fullfile(raw_sub_dir), '^*audiovisualattention.*bold.nii.gz$');
+            raw_sub_dir, '^*audiovisualattention.*bold.nii.gz$');
         
         for i_run = 1:size(time_series,1)
             gunzip(time_series(i_run,:))
         end
         
         time_series = spm_select('FPListRec', ...
-            fullfile(raw_sub_dir), '^*audiovisualattention.*bold.nii$');
+            raw_sub_dir, '^*audiovisualattention.*bold.nii$');
         
     end
     
