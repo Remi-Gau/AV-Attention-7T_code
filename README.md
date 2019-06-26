@@ -19,7 +19,8 @@ You will need the following softwares to run part of the analysis.
 | [ANTs](http://stnava.github.io/ANTs/)                               | 2.1.0        | intersubject coregistration (MMSR)                                   |
 | [JIST and the CBS tools](https://www.nitrc.org/projects/cbs-tools/) | 2 & 3.0.8    | segmentation, laminae definition, intersubject coregistration (MMSR) |
 | [MIPAV](https://mipav.cit.nih.gov/)                                 | 7.0.1        | segmentation, laminae definition, intersubject coregistration (MMSR) |
-| cosmetic                                                            |              | A1 ROI delineation                                                   |
+| cosmetic (private repo)                                             |              | A1 ROI delineation                                                   |
+| [paraview](https://www.paraview.org/)                               | 4.1.0        | VTK surface vizualization                                            |
 
 
 Many extra matlab functions from github and the mathwork file exchange are needed and are added to the path by the function `code/subfun/Get_dependencies`. Yeah this is tiring and cumbersome but that's matlab weirdness for you (“_And this why we can’t have nice things. Have you heard of [python](http://python.org)?_”)
@@ -31,7 +32,7 @@ Many extra matlab functions from github and the mathwork file exchange are neede
 | [SPM-RG](https://github.com/Remi-Gau/SPM-RG)                                                                                                      | NA          | manual coregistration      |
 | [nansuite](https://fr.mathworks.com/matlabcentral/fileexchange/6837-nan-suite)                                                                    | V1.0.0       |                            |
 | [distributionPlot](https://fr.mathworks.com/matlabcentral/fileexchange/23661-violin-plots-for-plotting-multiple-distributions-distributionplot-m) | v1.15.0      | violin plots for matlab    |
-| [plotSpread](https://fr.mathworks.com/matlabcentral/fileexchange/37105-plot-spread-points-beeswarm-plot)                                          | v1.2.0       | plot datta spread          |
+| [plotSpread](https://fr.mathworks.com/matlabcentral/fileexchange/37105-plot-spread-points-beeswarm-plot)                                          | v1.2.0       | plot data spread          |
 | [shadedErrorBar](https://fr.mathworks.com/matlabcentral/fileexchange/26311-raacampbell-shadederrorbar)                                            | v1.65.0      | shaded error bar           |
 | [herrorbar](https://fr.mathworks.com/matlabcentral/fileexchange/3963-herrorbar)                                                                   | V1.0.0       | horizontal error bar       |
 | [mtit](https://fr.mathworks.com/matlabcentral/fileexchange/3218-mtit-a-pedestrian-major-title-creator)                                            | v1.1.0       | main title for figures     |

@@ -2,25 +2,24 @@ clc
 clear
 close all
 
-StartDirectory = fullfile(pwd, '..', '..');
-% StartDirectory = fullfile('/media','rxg243','BackUp2','AV_Integration_7T_2');
+StartDirectory = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
 
-addpath(genpath(fullfile(StartDirectory, 'SubFun')))
-% Get_dependencies('/home/rxg243/Dropbox/')
-Get_dependencies('D:\Dropbox')
+CodeFodler = '/home/remi/github/AV-Attention-7T_code';
+addpath(genpath(fullfile(CodeFodler, 'SubFun')))
+Get_dependencies('/home/remi/Dropbox')
 
 SubjectList = [...
     '02';...
     '03';...
     '04';...
-%     '06';...
+    %     '06';...
     '07';...
     '08';...
     '09';...
     '11';...
     '12';...
     '13';...
-%     '14';...
+    %     '14';...
     '15';...
     '16'
     ];
@@ -32,29 +31,29 @@ Correction_CR{1,1} = [2,2,2,1];
 Correction_CR{1,3} = [2,1,2,1];
 Correction_CR{3,3} = [2,1,3,1];
 Correction_CR{5,2} = [3,2,1,1;...
-                      2,1,1,1];
-Correction_CR{5,3} = [2,2,3,1];                  
-Correction_CR{6,1} = [3,2,3,1];  
-Correction_CR{6,2} = [3,1,3,1]; 
-Correction_CR{6,3} = [2,1,2,1]; 
+    2,1,1,1];
+Correction_CR{5,3} = [2,2,3,1];
+Correction_CR{6,1} = [3,2,3,1];
+Correction_CR{6,2} = [3,1,3,1];
+Correction_CR{6,3} = [2,1,2,1];
 Correction_CR{6,4} = [2,2,2,1];
 Correction_CR{7,3} = [3,1,1,1];
 Correction_CR{7,4} = [3,2,1,1];
 Correction_CR{8,2} = [1,1,2,1;...
-                      3,1,2,1];
+    3,1,2,1];
 Correction_CR{8,3} = [1,1,2,1];
 Correction_CR{9,1} = [1,1,3,1];
 Correction_CR{9,4} = [2,2,3,1];
 Correction_CR{10,1} = [1,1,1,1];
 Correction_CR{10,2} = [3,2,1,1;...
-                       1,1,2,1];        
+    1,1,2,1];
 Correction_CR{12,1} = [1,1,1,1;...
-                       1,2,2,1]; 
-Correction_CR{12,2} = [1,2,2,1];                   
-Correction_CR{13,2} = [1,1,2,1]; 
-Correction_CR{13,3} = [2,1,3,1]; 
-Correction_CR{13,4} = [1,2,2,1]; 
-                  
+    1,2,2,1];
+Correction_CR{12,2} = [1,2,2,1];
+Correction_CR{13,2} = [1,1,2,1];
+Correction_CR{13,3} = [2,1,3,1];
+Correction_CR{13,4} = [1,2,2,1];
+
 Correction_Miss = cell(size(SubjectList,1),4);
 Correction_Miss{1,3} = [2,2,3,1];
 Correction_Miss{2,2} = [3,2,3,1];
@@ -73,7 +72,7 @@ Correction_Hit{9,2} = [2,1,1,1];
 Correction_Hit{10,1} = [2,1,2,1];
 Correction_Hit{12,2} = [1,1,1,1];
 Correction_Hit{12,3} = [1,1,1,1;...
-                        3,1,2,1];
+    3,1,2,1];
 Correction_Hit{13,1} = [1,1,3,1];
 
 Correction_FA = cell(size(SubjectList,1),4);
@@ -327,9 +326,9 @@ for SubjInd = 1:size(SubjectList,1)
         
         if ~isempty(Correction_Hit{SubjInd,FileInd})
             for i=1:size(Correction_Hit{SubjInd,FileInd},1)
-            HIT_Block(Correction_Hit{SubjInd,FileInd}(i,1),...
-                Correction_Hit{SubjInd,FileInd}(i,2),...
-                Correction_Hit{SubjInd,FileInd}(i,3)) = Correction_Hit{SubjInd,FileInd}(i,4);
+                HIT_Block(Correction_Hit{SubjInd,FileInd}(i,1),...
+                    Correction_Hit{SubjInd,FileInd}(i,2),...
+                    Correction_Hit{SubjInd,FileInd}(i,3)) = Correction_Hit{SubjInd,FileInd}(i,4);
             end
         end
         
@@ -337,7 +336,7 @@ for SubjInd = 1:size(SubjectList,1)
         B = [CORRECT_REJECTION_Block(1:3,1:2,:)+FALSE_ALARM_Block(1:3,1:2,:)]==0;
         
         
-         
+        
         if any(A(:)) || any(B(:))
             
             fprintf('\nSubject: %s ;  Run: %i \n\n', SubjID, FileInd)
@@ -360,7 +359,7 @@ for SubjInd = 1:size(SubjectList,1)
                 B;
             end
             
-           
+            
             Stim_Time{1,1};
             clear A B
             
@@ -450,7 +449,7 @@ for SubjInd = 1:size(SubjectList,1)
     
     
     
-    fprintf('Subject %s average', SubjInd)
+    fprintf('Subject %i average', SubjInd)
     
     GroupResults(SubjInd).HitRate(:,:,:) = HIT_TOTAL./(HIT_TOTAL+MISS_TOTAL); %#ok<*SAGROW>
     GroupResults(SubjInd).FARate(:,:,:) = FALSE_ALARM_TOTAL./(FALSE_ALARM_TOTAL+CORRECT_REJECTION_TOTAL); %#ok<*SAGROW>
@@ -510,7 +509,7 @@ for SubjInd = 1:size(SubjectList,1)
         GroupResults(SubjInd).AttModInd.Unscaled(i,1) = sum(HIT_TOTAL(i,1)) - sum(FALSE_ALARM_TOTAL(i,2));
         GroupResults(SubjInd).AttModInd.Unscaled(i,2) = sum(HIT_TOTAL(i,2)) - sum(FALSE_ALARM_TOTAL(i,1));
         GroupResults(SubjInd).AttModInd.Unscaled(i,3) = sum(sum(HIT_TOTAL(i,1:2))) - sum(sum(FALSE_ALARM_TOTAL(i,1:2)));
-
+        
         GroupResults(SubjInd).AttModInd.Scaled(i,1) = sum(HIT_TOTAL(i,1))/ (sum(HIT_TOTAL(i,1))+sum(MISS_TOTAL(i,1))) ...
             - sum(FALSE_ALARM_TOTAL(i,1)) / ( sum(FALSE_ALARM_TOTAL(i,1)) + sum(CORRECT_REJECTION_TOTAL(i,1)));
         GroupResults(SubjInd).AttModInd.Scaled(i,2) = sum(HIT_TOTAL(i,2))/(sum(HIT_TOTAL(i,2))+sum(MISS_TOTAL(i,2))) ...
@@ -533,8 +532,150 @@ for iSubj=1:size(GroupResults,2)
     C(iSubj,1:2) = [A B];
 end
 
-save(fullfile('/data','AV_Integration_2','Figures','Behavioral','BehavioralResults.mat'), 'GroupResults', 'SubjectList')
+mkdir(fullfile(StartDirectory,'Figures','Behavioral'))
+save(fullfile(StartDirectory,'Figures','Behavioral','BehavioralResults.mat'), 'GroupResults', 'SubjectList')
 
+
+%% Hits and FA
+
+close all
+
+FontSize = 12;
+
+figure('name', 'Hits and FA', 'position', [100, 100, 750, 500], 'Color', [1 1 1])
+
+for iSubj=1:size(GroupResults,2)
+    Hit_tmp(:,:,iSubj) = mean(GroupResults(iSubj).HitRate,3);
+    FA_tmp(:,:,iSubj) = mean(GroupResults(iSubj).FARate,3);
+end
+
+N = size(Hit_tmp,3);
+
+Hit_tmp_mean = nanmean(Hit_tmp,3);
+Hit_tmp_sem = nanstd(Hit_tmp,0,3)/N^.5;
+
+FA_tmp_mean = nanmean(FA_tmp,3);
+FA_tmp_sem = nanstd(FA_tmp,0,3)/N^.5;
+
+for AttCdt = 1:2
+    
+    subplot(2, 1, AttCdt)
+    hold on
+    grid on
+    
+    for iSubj=1:size(GroupResults,2)
+        plot(1:3, Hit_tmp(1:3, AttCdt, iSubj), '-o', ...
+            'Color', [.5, .5, 1], 'MarkerFaceColor', [.5, .5, 1],...
+            'MarkerSize', 4)
+        
+        plot(1:3, FA_tmp(1:3, AttCdt, iSubj), '-o', ...
+            'Color', [1, .5, .5], 'MarkerFaceColor', [1, .5, .5],...
+            'MarkerSize', 4)
+    end
+    
+    errorbar([1:3]-.1, Hit_tmp_mean(1:3, AttCdt), Hit_tmp_sem(1:3, AttCdt), ...
+        '-ob', 'linewidth', 2, 'MarkerFaceColor', 'b', 'MarkerSize', 5)
+    errorbar([1:3]+.1, FA_tmp_mean(1:3, AttCdt), FA_tmp_sem(1:3, AttCdt), ...
+        '-or', 'linewidth', 2, 'MarkerFaceColor', 'r', 'MarkerSize', 5)
+    
+    set(gca, 'xtick',1:3, ...
+        'xticklabel', {'Auditory','Visual', 'Audiovisual'}, ...
+        'ytick',0:.2:1, ...
+        'yticklabel',0:20:100, ...
+        'fontsize',FontSize);
+    
+    axis([0.7 3.2 0 1])
+    
+end
+
+subplot(2, 1, 1)
+t=title('Auditory attention');
+set(t,'fontsize',FontSize+2);
+
+subplot(2, 1, 2)
+t=title('Visual attention');
+set(t,'fontsize',FontSize+2);
+
+
+% print(gcf, fullfile('/data','AV_Integration_2','Figures','Behavioral', 'HitsAndFalseAlarm.tif'), '-dtiff')
+
+
+return
+
+
+%% Hits and FA
+
+close all
+
+Scatter=linspace(0.2,0.6,size(GroupResults,2));
+
+FontSize = 10;
+
+figure('name', 'Hits and FA', 'position', [100, 100, 1500, 1000], 'Color', [1 1 1])
+
+for iSubj=1:size(GroupResults,2)
+    Hit_tmp(:,:,iSubj) = mean(GroupResults(iSubj).HitRate,3);
+    FA_tmp(:,:,iSubj) = mean(GroupResults(iSubj).FARate,3);
+end
+
+N = size(Hit_tmp,3);
+
+Hit_tmp_mean = nanmean(Hit_tmp,3);
+Hit_tmp_sem = nanstd(Hit_tmp,0,3)/N^.5;
+
+FA_tmp_mean = nanmean(FA_tmp,3);
+FA_tmp_sem = nanstd(FA_tmp,0,3)/N^.5;
+
+iSubplot = 1;
+for iRow=1:2
+    for iCol=1:3
+        
+        subplot(2, 3, iSubplot)
+        hold on
+        grid on
+        axis([0 size(GroupResults,2)+.5 0 1])
+        
+        errorbar(0.35, Hit_tmp_mean(iCol,iRow), Hit_tmp_sem(iCol,iRow), 'ob', 'MarkerFaceColor', 'b', 'MarkerSize', 5)
+        errorbar(1.25, FA_tmp_mean(iCol,iRow), FA_tmp_sem(iCol,iRow), 'or', 'MarkerFaceColor', 'r', 'MarkerSize', 5)
+        
+        for iSubj=1:size(GroupResults,2)
+            plot(0.35+Scatter(iSubj),Hit_tmp(iCol,iRow,iSubj), ' o', ...
+                'Color', COLOR_Subject(iSubj,:), 'MarkerFaceColor', COLOR_Subject(iSubj,:),...
+                'MarkerSize', 4)
+            
+            plot(1.25+Scatter(iSubj),FA_tmp(iCol,iRow,iSubj), ' o', ...
+                'Color', COLOR_Subject(iSubj,:), 'MarkerFaceColor', COLOR_Subject(iSubj,:),...
+                'MarkerSize', 4)
+        end
+        axis([0.2 2 0 1])
+        set(gca, 'xtick',[0.35 1.25], 'xticklabel', {'Hits','False alarms'}, 'ytick', 0:.2:1, 'fontsize',FontSize);
+        iSubplot = iSubplot + 1;
+    end
+end
+
+subplot(2, 3, 1)
+t=title('Auditory stimulation');
+set(t,'fontsize',FontSize+2);
+t=ylabel('Auditory attention');
+set(t,'fontsize',FontSize+2);
+
+subplot(2, 3, 4)
+t=ylabel('Visual attention');
+set(t,'fontsize',FontSize+2);
+
+subplot(2, 3, 2)
+t=title('Visual stimulation');
+set(t,'fontsize',FontSize+2);
+
+subplot(2, 3, 3)
+t=title('AudioVisual stimulation');
+set(t,'fontsize',FontSize+2);
+
+% print(gcf, fullfile('/data','AV_Integration_2','Figures','Behavioral', 'HitsAndFalseAlarm.tif'), '-dtiff')
+
+clear TEMP TEMP2 TEMP3
+
+return
 
 
 %% Save tables D prime
@@ -780,7 +921,7 @@ for iStim=1:3
     h = plotSpread(A_Targets(:,iStim,:), 'distributionIdx', ones(size(A_Targets(:,iStim,:))), ...
         'distributionMarkers',{'.'},'distributionColors',{'k'}, ...
         'xValues', iStim+.4, 'binWidth', 0.1, 'spreadWidth', 0.8);
-    set(h{1}, 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k', 'LineWidth', 1)     
+    set(h{1}, 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k', 'LineWidth', 1)
 end
 
 axis([0.8 3.5 -0.5 16.5])
@@ -805,7 +946,7 @@ for iStim=1:3
     h = plotSpread(A_Targets(:,iStim+3,:), 'distributionIdx', ones(size(A_Targets(:,iStim,:))), ...
         'distributionMarkers',{'.'},'distributionColors',{'k'}, ...
         'xValues', iStim+.4, 'binWidth', 0.1, 'spreadWidth', 0.8);
-    set(h{1}, 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k', 'LineWidth', 1)  
+    set(h{1}, 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k', 'LineWidth', 1)
     
 end
 
@@ -830,7 +971,7 @@ for iStim=1:3
     h = plotSpread(V_Targets(:,iStim,:), 'distributionIdx', ones(size(V_Targets(:,iStim,:))), ...
         'distributionMarkers',{'.'},'distributionColors',{'k'}, ...
         'xValues', iStim+.4, 'binWidth', 0.1, 'spreadWidth', 0.8);
-    set(h{1}, 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k', 'LineWidth', 1)   
+    set(h{1}, 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k', 'LineWidth', 1)
 end
 
 axis([0.8 3.5 -0.5 16.5])
@@ -853,7 +994,7 @@ for iStim=1:3
     h = plotSpread(V_Targets(:,iStim+3,:), 'distributionIdx', ones(size(V_Targets(:,iStim,:))), ...
         'distributionMarkers',{'.'},'distributionColors',{'k'}, ...
         'xValues', iStim+.4, 'binWidth', 0.1, 'spreadWidth', 0.8);
-    set(h{1}, 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k', 'LineWidth', 1)  
+    set(h{1}, 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k', 'LineWidth', 1)
     
 end
 
@@ -939,17 +1080,6 @@ end
 fclose (fid);
 
 
-
-
-
-
-
-
-
-
-
-
-
 %% Attention Modulation Indices
 
 close all
@@ -962,7 +1092,7 @@ figure('name', 'Attention Modulation Indices', 'position', [100, 100, 1500, 1000
 
 for iSubj=1:size(GroupResults,2)
     AttModInd.Unscaled(:,:,iSubj) = GroupResults(iSubj).AttModInd.Unscaled;
-    AttModInd.Scaled(:,:,iSubj) = GroupResults(iSubj).AttModInd.Scaled;  
+    AttModInd.Scaled(:,:,iSubj) = GroupResults(iSubj).AttModInd.Scaled;
 end
 
 iSubplot = 1;
@@ -971,10 +1101,10 @@ for iCol=1:3
     subplot(2,3,iSubplot)
     hold on
     grid on
-%     axis([0 size(GroupResults,2)+.5 0 1])
-
+    %     axis([0 size(GroupResults,2)+.5 0 1])
+    
     for iStim=1:3
-
+        
         errorbar(iStim, nanmean(AttModInd.Unscaled(iStim,iCol,:),3), nansem(AttModInd.Unscaled(iStim,iCol,:),3), ...
             'ob', 'MarkerFaceColor', 'b', 'MarkerSize', 5)
         
@@ -1000,7 +1130,7 @@ for iCol=1:3
     grid on
     
     for iStim=1:3
-    
+        
         errorbar(iStim, nanmean(AttModInd.Scaled(iStim,iCol,:),3), nansem(AttModInd.Scaled(iStim,iCol,:),3), ...
             'ob', 'MarkerFaceColor', 'b', 'MarkerSize', 5)
         
@@ -1043,86 +1173,6 @@ mtit('Attention Modulation Indices', 'xoff',0,'yoff',.025)
 
 print(gcf, fullfile('/data','AV_Integration_2','Figures','Behavioral', 'AttentionModulationIndices.tif'), '-dtiff')
 
-
-clear TEMP TEMP2 TEMP3
-
-
-
-%% Hits and FA
-
-close all
-
-Scatter=linspace(0.2,0.6,size(GroupResults,2));
-
-FontSize = 6;
-
-figure('name', 'Hits and FA', 'position', [100, 100, 1500, 1000], 'Color', [1 1 1])
-
-for iSubj=1:size(GroupResults,2)
-    Hit_tmp(:,:,iSubj) = mean(GroupResults(iSubj).HitRate,3);
-    FA_tmp(:,:,iSubj) = mean(GroupResults(iSubj).FARate,3);    
-end
-
-Hit_tmp_mean = nanmean(Hit_tmp,3);
-Hit_tmp_sem = nansem(Hit_tmp,3);
-
-FA_tmp_mean = nanmean(FA_tmp,3);
-FA_tmp_sem = nansem(FA_tmp,3);
-
-iSubplot = 1;
-for iRow=1:3
-    for iCol=1:4
-        
-        subplot(3,4,iSubplot)
-        hold on
-        grid on
-        axis([0 size(GroupResults,2)+.5 0 1])
-        
-        errorbar(0.35, Hit_tmp_mean(iCol,iRow), Hit_tmp_sem(iCol,iRow), 'ob', 'MarkerFaceColor', 'b', 'MarkerSize', 5)
-        errorbar(1.25, FA_tmp_mean(iCol,iRow), FA_tmp_sem(iCol,iRow), 'or', 'MarkerFaceColor', 'r', 'MarkerSize', 5)
-        
-        for iSubj=1:size(GroupResults,2)
-            plot(0.35+Scatter(iSubj),Hit_tmp(iCol,iRow,iSubj), ' o', ...
-                'Color', COLOR_Subject(iSubj,:), 'MarkerFaceColor', COLOR_Subject(iSubj,:),...
-                'MarkerSize', 4)
-            
-            plot(1.25+Scatter(iSubj),FA_tmp(iCol,iRow,iSubj), ' o', ...
-                'Color', COLOR_Subject(iSubj,:), 'MarkerFaceColor', COLOR_Subject(iSubj,:),...
-                'MarkerSize', 4)
-        end
-        axis([0.2 2 0 1])
-        set(gca, 'xtick',[0.35 1.25], 'xticklabel', {'Hits','False alarms'}, 'ytick', 0:.2:1, 'fontsize',FontSize);
-        iSubplot = iSubplot + 1;
-    end
-end
-
-subplot(3,4,1)
-t=title('Auditory stimulation');
-set(t,'fontsize',FontSize+2);
-t=ylabel('Auditory attention');
-set(t,'fontsize',FontSize+2);
-
-subplot(3,4,5)
-t=ylabel('Visual attention');
-set(t,'fontsize',FontSize+2);
-
-subplot(3,4,9)
-t=ylabel('All');
-set(t,'fontsize',FontSize+2);
-
-subplot(3,4,2)
-t=title('Visual stimulation');
-set(t,'fontsize',FontSize+2);
-
-subplot(3,4,3)
-t=title('AudioVisual stimulation');
-set(t,'fontsize',FontSize+2);
-
-subplot(3,4,4)
-t=title('All');
-set(t,'fontsize',FontSize+2);
-
-print(gcf, fullfile('/data','AV_Integration_2','Figures','Behavioral', 'HitsAndFalseAlarm.tif'), '-dtiff')
 
 clear TEMP TEMP2 TEMP3
 
@@ -1208,7 +1258,6 @@ print(gcf, fullfile('/data','AV_Integration_2','Figures','Behavioral', 'FalseAla
 clear TEMP TEMP2 TEMP3
 
 
-
 %% Accuracy
 
 close all
@@ -1289,6 +1338,7 @@ print(gcf, fullfile('/data','AV_Integration_2','Figures','Behavioral', 'Accuracy
 
 clear TEMP TEMP2 TEMP3
 
+
 %% D prime
 
 TEMP = [];
@@ -1368,7 +1418,6 @@ t=title('All');
 set(t,'fontsize',FontSize);
 
 print(gcf, fullfile('/data','AV_Integration_2','Figures','Behavioral',  'D_Prime.tif'), '-dtiff')
-
 
 
 %% Reaction time
@@ -1595,7 +1644,6 @@ set(t,'fontsize',FontSize);
 print(gcf, fullfile('/data','AV_Integration_2','Figures','Behavioral',  'CorrectRejectionRate.tif'), '-dtiff')
 
 
-
 %% CR and hit rate per session/subject
 
 close all
@@ -1686,8 +1734,6 @@ for iSubj=1:size(GroupResults,2)
     
     
 end
-
-
 
 
 %% CR and hit rate per session/subject

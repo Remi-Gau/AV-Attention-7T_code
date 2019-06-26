@@ -2,13 +2,12 @@
 
 clear; close all; clc;
 
-
-
 CodeFolder = '/home/remi/github/AV-Attention-7T_code';
 
 % inputs
 % DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
 DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
+
 Results_Folder = fullfile(DataFolder, 'DataToExport');
 
 % output folder

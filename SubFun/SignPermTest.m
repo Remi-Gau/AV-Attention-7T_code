@@ -1,4 +1,4 @@
-function P = SignPermTest(tmp)
+function [P,H] = SignPermTest(tmp)
 sets = {};
 for iSub=1:11
     sets{iSub} = [-1 1]; %#ok<*AGROW>
@@ -16,4 +16,10 @@ P = sum( ...
     abs( Perms ) > ...
     repmat( abs(mean(tmp)), size(Perms,1),1)  ) ...
     / size(Perms,1);
+
+if P<.05
+    H = 1;
+else
+    H = 0;
+end
 end
