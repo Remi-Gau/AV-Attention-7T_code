@@ -46,6 +46,9 @@ Visibility = 'on';
 %to pplot each subject's regresion coeficient, the group mean and the p value 
 plot_reg_coeff = 0;
 
+% row demeaning of rasters plots for linear shape parameters
+demean_raster = 1;
+
 
 %% Design matrix for laminar GLM
 DesMat = (1:NbLayers)-mean(1:NbLayers);
@@ -89,15 +92,15 @@ Sorting_Cdt = 2;
 mkdir(fullfile(FigureFolder,'CrossSensory'));
 Name = {'AV-A';'AV-V'};
 
-for iToPlot = 1:2
+for iToPlot = 2
     
-    for iCdt = 1:2
+    for iCdt = 1
         
-        for iROI = 1:4
+        for iROI = 1
             
             if iROI==1
-                CLIM = [-0.2 0.2]; % for main raster
-                CLIM2 = CLIM*1.5; % for sorting raster
+                CLIM = [-0.15 0.15]; % for main raster
+                CLIM2 = CLIM*1.1; % for sorting raster
             elseif iROI == 2
                 CLIM = [-0.8 0.8];
                 CLIM2 = CLIM;
@@ -146,7 +149,14 @@ for iToPlot = 1:2
             colormap(ColorMap);
             
             % plot raster (add some gaussian smoothing across vertices)
-            imagesc(mean(imgaussfilt(Profiles,[size(Profiles,1)/100 .0001]), 3), CLIM)
+            raster_to_plot = mean(imgaussfilt(Profiles,[size(Profiles,1)/100 .0001]), 3);
+            if demean_raster && strcmp(ToPlot{iToPlot}, 'Lin')
+                mnval = mean(raster_to_plot, 2);
+                for i=1:size(raster_to_plot, 1)
+                    raster_to_plot(i,:) = raster_to_plot(i,:) - mnval(i);
+                end
+            end
+            imagesc(raster_to_plot, CLIM)
             axis([0.5 NbLayers+.5 0 size(Profiles,1)])
             
             set(gca,'tickdir', 'out', 'xtick', [],'xticklabel', [], ...
@@ -164,7 +174,14 @@ for iToPlot = 1:2
             colormap(ColorMap);
             
             % plot raster (add some gaussian smoothing across vertices)
-            imagesc(mean(imgaussfilt(Sorting_Raster,[size(Sorting_Raster,1)/100 .0001]),3), CLIM2)
+            raster_to_plot = mean(imgaussfilt(Sorting_Raster,[size(Sorting_Raster,1)/100 .0001]),3);
+            if demean_raster && strcmp(ToPlot{iToPlot}, 'Lin')
+                mnval = mean(raster_to_plot, 2);
+                for i=1:size(raster_to_plot, 1)
+                    raster_to_plot(i,:) = raster_to_plot(i,:) - mnval(i);
+                end
+            end
+            imagesc(raster_to_plot, CLIM2)
             axis([0.5 NbLayers+.5 0 size(Profiles,1)])
             
             set(gca,'tickdir', 'out', 'xtick', [],'xticklabel', [], ...
