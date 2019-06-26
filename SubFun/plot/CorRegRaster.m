@@ -1,10 +1,14 @@
-function [rho,slope]=CorRegRaster(Profiles,DesMat,iToPlot,X_sort)
+function [rho,slope]=CorRegRaster(Profiles, DesMat, iToPlot, X_sort)
+% computes vertex wise correlation / regression between predictor and predicted rasters
+% plots
+
+
 for iPerc = 1:size(Profiles,1)
     Y = squeeze(Profiles(iPerc,:,:));
     
     X = [];
     for iSubj=1:size(Y,2)
-        X((1:6)+6*(iSubj-1),(1:size(DesMat,2))+size(DesMat,2)*(iSubj-1)) = DesMat; %#ok<SAGROW>
+        X((1:6)+6*(iSubj-1),(1:size(DesMat,2))+size(DesMat,2)*(iSubj-1)) = DesMat;
     end
     
     Y = Y(:);
