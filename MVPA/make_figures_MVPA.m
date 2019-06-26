@@ -185,7 +185,7 @@ for iROI = 1:NbROI
             DATA.WithSubj = PlotSubjects;
             DATA.FontSize = FontSize;
             DATA.Transparent = Transparent;
-            DATA.YLabel = 'Param. est. [a u]';
+            DATA.YLabel = 'Decoding accuracy';
             DATA.MVPA = 1;
             
             % set plotting limits if specified
@@ -222,7 +222,12 @@ for iROI = 1:NbROI
             axis('off')
             DATA.ax = ax.Position;
             DATA.ToPermute = ToPermute;
+            DATA.YLabel = 'Param. est. [a u]';
             PlotInsetFinal(DATA)
+            
+            % save figure
+            print(gcf, fullfile(FigureFolder, ...
+                [DATA.Name '.tif']), '-dtiff')
             
         end
         

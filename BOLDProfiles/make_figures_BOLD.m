@@ -23,32 +23,32 @@ PlotSubjects = 0; % can be switched off (0) to not plot subjects laminar profile
 % 4 - for cross modal effects for A1-PT
 % 5 - for cross modal effects for V1-2-3
 % 6 - for attention effects
-clim_for_condition = 5;
+clim_for_condition = 6;
 
 
 %% define conditions to plot
-% figure 2
-%A vs. Baseline
-Cdt2Choose(1).name = '[A-fix]_{Att_A, Att_V}';
-Cdt2Choose(end).cdt = [1 4]; % auditory under A and V attention
-Cdt2Choose(end).test_side = {'right' 'right' 'left' 'left'}; %side of permutation test
-%V vs. Baseline
-Cdt2Choose(2).name = '[V-fix]_{Att_A, Att_V}';
-Cdt2Choose(end).cdt = [2 5];
-Cdt2Choose(end).test_side = {'left' 'left' 'right' 'right'};
+% % figure 2
+% %A vs. Baseline
+% Cdt2Choose(1).name = '[A-fix]_{Att_A, Att_V}';
+% Cdt2Choose(end).cdt = [1 4]; % auditory under A and V attention
+% Cdt2Choose(end).test_side = {'right' 'right' 'left' 'left'}; %side of permutation test
+% %V vs. Baseline
+% Cdt2Choose(2).name = '[V-fix]_{Att_A, Att_V}';
+% Cdt2Choose(end).cdt = [2 5];
+% Cdt2Choose(end).test_side = {'left' 'left' 'right' 'right'};
 
-% figure 3
-% this will plot some extra contrast that are not in the paper (e.g AV-V
-% for A1).
-Cdt2Choose(3).name = '[AV - A]_{Att_A, Att_V}';
-Cdt2Choose(end).cdt = [1 4 3 6]; % auditory under A and V attention ; AV under A and V attention ;
-Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
+% % figure 3
+% % this will plot some extra contrast that are not in the paper (e.g AV-V
+% % for A1).
+% Cdt2Choose(3).name = '[AV - A]_{Att_A, Att_V}';
+% Cdt2Choose(end).cdt = [1 4 3 6]; % auditory under A and V attention ; AV under A and V attention ;
+% Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
+% 
+% Cdt2Choose(4).name = '[AV - V]_{Att_A, Att_V}';
+% Cdt2Choose(end).cdt = [2 5 3 6]; % visual under A and V attention ; AV under A and V attention ;
+% Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
 
-Cdt2Choose(4).name = '[AV - V]_{Att_A, Att_V}';
-Cdt2Choose(end).cdt = [2 5 3 6]; % visual under A and V attention ; AV under A and V attention ;
-Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
-
-% % figure 4
+% figure 4
 Cdt2Choose(5).name = '[Att_V - Att_A]_{A, V, AV}';
 Cdt2Choose(end).cdt = [1 2 3 4 5 6]; % auditory under A and V attention ; AV under A and V attention ;
 Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'}; 
