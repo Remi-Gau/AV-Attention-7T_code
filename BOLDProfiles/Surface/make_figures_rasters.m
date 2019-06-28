@@ -35,11 +35,6 @@ ToPlot={'Cst','Lin'};
 
 %% Figures parameters
 
-% Color map
-X = 0:0.001:1;
-ColorMap = seismic(size(X,2));
-clear X
-
 FigDim = [100, 100, 1000, 700];
 Visibility = 'on';
 
@@ -47,7 +42,7 @@ Visibility = 'on';
 plot_reg_coeff = 0;
 
 % row demeaning of rasters plots for linear shape parameters
-demean_raster = 1;
+demean_raster = 0;
 
 
 %% Design matrix for laminar GLM
@@ -79,6 +74,11 @@ clear a b c d e f g h i j k
 % add dependencies
 addpath(genpath(fullfile(CodeFolder, 'SubFun')))
 Get_dependencies('/home/remi')
+
+% Color map
+X = 0:0.001:1;
+ColorMap = seismic(size(X,2));
+clear X
 
 % load data
 load(fullfile(Results_Folder,'MinNbVert.mat'), 'MinVert')
