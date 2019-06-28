@@ -1,3 +1,6 @@
+% average results from all subjects at the whole ROI level and performs
+% lamnar GLMs
+
 clear; close all; clc;
 
 NbLayers = 6;

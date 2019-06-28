@@ -1,5 +1,6 @@
-function Beta = PlotScatterDensity2(X,Y,XRange,YRange,Bins)
-    
+function Beta = PlotScatterDensity(X,Y,XRange,YRange,Bins)
+% outputs group intercept, slope and correlation coefficient of each comparison
+
 %     sum(isnan(X))
 %     sum(isnan(Y))
 
@@ -51,8 +52,8 @@ function Beta = PlotScatterDensity2(X,Y,XRange,YRange,Bins)
         fprintf('rho=%3.3f ; rho_Z=%3.3f', Beta(4), Beta(3))
     end
     
-    t = text(10, 20, sprintf('B_1=%3.3f; B_0=%3.3f; rho=%3.3f', Beta(2), Beta(1), Beta(3)));
-    set(t,'fontsize',14)
+    t = text(200, 75, sprintf('B_1=%3.3f\nB_0=%3.3f\nrho=%3.3f', Beta(2), Beta(1), Beta(3)));
+    set(t,'fontsize', 9)
     
     set(gca,'tickdir', 'out', 'ticklength', [0.01 0.01], 'fontsize', 6, ...
         'xtick', linspace(1, Bins, 6) ,'xticklabel', linspace(XRange(1),XRange(2), 6),...

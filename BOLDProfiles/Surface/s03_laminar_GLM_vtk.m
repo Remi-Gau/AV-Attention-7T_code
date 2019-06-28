@@ -1,3 +1,6 @@
+% compute laminar GLMs on the vtk surfaces directly for each subject to
+% display
+
 %%
 clc; clear;
 

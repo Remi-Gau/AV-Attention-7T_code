@@ -1,4 +1,4 @@
-function Preprocess_02_ApplyVDM
+function ApplyVDM
 % Only applies the voxel displacement map
 
 clear; clc
@@ -87,8 +87,6 @@ for SubjInd = 2:size(SubjectList,1)
     matlabbatch = {};
     
     for RunInd=1:NbRuns
-        
-        RunInd
 
         cd(fullfile(NiftiSourceFolder, sprintf('%2.2d', FoldersNames{SubjInd}(RunInd))))
         TEMP = dir('S1*iPAT4_6_8_48sli_TE25_0p75_Te25.nii');

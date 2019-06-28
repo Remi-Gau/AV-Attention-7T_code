@@ -1,3 +1,5 @@
+% scrit to transfer mapping from a vtk surface to its inflated counterpart
+
 clc
 clear
 close all

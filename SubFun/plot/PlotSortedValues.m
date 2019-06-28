@@ -1,15 +1,7 @@
-function PlotSortedValues(ax, X_sort, NbBin, Profiles, YLabel, PlotScale, Sorting_Raster, CLIM, plot_sub_zero)
+function PlotSortedValues(ax, X_sort, NbBin, Profiles, YLabel, PlotScale, plot_sub_zero)
+
 
 if nargin<7
-    Sorting_Raster = [];
-end
-
-if nargin<8
-    warning('No scaling for the sorting raster provided')
-    CLIM = [-5 5];
-end
-
-if nargin<9
     plot_sub_zero=1;
 end
 
@@ -18,16 +10,6 @@ MAX = ceil(max(abs(mean(X_sort,1))));
 axPos = ax.Position;
 axPos(1) = axPos(1)-.06;
 axPos(3) = .05;
-
-% plot the sorting raster
-if ~isempty(Sorting_Raster)
-    axes('Position',axPos);
-    hold on
-    %     imagesc(mean(imgaussfilt(Sorting_Raster,[20 .001]),3), CLIM)
-    imagesc(mean(imgaussfilt(Sorting_Raster,[size(Profiles,1)/200 .001]),3), CLIM)
-    axis([0.5 6.5 1 size(Profiles,1)])
-    axis off
-end
 
 % plot the sorting variable with horizontal error bars
 axes('Position',axPos);

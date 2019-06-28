@@ -1,4 +1,4 @@
-function PlotRectangle(NbLayers,Fontsize,Switch,LabelDepth)
+function PlotRectangle(NbLayers, Fontsize, Switch, LabelDepth)
 
 if nargin<4 || isempty(LabelDepth)
     LabelDepth=1;
@@ -57,17 +57,17 @@ for i=1:size(COLOR_Layer,1)
     rectangle('Position', [RecPos(i) 0 diff(RecPos(1:2)) 1], 'facecolor', COLOR_Layer(i,:), 'edgecolor', 'w');
     if LabelDepth
         t = text(RecPos(i)+diff(RecPos(1:2))/2-.023,0.5,num2str(TEXT(i)));
-        set(t,'fontsize',Fontsize-4);
+        set(t,'fontsize', Fontsize-3);
     end
 end
 axis([0 0.9 0 1])
 
 set(gca,'color', 'none', 'tickdir', 'out', 'xtick', [0 0.45 .9],'xticklabel',  {'WM      ' 'GM' '      CSF'}, ...
     'ytick', [],'yticklabel', [], ...
-    'ticklength', [0.00001 0], 'fontsize', 7)
+    'ticklength', [0.00001 0], 'fontsize', Fontsize-2)
 
 t=xlabel('% Cortical depth');
-set(t,'fontsize', 10);
+set(t,'fontsize', Fontsize-2);
 
 end
 

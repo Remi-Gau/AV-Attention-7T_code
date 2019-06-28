@@ -2,62 +2,77 @@
 
 clear; close all; clc;
 
+CodeFolder = '/home/remi/github/AV-Attention-7T_code';
+
+% inputs (where the OSF data have been downloaded: https://osf.io/63dba/)
+% DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
+DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
+Results_Folder = fullfile(DataFolder, 'DataToExport');
+
+% output folder
+FigureFolder = fullfile(CodeFolder, 'Figures');
+mkdir(FigureFolder)
+
+
+PlotSubjects = 0; % can be switched off (0) to not plot subjects laminar profiles
+
+% this can be used to specify which axis limit to use
+% 0 - (default) no pre-specified limit: use the data from the graph to specify limits
+% 1 - for activations
+% 2 - for deactivations in A1 and PT
+% 3 - for deactivations in V1-2-3
+% 4 - for cross modal effects for A1-PT
+% 5 - for cross modal effects for V1-2-3
+% 6 - for attention effects
+clim_for_condition = 6;
+
+
+%% define conditions to plot
+% % figure 2
+% %A vs. Baseline
+% Cdt2Choose(1).name = '[A-fix]_{Att_A, Att_V}';
+% Cdt2Choose(end).cdt = [1 4]; % auditory under A and V attention
+% Cdt2Choose(end).test_side = {'right' 'right' 'left' 'left'}; %side of permutation test
+% %V vs. Baseline
+% Cdt2Choose(2).name = '[V-fix]_{Att_A, Att_V}';
+% Cdt2Choose(end).cdt = [2 5];
+% Cdt2Choose(end).test_side = {'left' 'left' 'right' 'right'};
+
+% % figure 3
+% % this will plot some extra contrast that are not in the paper (e.g AV-V
+% % for A1).
+% Cdt2Choose(3).name = '[AV - A]_{Att_A, Att_V}';
+% Cdt2Choose(end).cdt = [1 4 3 6]; % auditory under A and V attention ; AV under A and V attention ;
+% Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
+% 
+% Cdt2Choose(4).name = '[AV - V]_{Att_A, Att_V}';
+% Cdt2Choose(end).cdt = [2 5 3 6]; % visual under A and V attention ; AV under A and V attention ;
+% Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
+
+% figure 4
+Cdt2Choose(5).name = '[Att_V - Att_A]_{A, V, AV}';
+Cdt2Choose(end).cdt = [1 2 3 4 5 6]; % auditory under A and V attention ; AV under A and V attention ;
+Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'}; 
+
+
+%% Figures parameters
+Transparent = 1;
+Switch = 1;
+FontSize = 12;
+FigDim = [100 100 500 500];
+
+
+%% data files parameters
 NbLayers = 6;
 NbRuns = 4;
 NbCdt = 6;
 NbBlocks = 3;
-
-CodeFolder = '/home/remi/github/AV-Attention-7T_code';
-addpath(genpath(fullfile(CodeFolder, 'SubFun')))
-
-FigureFolder = fullfile(CodeFolder, 'Figures', strcat(num2str(NbLayers+2), '_layers'));
-
-Get_dependencies('/home/remi')
-
-% DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
-DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
-
-Results_Folder = fullfile(DataFolder, 'DataToExport');
-
-PlotSubjects = 1; % can be switched off (0) to no plot subject
-
-% figure 2
-Cdt2Choose(1).name = 'A vs. Baseline';
-Cdt2Choose(end).cdt = [1 4]; % auditory under A and V attention
-Cdt2Choose(end).test_side = {'right' 'right' 'left' 'left'}; %side of permutation test
-Cdt2Choose(2).name = 'V vs. Baseline';
-Cdt2Choose(end).cdt = [2 5];
-Cdt2Choose(end).test_side = {'left' 'left' 'right' 'right'};
-
-% figure 3
-% this will plot some extra contrast that are not in the paper (e.g AV-V
-% for A1).
-Cdt2Choose(3).name = '[AV - A]_{att A, att V}';
-Cdt2Choose(end).cdt = [1 4 3 6]; % auditory under A and V attention ; AV under A and V attention ;
-Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'}; %side of permutation test
-Cdt2Choose(4).name = '[AV - V]_{att A, att V}';
-Cdt2Choose(end).cdt = [2 5 3 6]; % visual under A and V attention ; AV under A and V attention ;
-Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
-
-% figure 4
-% this will plot the results of A1 and PT upside down ([Att_V-Att_A] instead of ...
-% [Att_A-Att_V]) compare to the figures in the paper
-Cdt2Choose(5).name = '[Att_V - Att_A]_{A, V, AV}';
-Cdt2Choose(end).cdt = [1 2 3 4 5 6]; % auditory under A and V attention ; AV under A and V attention ;
-Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'}; %side of permutation test
-
-
-Transparent = 1;
-Switch = 1;
-FontSize = 12;
-FigDim = [100 100 700 700];
 
 ROIs = {...
     'A1';...
     'PT';...
     'V1';...
     'V2-3'};
-
 
 SubjectList = [...
     '02';...
@@ -98,7 +113,7 @@ endRow = 800;
 formatSpec = '%s%f%f%f%f%f%f%[^\n\r]';
 
 
-% Design matrix for laminar GLM
+%% Design matrix for laminar GLM
 DesMat = (1:NbLayers)-mean(1:NbLayers);
 % DesMat = [ones(NbLayers,1) DesMat' (DesMat.^2)']; % in case we want a
 % quadratic component
@@ -106,6 +121,7 @@ DesMat = [ones(NbLayers,1) DesMat'];
 DesMat = spm_orth(DesMat);
 
 
+%% get things ready
 NbSubj = size(SubjectList,1);
 
 % create permutations for exact sign permutation test
@@ -118,6 +134,13 @@ clear a b c d e f g h i j k
 
 NbROI = size(ROIs,1);
 
+% add dependencies
+addpath(genpath(fullfile(CodeFolder, 'SubFun')))
+Get_dependencies('/home/remi')
+
+% get the axis limits to use
+clim = set_clim(clim_for_condition);
+
 
 for iROI = 1:NbROI
     
@@ -128,7 +151,7 @@ for iROI = 1:NbROI
     filename = fullfile(Results_Folder, ...
         ['group_data-surf_ROI-' ...
         ROI_name '_hs-both.csv']);
-
+    
     % Open the text file.
     fileID = fopen(filename,'r');
     
@@ -169,81 +192,103 @@ for iROI = 1:NbROI
     %% does the math for each contrast
     for iCdt_2_plot = 1:numel(Cdt2Choose)
         
-        stim = Cdt2Choose(iCdt_2_plot).cdt;
-        
-        for iSubj = 1:NbSubj
+        if ~isempty(Cdt2Choose(iCdt_2_plot).name)
             
-            Subj_Data = nan(NbRuns*NbBlocks, NbLayers, numel(stim));
+            stim = Cdt2Choose(iCdt_2_plot).cdt;
             
-            % get data for that subject
-            for iCdt = 1:numel(stim)
-                Rows2Choose = [SubjVec(:, iSubj), CdtVec(:, stim(iCdt))];
-                Rows2Choose = all(Rows2Choose, 2);
-                Subj_Data(:, :, iCdt) = Data(Rows2Choose, :);
+            for iSubj = 1:NbSubj
+                
+                Subj_Data = nan(NbRuns*NbBlocks, NbLayers, numel(stim));
+                
+                % get data for that subject
+                for iCdt = 1:numel(stim)
+                    Rows2Choose = [SubjVec(:, iSubj), CdtVec(:, stim(iCdt))];
+                    Rows2Choose = all(Rows2Choose, 2);
+                    Subj_Data(:, :, iCdt) = Data(Rows2Choose, :);
+                end
+                
+                % in case we have to contrast between conditions
+                switch numel(stim)
+                    case 2
+                    case 4
+                        Subj_Data = Subj_Data(:, :, 3:4) - Subj_Data(:, :, 1:2);
+                    case 6
+                        Subj_Data = Subj_Data(:, :, 4:6) - Subj_Data(:, :, 1:3);
+                end
+                
+                % mean across condition
+                Subj_Data = mean(Subj_Data,3);
+                
+                % a reallyd dirty hack to plot the results of A1 and PT as [Att_A-Att_V] 
+                % and not as [Att_V-Att_A]
+                if iROI<3 && iCdt_2_plot==5
+                    Subj_Data = Subj_Data * -1;
+                end
+                
+                % mean profile for that subject
+                All_Subjs_Profile(iSubj, :) = mean(Subj_Data, 1); %#ok<SAGROW>
+                
+                % do laminar GLM
+                X = repmat(DesMat, [size(Subj_Data, 1), 1] ); % design matrix
+                
+                % regorganize data
+                Subj_Data=Subj_Data';
+                Subj_Data = Subj_Data(:);
+                
+                [B,~,~] = glmfit(X, Subj_Data, 'normal', 'constant', 'off');
+                
+                SubjectsBetas(iSubj, 1:size(X, 2)) = B; %#ok<SAGROW>
             end
             
-            % in case we have to contrast between conditions 
-            switch numel(stim)
-                case 2
-                case 4
-                Subj_Data = Subj_Data(:, :, 3:4) - Subj_Data(:, :, 1:2);
-                case 6
-                Subj_Data = Subj_Data(:, :, 4:6) - Subj_Data(:, :, 1:3);
+            
+            % prepare for plotting
+            DATA.WithSubj = PlotSubjects;
+            DATA.FontSize = FontSize;
+            DATA.Transparent = Transparent;
+            DATA.YLabel = 'Param. est. [a u]';
+            DATA.MVPA = 0;
+            
+            % set plotting limits if specified
+            if ~isempty(clim)
+                DATA.InsetLim(1,:) = clim.max.inset;
+                DATA.InsetLim(2,:) = clim.min.inset;
+                DATA.MAX = clim.max.profile;
+                DATA.MIN = clim.min.profile;
             end
             
-            % mean across condition
-            Subj_Data = mean(Subj_Data,3);
             
-            % mean profile for that subject
-            All_Subjs_Profile(iSubj, :) = mean(Subj_Data, 1); %#ok<SAGROW>
+            %% do actual plotting
             
-            % do laminar GLM
-            X = repmat(DesMat, [size(Subj_Data, 1), 1] ); % design matrix
+            figure('position', FigDim, 'name', ' ', 'Color', [1 1 1], ...
+                'visible', 'on')
             
-            % regorganize data
-            Subj_Data=Subj_Data';
-            Subj_Data = Subj_Data(:);
+            DATA.OneSideTTest = {Cdt2Choose(iCdt_2_plot).test_side{iROI} ...
+                'both' 'both'};
             
-            [B,~,~] = glmfit(X, Subj_Data, 'normal', 'constant', 'off');
+            subplot(2, 1, 1)
+            PlotRectangle(NbLayers, FontSize, Switch)
+            subplot(2, 1, 1)
             
-            SubjectsBetas(iSubj, 1:size(X, 2)) = B; %#ok<SAGROW>
+            
+            DATA.Name = [ROI_name ' - ' Cdt2Choose(iCdt_2_plot).name];
+            DATA.Data = All_Subjs_Profile;
+            DATA.Betas = SubjectsBetas;
+            DATA.Color =  [0 0 0];
+            DATA.Thresholds = 0.05*ones(1,size(DATA.Betas,2));
+            
+            PlotProfileAndBetas(DATA)
+            
+            ax = subplot(2, 1, 2);
+            axis('off')
+            DATA.ax = ax.Position;
+            DATA.ToPermute = ToPermute;
+            PlotInsetFinal(DATA)
+            
+            % save figure
+            print(gcf, fullfile(FigureFolder, ...
+                [DATA.Name '.tif']), '-dtiff')
+            
         end
-        
-        
-        % prepare for plotting
-        DATA.WithSubj = PlotSubjects;
-        DATA.FontSize = FontSize;
-        DATA.Transparent = Transparent;
-        DATA.YLabel = 'Param. est. [a u]';
-        DATA.MVPA = 0;
-        
-        
-        %% do actual plotting
-        
-        figure('position', FigDim, 'name', ' ', 'Color', [1 1 1], ...
-            'visible', 'on')
-        
-        DATA.OneSideTTest = {Cdt2Choose(iCdt_2_plot).test_side{iROI} ...
-            'both' 'both'};
-        
-        subplot(2, 1, 1)
-        PlotRectangle(NbLayers, FontSize, Switch)
-        subplot(2, 1, 1)
-        
-        
-        DATA.Name = char({Cdt2Choose(iCdt_2_plot).name ; '' ; ROI_name});
-        DATA.Data = All_Subjs_Profile;
-        DATA.Betas = SubjectsBetas;
-        DATA.Color =  [0 0 0];
-        DATA.Thresholds = 0.05*ones(1,size(DATA.Betas,2));
-        
-        PlotProfileAndBetas(DATA)
-        
-        ax = subplot(2, 1, 2);
-        axis('off')
-        DATA.ax = ax.Position;
-        DATA.ToPermute = ToPermute;
-        PlotInsetFinal(DATA)
         
     end
     

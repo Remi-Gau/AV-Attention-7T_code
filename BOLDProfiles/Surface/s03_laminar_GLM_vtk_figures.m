@@ -1,4 +1,5 @@
-%%
+% plots the results of the laminar GLMs on the vtk surfaces directly for each subject 
+
 clc; clear;
 
 StartFolder=fullfile(pwd,'..','..','..');

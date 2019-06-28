@@ -52,8 +52,8 @@ for i=1:size(Betas,2)
         'distributionMarkers',{'o'},'distributionColors',{'w'}, ...
         'xValues', 1.3, 'binWidth', .6, 'spreadWidth', 0.6);
     if ~isnan(h{1})
-        set(h{1}, 'MarkerSize', 5, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', ...
-            'w', 'LineWidth', 1.5)
+        set(h{1}, 'MarkerSize', 7, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', ...
+            'w', 'LineWidth', 2)
     end
     
     
@@ -61,7 +61,7 @@ for i=1:size(Betas,2)
 
     % plot group average
     errorbar(1,nanmean(Betas(:,i),1),nansem(Betas(:,i),1), 'ok','LineWidth', ...
-        1, 'MarkerSize', 1.5);
+        1.75, 'MarkerSize', 3.5);
 
     
     if isfield(DATA, 'OneSideTTest')

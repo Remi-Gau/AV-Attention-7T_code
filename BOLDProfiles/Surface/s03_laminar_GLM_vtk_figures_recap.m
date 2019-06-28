@@ -1,4 +1,5 @@
-%%
+% creates composite figures of the results of the laminar GLMs on the vtk surfaces directly for each subject 
+
 close all
 clc; clear;
 
