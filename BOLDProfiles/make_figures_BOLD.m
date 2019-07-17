@@ -269,7 +269,7 @@ for iROI = 1:NbROI
             %% do actual plotting
             if PlotDo
                 figure('position', FigDim, 'name', ' ', 'Color', [1 1 1], ...
-                    'visible', 'on')
+                    'visible', 'on') %#ok<UNRCH>
                 
                 subplot(2, 1, 1)
                 PlotRectangle(NbLayers, FontSize, Switch)
@@ -297,11 +297,11 @@ for iROI = 1:NbROI
 end
 
 
-%% run F-test
+%% run F-test and LMM
 clc
 
+% results file for F test
 SavedTxt = fullfile(FigureFolder, 'F_test_results.tsv');
-
 pattern = '%s\t F(%f,%f)= %f\t p = %f\n';
 
 fid = fopen (SavedTxt, 'w');
@@ -310,41 +310,68 @@ for iCdt_2_plot = 1:numel(Cdt2Choose)
     
     fprintf (fid, '%s\n', Cdt2Choose(iCdt_2_plot).name);
     
+    % Runs F test across cst and lin shape parameters on each ROI
     for iROI = 1:NbROI
         clear DATA
         DATA{1} = data_rois{iROI, iCdt_2_plot};
         
         [F, p, df, dferror] = F_test(DATA);
         
+        % outputs results to a tsv file
         fprintf(fid, pattern, ...
             ROIs{iROI}, ...
             df, dferror, ...
             F, p);
     end
     
+    % Runs F test across cst and lin shape parameters pooled over A1 and PT
     DATA{1} = data_rois{1, iCdt_2_plot};
     DATA{2} = data_rois{2, iCdt_2_plot};
     
     [F, p, df, dferror] = F_test(DATA);
     
+    % outputs results to a tsv file
     fprintf(fid, pattern, ...
         [ROIs{1} ' - ' ROIs{2}], ...
         df, dferror, ...
         F, p);
     
+    % Runs Linear mixed models across cst and lin shape parameters pooled over A1 and PT
+    [model, Y_legend] = linear_mixed_model(DATA);
+    model.name = Cdt2Choose(iCdt_2_plot).name;
+    model.Y_legend = Y_legend;
+    model.ROIs = [ROIs{1} ' - ' ROIs{2}];
+    if ~exist('models', 'var')
+        models(1) = model;
+    else
+        models(end+1) = model;
+    end
     
+    
+    % Runs F test across cst and lin shape parameters pooled over V123
     DATA{1} = data_rois{3, iCdt_2_plot};
     DATA{2} = data_rois{4, iCdt_2_plot};
     
     [F, p, df, dferror] = F_test(DATA);
     
+    % outputs results to a tsv file
     fprintf(fid, pattern, ...
         [ROIs{3} ' - ' ROIs{4}], ...
         df, dferror, ...
         F, p);
+    
+    % Runs Linear mixed models across cst and lin shape parameters pooled
+    % over V123
+    [model, Y_legend] = linear_mixed_model(DATA);
+    model.name = Cdt2Choose(iCdt_2_plot).name;
+    model.Y_legend = Y_legend;
+    model.ROIs = [ROIs{3} ' - ' ROIs{4}];
+    models(end+1) = model;
+    
     
     fprintf(fid, '\n');
 end
 
 fclose (fid);
 
+save(fullfile(FigureFolder, 'LMM_results.mat'), 'models');
