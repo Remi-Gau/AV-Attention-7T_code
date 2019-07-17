@@ -26,44 +26,62 @@ for iROI = 1:nb_rois
     % reg 1 : cst / lin
     % reg 2 : ROI
     % reg 3 : subject
-    X = [ X; ...
-        ones(nb_subjects,1) ones(nb_subjects,1)*iROI [1:nb_subjects]' ; ...
-        ones(nb_subjects,1)*2 ones(nb_subjects,1)*iROI [1:nb_subjects]' ];
+    %     X = [ X; ...
+    %         ones(nb_subjects,1) ones(nb_subjects,1)*iROI [1:nb_subjects]' ; ...
+    %         ones(nb_subjects,1)*2 ones(nb_subjects,1)*iROI [1:nb_subjects]' ];
     
+    if iROI ==1
+        X = [ X; ...
+            [ones(nb_subjects,1) ; zeros(nb_subjects,1)], ...
+            [zeros(nb_subjects,1) ; ones(nb_subjects,1)], ...
+            zeros(nb_subjects*2, 2), ...
+            repmat([1:nb_subjects]', 2, 1) ]; %#ok<*NBRAK>
+    else
+        X = [ X; ...
+            zeros(nb_subjects*2, 2), ...
+            [ones(nb_subjects,1) ; zeros(nb_subjects,1)], ...
+            [zeros(nb_subjects,1) ; ones(nb_subjects,1)], ...
+            repmat([1:nb_subjects]', 2, 1) ];
+    end
 end
 
 %% plot
-% figure(1)
-% colormap gray
-%
-% subplot(1,2,1)
-% imagesc(Y)
-% set(gca, 'ytick', 1:numel(Y), 'yticklabel', Y_legend)
-% title('data')
-%
-% subplot(1,2,2)
-% imagesc(X)
-% set(gca, 'xtick', 1:4, 'xticklabel', {'cst/lin'; 'ROI'; 'subject'})
-% title('design matrix')
+figure(1)
+colormap gray
+
+subplot(1,2,1)
+imagesc(Y)
+set(gca, 'ytick', 1:numel(Y), 'yticklabel', Y_legend)
+title('data')
+
+subplot(1,2,2)
+imagesc(X)
+set(gca, 'xtick', 1:5, 'xticklabel', ...
+    {'ROI 1 - cst'; 'ROI 1 - lin'; 'ROI 2 - cst'; 'ROI 2 - lin'; 'Subjects'})
+title('design matrix')
 
 
 %% LMM
 % subject is random
 % lin/const and ROI are fixed
 
-Subject = X(:,3); % Fixed effect predictor: 'ShapeParameter','ROI','Intercept'
+% to make stats on final params we need to estimate with REML
+
+Subject = X(:,5); 
 G = Subject; % RandomEffect Group
 Z = ones(size(X,1),1); % random effect predictor
 
-x = [X(:,1:2) ones(size(X,1),1)];
+% Fixed effect predictor: ...
+% 'ROI 1 - cst'; 'ROI 1 - lin'; 'ROI 2 - cst'; 'ROI 2 - lin'
+x = X(:,1:4);
 
-lme = fitlmematrix(x, Y, Z, G,...
+lme = fitlmematrix(x, Y, Z, G, 'FitMethod', 'REML',...
     'FixedEffectPredictors',...
-        {'ShapeParameter','ROI','Intercept'},...
+    {'ROI1_cst', 'ROI1_lin', 'ROI2_cst', 'ROI2_lin'},...
     'RandomEffectPredictors',...
-        {{'Intercept'}},...
+    {{'Intercept'}},...
     'RandomEffectGroups',...
-        {'Subject'});
+    {'Subject'});
 
 model.X = x;
 model.G = G;
