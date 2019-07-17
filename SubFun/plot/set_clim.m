@@ -58,8 +58,8 @@ switch condition
         % for attention effects
         clim.min.profile = -.2;
         clim.max.profile = .5;
-        clim.min.inset = [-2 -.5];
-        clim.max.inset = [.5 .1];
+        clim.min.inset = [-.7 -.17];
+        clim.max.inset = [.7 .17];
         
     case 11
         % for MVPA

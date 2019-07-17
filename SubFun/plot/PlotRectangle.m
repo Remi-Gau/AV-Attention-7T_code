@@ -1,4 +1,4 @@
-function PlotRectangle(NbLayers,Fontsize,Switch,LabelDepth)
+function PlotRectangle(NbLayers, Fontsize, Switch, LabelDepth)
 
 if nargin<4 || isempty(LabelDepth)
     LabelDepth=1;

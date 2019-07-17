@@ -1,17 +1,20 @@
 %% uses CSV files of saved data to plot the data for the article
+
 clear; close all; clc;
 
-CodeFolder = '/home/remi/github/AV-Attention-7T_code';
+% CodeFolder = '/home/remi/github/AV-Attention-7T_code';
+CodeFolder = 'D:\github\AV-Attention-7T_code';
 
-% inputs (where the OSF data have been downloaded)
-% DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
-DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
+% inputs (where the OSF data have been downloaded: https://osf.io/63dba/)
+DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
+% DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
 Results_Folder = fullfile(DataFolder, 'DataToExport');
 
 % output folder
 FigureFolder = fullfile(CodeFolder, 'Figures');
 mkdir(FigureFolder)
 
+PlotDo = 0;
 
 PlotSubjects = 0; % can be switched off (0) to not plot subjects laminar profiles
 
@@ -23,7 +26,7 @@ PlotSubjects = 0; % can be switched off (0) to not plot subjects laminar profile
 % 4 - for cross modal effects for A1-PT
 % 5 - for cross modal effects for V1-2-3
 % 6 - for attention effects
-clim_for_condition = 5;
+clim_for_condition = 6;
 
 
 %% define conditions to plot
@@ -48,10 +51,10 @@ Cdt2Choose(4).name = '[AV - V]_{Att_A, Att_V}';
 Cdt2Choose(end).cdt = [2 5 3 6]; % visual under A and V attention ; AV under A and V attention ;
 Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
 
-% % figure 4
+% figure 4
 Cdt2Choose(5).name = '[Att_V - Att_A]_{A, V, AV}';
 Cdt2Choose(end).cdt = [1 2 3 4 5 6]; % auditory under A and V attention ; AV under A and V attention ;
-Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'}; 
+Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
 
 
 %% Figures parameters
@@ -218,7 +221,7 @@ for iROI = 1:NbROI
                 % mean across condition
                 Subj_Data = mean(Subj_Data,3);
                 
-                % a reallyd dirty hack to plot the results of A1 and PT as [Att_A-Att_V] 
+                % a reallyd dirty hack to plot the results of A1 and PT as [Att_A-Att_V]
                 % and not as [Att_V-Att_A]
                 if iROI<3 && iCdt_2_plot==5
                     Subj_Data = Subj_Data * -1;
@@ -255,40 +258,93 @@ for iROI = 1:NbROI
                 DATA.MIN = clim.min.profile;
             end
             
-            
-            %% do actual plotting
-            
-            figure('position', FigDim, 'name', ' ', 'Color', [1 1 1], ...
-                'visible', 'on')
-            
             DATA.OneSideTTest = {Cdt2Choose(iCdt_2_plot).test_side{iROI} ...
                 'both' 'both'};
-            
-            subplot(2, 1, 1)
-            PlotRectangle(NbLayers, FontSize, Switch)
-            subplot(2, 1, 1)
-            
-            
             DATA.Name = [ROI_name ' - ' Cdt2Choose(iCdt_2_plot).name];
             DATA.Data = All_Subjs_Profile;
             DATA.Betas = SubjectsBetas;
             DATA.Color =  [0 0 0];
             DATA.Thresholds = 0.05*ones(1,size(DATA.Betas,2));
             
-            PlotProfileAndBetas(DATA)
+            %% do actual plotting
+            if PlotDo
+                figure('position', FigDim, 'name', ' ', 'Color', [1 1 1], ...
+                    'visible', 'on')
+                
+                subplot(2, 1, 1)
+                PlotRectangle(NbLayers, FontSize, Switch)
+                subplot(2, 1, 1)
+                
+                PlotProfileAndBetas(DATA)
+                
+                ax = subplot(2, 1, 2);
+                axis('off')
+                DATA.ax = ax.Position;
+                DATA.ToPermute = ToPermute;
+                PlotInsetFinal(DATA)
+                
+                % save figure
+                print(gcf, fullfile(FigureFolder, ...
+                    [DATA.Name '.tif']), '-dtiff')
+            end
             
-            ax = subplot(2, 1, 2);
-            axis('off')
-            DATA.ax = ax.Position;
-            DATA.ToPermute = ToPermute;
-            PlotInsetFinal(DATA)
-            
-            % save figure
-            print(gcf, fullfile(FigureFolder, ...
-                [DATA.Name '.tif']), '-dtiff')
+            data_rois{iROI, iCdt_2_plot} = DATA;
             
         end
         
     end
     
 end
+
+
+%% run F-test
+clc
+
+SavedTxt = fullfile(FigureFolder, 'F_test_results.tsv');
+
+pattern = '%s\t F(%f,%f)= %f\t p = %f\n';
+
+fid = fopen (SavedTxt, 'w');
+
+for iCdt_2_plot = 1:numel(Cdt2Choose)
+    
+    fprintf (fid, '%s\n', Cdt2Choose(iCdt_2_plot).name);
+    
+    for iROI = 1:NbROI
+        clear DATA
+        DATA{1} = data_rois{iROI, iCdt_2_plot};
+        
+        [F, p, df, dferror] = F_test(DATA);
+        
+        fprintf(fid, pattern, ...
+            ROIs{iROI}, ...
+            df, dferror, ...
+            F, p);
+    end
+    
+    DATA{1} = data_rois{1, iCdt_2_plot};
+    DATA{2} = data_rois{2, iCdt_2_plot};
+    
+    [F, p, df, dferror] = F_test(DATA);
+    
+    fprintf(fid, pattern, ...
+        [ROIs{1} ' - ' ROIs{2}], ...
+        df, dferror, ...
+        F, p);
+    
+    
+    DATA{1} = data_rois{3, iCdt_2_plot};
+    DATA{2} = data_rois{4, iCdt_2_plot};
+    
+    [F, p, df, dferror] = F_test(DATA);
+    
+    fprintf(fid, pattern, ...
+        [ROIs{3} ' - ' ROIs{4}], ...
+        df, dferror, ...
+        F, p);
+    
+    fprintf(fid, '\n');
+end
+
+fclose (fid);
+

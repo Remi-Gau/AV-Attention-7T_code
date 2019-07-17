@@ -1,10 +1,9 @@
 %% uses CSV files of saved data to plot the data for the article
-
 clear; close all; clc;
 
 CodeFolder = '/home/remi/github/AV-Attention-7T_code';
 
-% inputs
+% inputs (where the OSF data have been downloaded: https://osf.io/63dba/)
 % DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
 DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
 
@@ -114,11 +113,11 @@ Get_dependencies('/home/remi')
 clim = set_clim(clim_for_condition);
 
 for iROI = 1:NbROI
-    
+
     ROI_name = ROIs{iROI};
     
     for iCdt_2_plot = 1:numel(Cdt2Choose)
-        
+
         if ~isempty(Cdt2Choose(iCdt_2_plot).name)
             
             %% get data
@@ -185,7 +184,7 @@ for iROI = 1:NbROI
             DATA.WithSubj = PlotSubjects;
             DATA.FontSize = FontSize;
             DATA.Transparent = Transparent;
-            DATA.YLabel = 'Param. est. [a u]';
+            DATA.YLabel = 'Decoding accuracy';
             DATA.MVPA = 1;
             
             % set plotting limits if specified
@@ -222,10 +221,15 @@ for iROI = 1:NbROI
             axis('off')
             DATA.ax = ax.Position;
             DATA.ToPermute = ToPermute;
+            DATA.YLabel = 'Param. est. [a u]';
             PlotInsetFinal(DATA)
+            
+            % save figure
+            print(gcf, fullfile(FigureFolder, ...
+                [DATA.Name '.tif']), '-dtiff')
             
         end
         
     end
-    
+
 end
