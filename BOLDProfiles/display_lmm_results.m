@@ -104,20 +104,9 @@ for i_model = model_of_interest %1:numel(models)
     % results from some specific contrasts
     fprintf('%s %i - %s - %s\n', '%', i_model, model.name, model.ROIs)
     
-    % get perm test for each s parameter
-    Betas = reshape(model.Y, [11 4]);
-    ROI_nb = [1 1 2 2];
-    side_idx = [1 2 1 2];
-    s_param = {'Cst', 'Lin', 'Cst', 'Lin'};
+    % display reults perm test and t-test for each s parameter for each ROI
     for i = 1:4
-        betas = Betas(:,i);
-        side = model.test_side{side_idx(i)};
-        perms = create_null_distribution(ToPermute, betas);
-        p_perm = perm_test(betas, side, perms);
-        [~, p_ttest] = ttest(betas, 0, 'tail', side);
-        fprintf('ROI %i - %s - p(perm) = %f - p(ttest) = %f\n', ...
-            ROI_nb(i), s_param{i}, ...
-            p_perm, p_ttest);
+        compare_results(i, model, ToPermute);
     end
     fprintf('\n')
     
@@ -222,4 +211,35 @@ elseif strcmp(side,'right')
 elseif strcmp(side,'both')
     P = sum(abs(perms)>abs(mean(betas))) / numel(perms) ;
 end
+end
+
+function compare_results(i, model, ToPermute)
+
+ROI_nb = [1 1 2 2];
+side_idx = [1 2 1 2];
+s_param = {'Cst', 'Lin', 'Cst', 'Lin'};
+
+betas = model.Y(logical(model.X(:,i))); % get betas
+side = model.test_side{side_idx(i)}; % get side for the test
+perms = create_null_distribution(ToPermute, betas);
+
+p_perm = perm_test(betas, side, perms);
+[~, p_ttest] = ttest(betas, 0, 'tail', side);
+
+% display the results of perm and t-test
+fprintf('ROI %i - %s - p(perm) = %f - p(ttest) = %f\n', ...
+    ROI_nb(i), s_param{i}, ...
+    p_perm, p_ttest);
+
+% OVERKILL: use LMM to do a t-test to make sure we get the same
+% thing
+lme = fitlmematrix(ones(11,1), betas, ones(11,1), [1:11]', 'FitMethod', 'REML',...
+    'FixedEffectPredictors',...
+    {'s_param'},...
+    'RandomEffectPredictors',...
+    {{'Intercept'}},...
+    'RandomEffectGroups',...
+    {'Subject'});
+disp(lme.Coefficients)
+
 end
