@@ -22,26 +22,19 @@ for iROI = 1:nb_rois
     y = y(:);
     Y = [Y ; y]; %#ok<*AGROW>
     
-    % design matrix:
-    % reg 1 : cst / lin
-    % reg 2 : ROI
-    % reg 3 : subject
-    %     X = [ X; ...
-    %         ones(nb_subjects,1) ones(nb_subjects,1)*iROI [1:nb_subjects]' ; ...
-    %         ones(nb_subjects,1)*2 ones(nb_subjects,1)*iROI [1:nb_subjects]' ];
-    
+    % design matrix:   
     if iROI ==1
         X = [ X; ...
-            [ones(nb_subjects,1) ; zeros(nb_subjects,1)], ...
-            [zeros(nb_subjects,1) ; ones(nb_subjects,1)], ...
+            [ones(nb_subjects,1) ; zeros(nb_subjects,1)], ... % reg 1 : ROI1 cst
+            [zeros(nb_subjects,1) ; ones(nb_subjects,1)], ... % reg 1 : ROI1 lin
             zeros(nb_subjects*2, 2), ...
-            repmat([1:nb_subjects]', 2, 1) ]; %#ok<*NBRAK>
+            repmat([1:nb_subjects]', 2, 1) ]; %reg 5: subjects %#ok<*NBRAK>
     else
         X = [ X; ...
             zeros(nb_subjects*2, 2), ...
-            [ones(nb_subjects,1) ; zeros(nb_subjects,1)], ...
-            [zeros(nb_subjects,1) ; ones(nb_subjects,1)], ...
-            repmat([1:nb_subjects]', 2, 1) ];
+            [ones(nb_subjects,1) ; zeros(nb_subjects,1)], ... % reg 3 : ROI1 cst
+            [zeros(nb_subjects,1) ; ones(nb_subjects,1)], ... % reg 4 : ROI1 lin
+            repmat([1:nb_subjects]', 2, 1) ]; %reg 5: subjects
     end
 end
 
