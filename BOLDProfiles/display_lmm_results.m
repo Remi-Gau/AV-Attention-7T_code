@@ -4,7 +4,9 @@ clear
 close all
 clc
 
-DO = 2; % 1 BOLD ; 2 MVPA
+DO = 1; % 1 BOLD ; 2 MVPA
+
+StepDown = 2;
 
 CodeFolder = 'D:\github\AV-Attention-7T_code';
 FigureFolder = fullfile(CodeFolder, 'Figures');
@@ -94,55 +96,74 @@ for i_model = model_of_interest %1:numel(models)
     
     model = models(i_model);
     
-    % print out results
+    %     % print out results
     %     fprintf('%s %i - %s - %s', '%', i_model, model.name, model.ROIs)
     %     disp(model.lme)
     
     % results from some specific contrasts
     fprintf('%s %i - %s - %s\n', '%', i_model, model.name, model.ROIs)
-    % effect of either linear or constant in either ROIs
-    c = [...
-        1 0 0 0 ;...
-        0 1 0 0 ;...
-        0 0 1 0 ;...
-        0 0 0 1 ];
-    message = 'effect of either linear or constant in either ROI';
-    PVAL = test_and_print(model, c, pattern, message);
-    
-    if PVAL>.05
+    if StepDown == 1
+        
+        % effect of either linear or constant in either ROIs
         c = [...
             1 0 0 0 ;...
-            0 1 0 0];
-        message = 'effect of either CST/LIN in ROI 1';
+            0 1 0 0 ;...
+            0 0 1 0 ;...
+            0 0 0 1 ];
+        message = 'effect of either linear or constant in either ROI';
         PVAL = test_and_print(model, c, pattern, message);
         
-        c = [...
-            0 0 1 0 ;...
-            0 0 0 1];
-        message = 'effect of either CST/LIN in ROI 2';
-        PVAL = test_and_print(model, c, pattern, message);
-    else
-        % effect of either CST/LIN
+        if PVAL<.05
+            c = [...
+                1 0 0 0 ;...
+                0 0 1 0];
+            message = 'CST in ROI1 or ROI2';
+            PVAL = test_and_print(model, c, pattern, message); %#ok<*NASGU>
+            if PVAL<.05
+                disp(model.lme.Coefficients)
+            end
+            
+            c = [...
+                0 1 0 0 ;...
+                0 0 0 1];
+            message = 'LIN in ROI1 or ROI2';
+            PVAL = test_and_print(model, c, pattern, message);
+            if PVAL<.05
+                disp(model.lme.Coefficients)
+            end
+            
+        end
+        
+    elseif StepDown == 2
+        
+        % effect of cst or lin averaged across ROIs
         c = [...
             1 0 1 0 ;...
-            0 1 0 1 ];
-        message = 'effect of either CST/LIN';
+            0 1 0 1];
+        message = 'effect of cst or lin averaged across ROIs';
         PVAL = test_and_print(model, c, pattern, message);
         
-        if PVAL>.05
-            % effect of CST
-            c = [1 0 1 0];
-            message = 'effect of CST';
-            PVAL = test_and_print(model, c, pattern, message);
+        if PVAL<0.05
             
-            % effect of LIN
-            c = [0 1 0 1];
-            message = 'effect of LIN';
+            % average effect of cst across ROIs
+            c = [1 0 1 0 ];
+            message = 'average effect of cst across ROIs';
             PVAL = test_and_print(model, c, pattern, message);
+            if PVAL<.05
+                disp(model.lme.Coefficients)
+            end
+            
+            % average effect of lin across ROIs
+            c = [0 1 0 1];
+            message = 'average effect of lin across ROIs';
+            PVAL = test_and_print(model, c, pattern, message);
+            if PVAL<.05
+                disp(model.lme.Coefficients)
+            end
         end
     end
+    fprintf('\n')
     
-    fprintf('\n\n\n')
 end
 
 end
