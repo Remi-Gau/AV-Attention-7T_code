@@ -4,9 +4,7 @@ clear
 close all
 clc
 
-DO = 1; % 1 BOLD ; 2 MVPA
-
-StepDown = 1;
+DO = 2; % 1 BOLD ; 2 MVPA
 
 CodeFolder = 'D:\github\AV-Attention-7T_code';
 FigureFolder = fullfile(CodeFolder, 'Figures');
@@ -15,6 +13,8 @@ FigureFolder = fullfile(CodeFolder, 'Figures');
 if ~exist(FigureFolder, 'dir')
     FigureFolder = pwd;
 end
+
+NbSubj = 11;
 
 
 % Models BOLD
@@ -51,8 +51,6 @@ switch DO
         load(fullfile(FigureFolder, 'LMM_MVPA_results.mat'), 'models');
         model_of_interest = [1 4:6];
 end
-
-
 
 
 
@@ -101,91 +99,62 @@ for i_model = model_of_interest %1:numel(models)
     fprintf('%s %i - %s - %s \n', '%', i_model, model.name, model.ROIs)
     %     disp(model.lme)
     
-    % results from some specific contrasts
-    
     % display reults perm test and t-test for each s parameter for each ROI
     %     for i = 1:4
     %         compare_results(i, model, ToPermute);
     %     end
     %     fprintf('\n')
     
-    if StepDown == 1
+    % effect of either linear or constant in either ROIs
+    c = [...
+        1 0 0 0 ;...
+        0 1 0 0 ;...
+        0 0 1 0 ;...
+        0 0 0 1 ];
+    message = 'effect of either linear or constant in either ROI';
+    PVAL = test_and_print(model, c, pattern, message);
+    
+    %  run LMM on just the CST or LIN from both ROIs if signiicant
+    if PVAL<.05
         
-        % effect of either linear or constant in either ROIs
-        c = [...
-            1 0 0 0 ;...
-            0 1 0 0 ;...
-            0 0 1 0 ;...
-            0 0 0 1 ];
-        message = 'effect of either linear or constant in either ROI';
-        PVAL = test_and_print(model, c, pattern, message);
+        X = [...
+            [ones(NbSubj,1) ; zeros(NbSubj,1)], ... % reg 1 : ROI1 cst
+            [zeros(NbSubj,1) ; ones(NbSubj,1)]]; % reg 1 : ROI1 lin
+        Z = repmat(ones(NbSubj,1), 2, 1);
+        G = repmat([1:NbSubj]', 2, 1);
         
-        if PVAL<.05
-            c = [...
-                1 0 0 0 ;...
-                0 0 1 0];
-            message = 'CST in ROI1 or ROI2';
-            PVAL = test_and_print(model, c, pattern, message); %#ok<*NASGU>
-            if PVAL<.05
-                disp(model.lme.Coefficients)
+        % loop over cst and lin
+        for i_s_param = 1:2
+            
+            switch i_s_param
+                case 1
+                    name_param = {'ROI1_cst', 'ROI2_cst'};
+                    reg_of_interest = [1 3];
+                case 2
+                    name_param = {'ROI1_lin', 'ROI2_lin'};
+                    reg_of_interest = [2 4];
+                    
             end
+            
+            Y = model.Y(any(model.X(:,reg_of_interest), 2));
+            
+            submodel.lme = fitlmematrix(X, Y, Z, G, 'FitMethod', 'REML',...
+                'FixedEffectPredictors',...
+                name_param,...
+                'RandomEffectPredictors',...
+                {{'Intercept'}},...
+                'RandomEffectGroups',...
+                {'Subject'});
             
             c = [...
-                0 1 0 0 ;...
-                0 0 0 1];
-            message = 'LIN in ROI1 or ROI2';
-            PVAL = test_and_print(model, c, pattern, message);
-            if PVAL<.05
-                disp(model.lme.Coefficients)
-            end
-            
+                1 0;...
+                0 1];
+            message = ['effect of ' name_param{1} ' and ' name_param{2} ' averaged across ROIs'];
+            PVAL = test_and_print(submodel, c, pattern, message);
         end
         
-    elseif StepDown == 2
-        
-        % effect of cst or lin averaged across ROIs
-        c = [...
-            1 0 1 0 ;...
-            0 1 0 1];
-        message = 'effect of cst or lin averaged across ROIs';
-        PVAL = test_and_print(model, c, pattern, message);
-        
-        if PVAL<0.05
-            
-            % average effect of cst across ROIs
-            c = [1 0 1 0 ];
-            message = 'average effect of cst across ROIs';
-            PVAL = test_and_print(model, c, pattern, message);
-            if PVAL<.05
-                disp(model.lme.Coefficients)
-            end
-            
-            % average effect of lin across ROIs
-            c = [0 1 0 1];
-            message = 'average effect of lin across ROIs';
-            PVAL = test_and_print(model, c, pattern, message);
-            if PVAL<.05
-                disp(model.lme.Coefficients)
-            end
-        end
-        
-    elseif StepDown == 3
-        % average effect of cst across ROIs
-        c = [1 0 1 0 ];
-        message = 'average effect of cst across ROIs';
-        PVAL = test_and_print(model, c, pattern, message);
-        if PVAL<.05
-            disp(model.lme.Coefficients)
-        end
-        
-        % average effect of lin across ROIs
-        c = [0 1 0 1];
-        message = 'average effect of lin across ROIs';
-        PVAL = test_and_print(model, c, pattern, message);
-        if PVAL<.05
-            disp(model.lme.Coefficients)
-        end
     end
+    
     fprintf('\n')
     
 end
@@ -231,6 +200,7 @@ end
 
 function compare_results(i, model, ToPermute)
 
+NbSubj = 11;
 ROI_nb = [1 1 2 2];
 side_idx = [1 2 1 2];
 s_param = {'Cst', 'Lin', 'Cst', 'Lin'};
@@ -249,7 +219,7 @@ fprintf('ROI %i - %s - p(perm) = %f - p(ttest) = %f\n', ...
 
 % OVERKILL: use LMM to do a t-test to make sure we get the same
 % thing
-lme = fitlmematrix(ones(11,1), betas, ones(11,1), [1:11]', 'FitMethod', 'REML',...
+lme = fitlmematrix(ones(NbSubj,1), betas, ones(NbSubj,1), [1:NbSubj]', 'FitMethod', 'REML',...
     'FixedEffectPredictors',...
     {'s_param'},...
     'RandomEffectPredictors',...
