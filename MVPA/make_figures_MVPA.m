@@ -259,6 +259,7 @@ for iCdt_2_plot = 1:numel(Cdt2Choose)
     % Runs Linear mixed models across cst and lin shape parameters pooled over A1 and PT
     [model, Y_legend] = linear_mixed_model(DATA);
     model.name = Cdt2Choose(iCdt_2_plot).name;
+    model.test_side = Cdt2Choose(iCdt_2_plot).test_side;
     model.Y_legend = Y_legend;
     model.ROIs = [ROIs{1} ' - ' ROIs{2}];
     if ~exist('models', 'var')
@@ -275,6 +276,7 @@ for iCdt_2_plot = 1:numel(Cdt2Choose)
     % over V123
     [model, Y_legend] = linear_mixed_model(DATA);
     model.name = Cdt2Choose(iCdt_2_plot).name;
+    model.test_side = Cdt2Choose(iCdt_2_plot).test_side;
     model.Y_legend = Y_legend;
     model.ROIs = [ROIs{3} ' - ' ROIs{4}];
     models(end+1) = model;

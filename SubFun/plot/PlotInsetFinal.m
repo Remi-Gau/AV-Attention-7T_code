@@ -72,10 +72,8 @@ for i=1:size(Betas,2)
         elseif strcmp(DATA.OneSideTTest{i},'both')
             P = sum(abs(Perms(:,i))>abs(mean(Betas(:,i)))) / numel(Perms(:,i)) ;
         end
-
     else
         P = sum(abs(Perms(:,i))>abs(mean(Betas(:,i)))) / numel(Perms(:,i)) ;
-
     end
     
     Sig = []; %#ok<NASGU>
