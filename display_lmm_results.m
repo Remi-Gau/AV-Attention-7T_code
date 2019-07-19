@@ -4,7 +4,7 @@ clear
 close all
 clc
 
-DO = 2; % 1 BOLD ; 2 MVPA
+DO = 1; % 1 BOLD ; 2 MVPA
 
 CodeFolder = 'D:\github\AV-Attention-7T_code';
 FigureFolder = fullfile(CodeFolder, 'Figures');
