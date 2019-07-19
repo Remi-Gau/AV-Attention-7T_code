@@ -6,7 +6,7 @@ clc
 
 DO = 1; % 1 BOLD ; 2 MVPA
 
-StepDown = 2;
+StepDown = 1;
 
 CodeFolder = 'D:\github\AV-Attention-7T_code';
 FigureFolder = fullfile(CodeFolder, 'Figures');
@@ -97,18 +97,17 @@ for i_model = model_of_interest %1:numel(models)
     
     model = models(i_model);
     
-    %     % print out results
-    %     fprintf('%s %i - %s - %s', '%', i_model, model.name, model.ROIs)
+    %print out results
+    fprintf('%s %i - %s - %s \n', '%', i_model, model.name, model.ROIs)
     %     disp(model.lme)
     
     % results from some specific contrasts
-    fprintf('%s %i - %s - %s\n', '%', i_model, model.name, model.ROIs)
     
     % display reults perm test and t-test for each s parameter for each ROI
-    for i = 1:4
-        compare_results(i, model, ToPermute);
-    end
-    fprintf('\n')
+    %     for i = 1:4
+    %         compare_results(i, model, ToPermute);
+    %     end
+    %     fprintf('\n')
     
     if StepDown == 1
         
@@ -168,6 +167,23 @@ for i_model = model_of_interest %1:numel(models)
             if PVAL<.05
                 disp(model.lme.Coefficients)
             end
+        end
+        
+    elseif StepDown == 3
+        % average effect of cst across ROIs
+        c = [1 0 1 0 ];
+        message = 'average effect of cst across ROIs';
+        PVAL = test_and_print(model, c, pattern, message);
+        if PVAL<.05
+            disp(model.lme.Coefficients)
+        end
+        
+        % average effect of lin across ROIs
+        c = [0 1 0 1];
+        message = 'average effect of lin across ROIs';
+        PVAL = test_and_print(model, c, pattern, message);
+        if PVAL<.05
+            disp(model.lme.Coefficients)
         end
     end
     fprintf('\n')
