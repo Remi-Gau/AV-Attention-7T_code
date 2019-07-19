@@ -110,6 +110,7 @@ NbROI = size(ROIs,1);
 % add dependencies
 addpath(genpath(fullfile(CodeFolder, 'SubFun')))
 Get_dependencies('/home/remi')
+Get_dependencies('D:')
 
 % get the axis limits to use
 clim = set_clim(clim_for_condition);
@@ -197,6 +198,8 @@ for iROI = 1:NbROI
                 DATA.MIN = clim.min.profile;
             end
             
+            DATA.OneSideTTest = {Cdt2Choose(iCdt_2_plot).test_side{iROI} ...
+                'both' 'both'};
             DATA.Name = [ROI_name ' - ' Cdt2Choose(iCdt_2_plot).name];
             DATA.Data = fliplr(All_Subjs_Profile);
             DATA.Betas = SubjectsBetas;
@@ -208,10 +211,7 @@ for iROI = 1:NbROI
             if PlotDo
                 figure('position', FigDim, 'name', ' ', 'Color', [1 1 1], ...
                     'visible', 'on')
-                
-                DATA.OneSideTTest = {Cdt2Choose(iCdt_2_plot).test_side{iROI} ...
-                    'both' 'both'};
-                
+
                 subplot(2, 1, 1)
                 PlotRectangle(NbLayers, FontSize, Switch)
                 subplot(2, 1, 1)
@@ -259,7 +259,7 @@ for iCdt_2_plot = 1:numel(Cdt2Choose)
     % Runs Linear mixed models across cst and lin shape parameters pooled over A1 and PT
     [model, Y_legend] = linear_mixed_model(DATA);
     model.name = Cdt2Choose(iCdt_2_plot).name;
-    model.test_side = Cdt2Choose(iCdt_2_plot).test_side;
+    model.test_side = DATA{1}.OneSideTTest;
     model.Y_legend = Y_legend;
     model.ROIs = [ROIs{1} ' - ' ROIs{2}];
     if ~exist('models', 'var')
@@ -276,7 +276,7 @@ for iCdt_2_plot = 1:numel(Cdt2Choose)
     % over V123
     [model, Y_legend] = linear_mixed_model(DATA);
     model.name = Cdt2Choose(iCdt_2_plot).name;
-    model.test_side = Cdt2Choose(iCdt_2_plot).test_side;
+    model.test_side = DATA{1}.OneSideTTest;
     model.Y_legend = Y_legend;
     model.ROIs = [ROIs{3} ' - ' ROIs{4}];
     models(end+1) = model;

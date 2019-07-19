@@ -91,6 +91,7 @@ title('random effect group')
 
 %% print out results
 pattern = '%s\t F(%i,%i)= %f\t p = %f\n';
+ToPermute = list_permutation();
 
 for i_model = model_of_interest %1:numel(models)
     
@@ -102,6 +103,24 @@ for i_model = model_of_interest %1:numel(models)
     
     % results from some specific contrasts
     fprintf('%s %i - %s - %s\n', '%', i_model, model.name, model.ROIs)
+    
+    % get perm test for each s parameter
+    Betas = reshape(model.Y, [11 4]);
+    ROI_nb = [1 1 2 2];
+    side_idx = [1 2 1 2];
+    s_param = {'Cst', 'Lin', 'Cst', 'Lin'};
+    for i = 1:4
+        betas = Betas(:,i);
+        side = model.test_side{side_idx(i)};
+        perms = create_null_distribution(ToPermute, betas);
+        p_perm = perm_test(betas, side, perms);
+        [~, p_ttest] = ttest(betas, 0, 'tail', side);
+        fprintf('ROI %i - %s - p(perm) = %f - p(ttest) = %f\n', ...
+            ROI_nb(i), s_param{i}, ...
+            p_perm, p_ttest);
+    end
+    fprintf('\n')
+    
     if StepDown == 1
         
         % effect of either linear or constant in either ROIs
@@ -175,4 +194,32 @@ fprintf(pattern, ...
     message, ...
     DF1, DF2, ...
     F, PVAL);
+end
+
+function ToPermute = list_permutation()
+% create permutations for exact sign permutation test
+for iSubj=1:11
+    sets{iSubj} = [-1 1];
+end
+[a, b, c, d, e, f, g, h, i, j, k] = ndgrid(sets{:}); clear sets
+ToPermute = [a(:), b(:), c(:), d(:), e(:), f(:), g(:), h(:), i(:), j(:), k(:)];
+end
+
+function Perms = create_null_distribution(ToPermute, Betas)
+for iPerm = 1:size(ToPermute,1)
+    tmp2 = ToPermute(iPerm,:)';
+    Perms(iPerm,:) = mean(Betas.*repmat(tmp2,1,size(Betas,2))); %#ok<*AGROW>
+end
+end
+
+function P = perm_test(betas, side, perms)
+if strcmp(side,'left')
+    P = sum(perms<mean(betas)) / numel(perms);
+    
+elseif strcmp(side,'right')
+    P = sum(perms>mean(betas))/  numel(perms);
+    
+elseif strcmp(side,'both')
+    P = sum(abs(perms)>abs(mean(betas))) / numel(perms) ;
+end
 end
