@@ -1,17 +1,19 @@
 %% uses CSV files of saved data to plot the data for the article
 clear; close all; clc;
 
-CodeFolder = '/home/remi/github/AV-Attention-7T_code';
+% CodeFolder = '/home/remi/github/AV-Attention-7T_code';
+CodeFolder = 'D:\github\AV-Attention-7T_code';
 
 % inputs (where the OSF data have been downloaded: https://osf.io/63dba/)
-% DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
-DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
-
+DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
+% DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
 Results_Folder = fullfile(DataFolder, 'DataToExport');
 
 % output folder
 FigureFolder = fullfile(CodeFolder, 'Figures');
 mkdir(FigureFolder)
+
+PlotDo = 0;
 
 PlotSubjects = 0; % can be switched off (0) to no plot subject
 
@@ -113,11 +115,11 @@ Get_dependencies('/home/remi')
 clim = set_clim(clim_for_condition);
 
 for iROI = 1:NbROI
-
+    
     ROI_name = ROIs{iROI};
     
     for iCdt_2_plot = 1:numel(Cdt2Choose)
-
+        
         if ~isempty(Cdt2Choose(iCdt_2_plot).name)
             
             %% get data
@@ -195,41 +197,97 @@ for iROI = 1:NbROI
                 DATA.MIN = clim.min.profile;
             end
             
-            
-            %% do actual plotting
-            
-            figure('position', FigDim, 'name', ' ', 'Color', [1 1 1], ...
-                'visible', 'on')
-            
-            DATA.OneSideTTest = {Cdt2Choose(iCdt_2_plot).test_side{iROI} ...
-                'both' 'both'};
-            
-            subplot(2, 1, 1)
-            PlotRectangle(NbLayers, FontSize, Switch)
-            subplot(2, 1, 1)
-            
-            
             DATA.Name = [ROI_name ' - ' Cdt2Choose(iCdt_2_plot).name];
             DATA.Data = fliplr(All_Subjs_Profile);
             DATA.Betas = SubjectsBetas;
             DATA.Color =  [0 0 0];
             DATA.Thresholds = 0.05*ones(1,size(DATA.Betas,2));
-            
-            PlotProfileAndBetas(DATA)
-            
-            ax = subplot(2, 1, 2);
-            axis('off')
-            DATA.ax = ax.Position;
             DATA.ToPermute = ToPermute;
-            DATA.YLabel = 'Param. est. [a u]';
-            PlotInsetFinal(DATA)
             
-            % save figure
-            print(gcf, fullfile(FigureFolder, ...
-                [DATA.Name '.tif']), '-dtiff')
+            %% do actual plotting
+            if PlotDo
+                figure('position', FigDim, 'name', ' ', 'Color', [1 1 1], ...
+                    'visible', 'on')
+                
+                DATA.OneSideTTest = {Cdt2Choose(iCdt_2_plot).test_side{iROI} ...
+                    'both' 'both'};
+                
+                subplot(2, 1, 1)
+                PlotRectangle(NbLayers, FontSize, Switch)
+                subplot(2, 1, 1)
+                
+                PlotProfileAndBetas(DATA)
+                
+                ax = subplot(2, 1, 2);
+                axis('off')
+                DATA.ax = ax.Position;
+                
+                DATA.YLabel = 'Param. est. [a u]';
+                PlotInsetFinal(DATA)
+                
+                % save figure
+                print(gcf, fullfile(FigureFolder, ...
+                    [DATA.Name '.tif']), '-dtiff')
+            end
             
+            data_rois{iROI, iCdt_2_plot} = DATA;
         end
         
     end
-
+    
 end
+
+
+%% run Linear mixed model
+clc
+clear DATA
+
+% results file
+SavedTxt = fullfile(FigureFolder, 'LMM_MVPA_results.tsv');
+pattern = '%s\t F(%f,%f)= %f\t p = %f\n';
+
+% fid = fopen (SavedTxt, 'w');
+
+for iCdt_2_plot = 1:numel(Cdt2Choose)
+    
+    %     fprintf (fid, '%s\n', Cdt2Choose(iCdt_2_plot).name);
+    
+    % Runs F test across cst and lin shape parameters pooled over A1 and PT
+    DATA{1} = data_rois{1, iCdt_2_plot};
+    DATA{2} = data_rois{2, iCdt_2_plot};
+    
+    % Runs Linear mixed models across cst and lin shape parameters pooled over A1 and PT
+    [model, Y_legend] = linear_mixed_model(DATA);
+    model.name = Cdt2Choose(iCdt_2_plot).name;
+    model.Y_legend = Y_legend;
+    model.ROIs = [ROIs{1} ' - ' ROIs{2}];
+    if ~exist('models', 'var')
+        models(1) = model;
+    else
+        models(end+1) = model;
+    end
+    
+    % Runs F test across cst and lin shape parameters pooled over V123
+    DATA{1} = data_rois{3, iCdt_2_plot};
+    DATA{2} = data_rois{4, iCdt_2_plot};
+    
+    % Runs Linear mixed models across cst and lin shape parameters pooled
+    % over V123
+    [model, Y_legend] = linear_mixed_model(DATA);
+    model.name = Cdt2Choose(iCdt_2_plot).name;
+    model.Y_legend = Y_legend;
+    model.ROIs = [ROIs{3} ' - ' ROIs{4}];
+    models(end+1) = model;
+    
+    %     % outputs results to a tsv file
+    %     fprintf(fid, pattern, ...
+    %         [ROIs{3} ' - ' ROIs{4}], ...
+    %         df, dferror, ...
+    %         F, p);
+    
+    %     fprintf(fid, '\n');
+end
+
+% fclose (fid);
+
+save(fullfile(FigureFolder, 'LMM_MVPA_results.mat'), 'models');
