@@ -242,17 +242,9 @@ end
 clc
 clear DATA
 
-% results file
-SavedTxt = fullfile(FigureFolder, 'LMM_MVPA_results.tsv');
-pattern = '%s\t F(%f,%f)= %f\t p = %f\n';
-
-% fid = fopen (SavedTxt, 'w');
-
 for iCdt_2_plot = 1:numel(Cdt2Choose)
-    
-    %     fprintf (fid, '%s\n', Cdt2Choose(iCdt_2_plot).name);
-    
-    % Runs F test across cst and lin shape parameters pooled over A1 and PT
+
+    % Runs test across cst and lin shape parameters pooled over A1 and PT
     DATA{1} = data_rois{1, iCdt_2_plot};
     DATA{2} = data_rois{2, iCdt_2_plot};
     
@@ -268,7 +260,7 @@ for iCdt_2_plot = 1:numel(Cdt2Choose)
         models(end+1) = model;
     end
     
-    % Runs F test across cst and lin shape parameters pooled over V123
+    % Runs test across cst and lin shape parameters pooled over V123
     DATA{1} = data_rois{3, iCdt_2_plot};
     DATA{2} = data_rois{4, iCdt_2_plot};
     
@@ -280,16 +272,7 @@ for iCdt_2_plot = 1:numel(Cdt2Choose)
     model.Y_legend = Y_legend;
     model.ROIs = [ROIs{3} ' - ' ROIs{4}];
     models(end+1) = model;
-    
-    %     % outputs results to a tsv file
-    %     fprintf(fid, pattern, ...
-    %         [ROIs{3} ' - ' ROIs{4}], ...
-    %         df, dferror, ...
-    %         F, p);
-    
-    %     fprintf(fid, '\n');
-end
 
-% fclose (fid);
+end
 
 save(fullfile(FigureFolder, 'LMM_MVPA_results.mat'), 'models');
