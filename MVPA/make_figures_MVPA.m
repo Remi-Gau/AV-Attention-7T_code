@@ -13,7 +13,8 @@ Results_Folder = fullfile(DataFolder, 'DataToExport');
 FigureFolder = fullfile(CodeFolder, 'Figures');
 mkdir(FigureFolder)
 
-PlotDo = 0;
+PlotDo = 1;
+print_pvalue = 0;
 
 PlotSubjects = 0; % can be switched off (0) to no plot subject
 
@@ -205,13 +206,12 @@ for iROI = 1:NbROI
             DATA.Betas = SubjectsBetas;
             DATA.Color =  [0 0 0];
             DATA.Thresholds = 0.05*ones(1,size(DATA.Betas,2));
-            DATA.ToPermute = ToPermute;
             
             %% do actual plotting
             if PlotDo
                 figure('position', FigDim, 'name', ' ', 'Color', [1 1 1], ...
                     'visible', 'on')
-
+                
                 subplot(2, 1, 1)
                 PlotRectangle(NbLayers, FontSize, Switch)
                 subplot(2, 1, 1)
@@ -221,8 +221,9 @@ for iROI = 1:NbROI
                 ax = subplot(2, 1, 2);
                 axis('off')
                 DATA.ax = ax.Position;
-                
+                DATA.ToPermute = ToPermute;
                 DATA.YLabel = 'Param. est. [a u]';
+                DATA.print_pvalue = print_pvalue;
                 PlotInsetFinal(DATA)
                 
                 % save figure
@@ -243,7 +244,7 @@ clc
 clear DATA
 
 for iCdt_2_plot = 1:numel(Cdt2Choose)
-
+    
     % Runs test across cst and lin shape parameters pooled over A1 and PT
     DATA{1} = data_rois{1, iCdt_2_plot};
     DATA{2} = data_rois{2, iCdt_2_plot};
@@ -272,7 +273,7 @@ for iCdt_2_plot = 1:numel(Cdt2Choose)
     model.Y_legend = Y_legend;
     model.ROIs = [ROIs{3} ' - ' ROIs{4}];
     models(end+1) = model;
-
+    
 end
 
 save(fullfile(FigureFolder, 'LMM_MVPA_results.mat'), 'models');

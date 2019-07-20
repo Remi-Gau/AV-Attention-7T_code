@@ -14,7 +14,8 @@ Results_Folder = fullfile(DataFolder, 'DataToExport');
 FigureFolder = fullfile(CodeFolder, 'Figures');
 mkdir(FigureFolder)
 
-PlotDo = 0;
+PlotDo = 1;
+print_pvalue = 0;
 
 PlotSubjects = 0; % can be switched off (0) to not plot subjects laminar profiles
 
@@ -26,7 +27,7 @@ PlotSubjects = 0; % can be switched off (0) to not plot subjects laminar profile
 % 4 - for cross modal effects for A1-PT
 % 5 - for cross modal effects for V1-2-3
 % 6 - for attention effects
-clim_for_condition = 6;
+clim_for_condition = 1;
 
 
 %% define conditions to plot
@@ -282,6 +283,7 @@ for iROI = 1:NbROI
                 axis('off')
                 DATA.ax = ax.Position;
                 DATA.ToPermute = ToPermute;
+                DATA.print_pvalue = print_pvalue;
                 PlotInsetFinal(DATA)
                 
                 % save figure
