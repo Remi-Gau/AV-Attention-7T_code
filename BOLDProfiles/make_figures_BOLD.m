@@ -27,7 +27,7 @@ PlotSubjects = 0; % can be switched off (0) to not plot subjects laminar profile
 % 4 - for cross modal effects for A1-PT
 % 5 - for cross modal effects for V1-2-3
 % 6 - for attention effects
-clim_for_condition = 1;
+clim_for_condition = 6;
 
 
 %% define conditions to plot
@@ -305,35 +305,39 @@ clc
 clear DATA
 
 for iCdt_2_plot = 1:numel(Cdt2Choose)
-
-    % Runs test across cst and lin shape parameters pooled over A1 and PT
-    DATA{1} = data_rois{1, iCdt_2_plot};
-    DATA{2} = data_rois{2, iCdt_2_plot};
     
-    % Runs Linear mixed models across cst and lin shape parameters pooled over A1 and PT
-    [model, Y_legend] = linear_mixed_model(DATA);
-    model.name = Cdt2Choose(iCdt_2_plot).name;
-    model.test_side = DATA{1}.OneSideTTest;
-    model.Y_legend = Y_legend;
-    model.ROIs = [ROIs{1} ' - ' ROIs{2}];
-    if ~exist('models', 'var')
-        models(1) = model;
-    else
+    if ~isempty(Cdt2Choose(iCdt_2_plot).name)
+        
+        % Runs test across cst and lin shape parameters pooled over A1 and PT
+        DATA{1} = data_rois{1, iCdt_2_plot};
+        DATA{2} = data_rois{2, iCdt_2_plot};
+        
+        % Runs Linear mixed models across cst and lin shape parameters pooled over A1 and PT
+        [model, Y_legend] = linear_mixed_model(DATA);
+        model.name = Cdt2Choose(iCdt_2_plot).name;
+        model.test_side = DATA{1}.OneSideTTest;
+        model.Y_legend = Y_legend;
+        model.ROIs = [ROIs{1} ' - ' ROIs{2}];
+        if ~exist('models', 'var')
+            models(1) = model;
+        else
+            models(end+1) = model;
+        end
+        
+        % Runs test across cst and lin shape parameters pooled over V123
+        DATA{1} = data_rois{3, iCdt_2_plot};
+        DATA{2} = data_rois{4, iCdt_2_plot};
+        
+        % Runs Linear mixed models across cst and lin shape parameters pooled
+        % over V123
+        [model, Y_legend] = linear_mixed_model(DATA);
+        model.name = Cdt2Choose(iCdt_2_plot).name;
+        model.test_side = DATA{1}.OneSideTTest;
+        model.Y_legend = Y_legend;
+        model.ROIs = [ROIs{3} ' - ' ROIs{4}];
         models(end+1) = model;
+        
     end
-
-    % Runs test across cst and lin shape parameters pooled over V123
-    DATA{1} = data_rois{3, iCdt_2_plot};
-    DATA{2} = data_rois{4, iCdt_2_plot};
-
-    % Runs Linear mixed models across cst and lin shape parameters pooled
-    % over V123
-    [model, Y_legend] = linear_mixed_model(DATA);
-    model.name = Cdt2Choose(iCdt_2_plot).name;
-    model.test_side = DATA{1}.OneSideTTest;
-    model.Y_legend = Y_legend;
-    model.ROIs = [ROIs{3} ' - ' ROIs{4}];
-    models(end+1) = model;
     
 end
 
