@@ -72,10 +72,8 @@ for i=1:size(Betas,2)
         elseif strcmp(DATA.OneSideTTest{i},'both')
             P = sum(abs(Perms(:,i))>abs(mean(Betas(:,i)))) / numel(Perms(:,i)) ;
         end
-
     else
         P = sum(abs(Perms(:,i))>abs(mean(Betas(:,i)))) / numel(Perms(:,i)) ;
-
     end
     
     Sig = []; %#ok<NASGU>
@@ -85,11 +83,13 @@ for i=1:size(Betas,2)
         Sig = sprintf('p=%.3f',P);
     end
     
-    t = text(1.1,Max+(Max-Min)/10,sprintf(Sig));
-    set(t,'fontsize',FontSize-1);
-    
-    if P<0.05
-        set(t,'fontsize',FontSize,'fontweight','bold')
+    if DATA.print_pvalue
+        t = text(1.1,Max+(Max-Min)/10,sprintf(Sig));
+        set(t,'fontsize',FontSize-1);
+        
+        if P<0.05
+            set(t,'fontsize',FontSize,'fontweight','bold')
+        end
     end
     clear Sig
 

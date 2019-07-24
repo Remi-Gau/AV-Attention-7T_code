@@ -1,5 +1,7 @@
 function [F_semi_partial_coef, p_semi_partial_coef, df, dferror] = F_test(data_rois)
+% Runs a F-test on for the shape parameters (encoded in 2 different regressors)
 
+% Code massively inspired from Cyril's website
 % http://www.sbirc.ed.ac.uk/cyril/glm/GLM_lectures.html
 
 nb_rois = numel(data_rois);
@@ -16,21 +18,17 @@ for iROI = 1:nb_rois
     
     nb_subjects = size(DATA.Betas,1);
     
-    Y_legend{end+1} = [DATA.Name ' ; sub-01 ; CST' ]; %#ok<*AGROW>
-    for i=1:nb_subjects-2
-        Y_legend{end+1} = '...';
-    end
-    Y_legend{end+1} = [DATA.Name ' ; sub-11 ; CST' ];
-    Y_legend{end+1} = [DATA.Name ' ; sub-01 ; LIN' ];
-    for i=1:nb_subjects-2
-        Y_legend{end+1} = '...';
-    end
-    Y_legend{end+1} = [DATA.Name ' ; sub-11 ; LIN' ];
+    Y_legend = gen_y_legend(Y_legend, DATA, nb_subjects);
     
+    % concatenate data over ROIs
     y = DATA.Betas;
     y = y(:);
+    Y = [Y ; y]; %#ok<*AGROW>
     
-    Y = [Y ; y];
+    % design matrix:
+    % reg 1 : cst
+    % reg 2 : lin
+    % reg 3:end : subject specific regressors
     X = [ X; ...
         ones(nb_subjects,1) zeros(nb_subjects,1) eye(nb_subjects); ...
         zeros(nb_subjects,1) ones(nb_subjects,1) eye(nb_subjects)];
@@ -56,12 +54,14 @@ end
 
 
 %% do GLM and stats
-[B, Yhat, Res, SStotal, SSeffect, SSerror, R2, df, dferror, F, p] = do_glm(X, Y);
+[B, Yhat, Res, SStotal, SSeffect, SSerror, R2, df, dferror, F, p] = do_glm(X, Y); %#ok<*ASGLU>
 
 Xreduced    = X(:,3:end); % reduced model all minus 2 1st regressor
 [B_red, Yhat_red, Res_red, SStotal_red, SSeffect_red, SSerror_red, R2_red, df_red, dferror_red, F_red, p_red] =...
     do_glm(Xreduced, Y);
 
+% Compare reduced model and full model to see how much variance is
+% explained by Cst and Lin regressors
 Semi_Partial_corr_coef = R2 - R2_red;
 dfe_semi_partial_coef  = df - df_red;
 F_semi_partial_coef    = (Semi_Partial_corr_coef*dferror) / ...  % variance explained by x1
@@ -71,6 +71,7 @@ p_semi_partial_coef    = 1 - fcdf(Semi_Partial_corr_coef, df, dfe_semi_partial_c
 end
 
 function [B, Yhat, Res, SStotal, SSeffect, SSerror, R2, df, dferror, F, p] = do_glm(X, Y)
+% Runs GLM and gets F and p value for the whole model.
 
 B    = inv(X'*X)*X'*Y;
 Yhat = X*B;
