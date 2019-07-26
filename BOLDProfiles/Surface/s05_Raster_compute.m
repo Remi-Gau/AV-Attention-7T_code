@@ -318,10 +318,11 @@ for SubjInd = 1:size(SubjectList,1)
                         Profiles_rh(VertexWithDataHS{2},:) = FeaturesCdtion{Cdt(iCdt,2),2,CV_cdt(iCV)};
                         
                         
-                        
+                        % sort the profiles
                         X = [X_lh(ROI(iROI).VertOfInt{1}) X_rh(ROI(iROI).VertOfInt{2})];
                         [X_sort,I] = sort(X);
                         
+                        % applyt the sorting
                         Profiles = [...
                             Profiles_lh(ROI(iROI).VertOfInt{1},:) ; ...
                             Profiles_rh(ROI(iROI).VertOfInt{2},:)];

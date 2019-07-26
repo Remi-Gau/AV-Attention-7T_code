@@ -4,7 +4,7 @@ matlab_code_dir = fullfile(Dir, 'Dropbox', 'Code','MATLAB', 'From_Web');
 github_code_dir = fullfile(Dir, 'github');
 
 % https://fr.mathworks.com/matlabcentral/fileexchange/6837-nan-suite
-addpath(genpath(fullfile(matlab_code_dir, 'nansuite')))
+% addpath(genpath(fullfile(matlab_code_dir, 'nansuite')))
 
 %% Plotting
 % [violin plots for matlab]

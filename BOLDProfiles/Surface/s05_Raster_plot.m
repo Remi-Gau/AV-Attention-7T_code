@@ -4,15 +4,21 @@ close all
 clear
 clc
 
+CodeFolder = 'D:\github\AV-Attention-7T_code';
+% CodeFolder = '/home/remi/github/AV-Attention-7T_code';
 
-CodeFolder = '/home/remi/github/AV-Attention-7T_code';
+% DataFolder = '/home/remi/';
+DataFolder = 'D:\';
+DataFolder = fullfile(DataFolder, 'Dropbox', 'PhD', 'Experiments', 'AV_Integration_7T');
+
 addpath(genpath(fullfile(CodeFolder, 'SubFun')))
 
-Get_dependencies('/home/remi/')
+% Get_dependencies('/home/remi/')
+Get_dependencies('D:\')
 
 FigureFolder = fullfile(CodeFolder,'Figures');
 
-DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
+
 load(fullfile(DataFolder, 'Results', 'Profiles', 'Surfaces', 'Raster_CV.mat'))
 
 Subj2Include = true(11,1);
