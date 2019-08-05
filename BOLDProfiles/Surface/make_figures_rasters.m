@@ -92,7 +92,7 @@ load(fullfile(Results_Folder,'Raster_CV.mat'))
 
 
 
-%% raster CrossMod = f(Percentile of V stim)
+%% raster CrossMod = f(Percentile of [V or A] stim)
 % for figure 3
 % will create extra rasters not used in the end
 
@@ -101,9 +101,10 @@ close all
 plot_reg_coeff = 0;
 demean_raster = 0;
 
-Sorting_Cdt = 2;
+Sorting_Cdt = [2, 1];
 mkdir(fullfile(FigureFolder,'CrossSensory'));
 Name = {'AV-A';'AV-V'};
+NameSortingCondition = {'V', 'A'};
 
 if plot_reg_coeff
     NbSubPlot = 4;
@@ -111,11 +112,24 @@ else
     NbSubPlot = 3;
 end
 
-for iToPlot = 1:2
+for iCdt = 1:2
     
-    for iCdt = 1:2
+    switch iCdt
+        case 1
+            All_Sorting_Raster = All_Profiles_V;
+            All_X_sort = All_X_sort_Cross_V;
+            All_Profiles = All_Profiles_Cross_V;
+            ROIs2do = 1:2;
+        case 2
+            All_Sorting_Raster = All_Profiles_A;
+            All_X_sort = All_X_sort_Cross_A;
+            All_Profiles = All_Profiles_Cross_A;
+            ROIs2do = 3:4;
+    end
+    
+    for iToPlot = 1:2
         
-        for iROI = 1:4
+        for iROI = ROIs2do
             
             if iROI==1
                 CLIM = [-0.15 0.15]; % for main raster
@@ -129,7 +143,7 @@ for iToPlot = 1:2
             end
             
             fig_name = ['GrpLvl_Raster_' Name{iCdt} ...
-                '_fV_' ToPlot{iToPlot} '_CV_' ROI(iROI).name];
+                '_f' NameSortingCondition{iCdt} '_' ToPlot{iToPlot} '_CV_' ROI(iROI).name];
             
             disp(fig_name)
             
@@ -144,9 +158,9 @@ for iToPlot = 1:2
             clear X_sort Profiles Sorting_Raster
             
             for iSubj = 1:size(All_X_sort_Cross,1)
-                Sorting_Raster(:, :, iSubj) = All_Profiles_V{iSubj, iToPlot, Sorting_Cdt, iROI};
-                X_sort(iSubj, :) = All_X_sort_Cross_V{iSubj, iToPlot, iCdt, iROI};
-                Profiles(:, :, iSubj) = All_Profiles_Cross_V{iSubj, iToPlot, iCdt, iROI};
+                Sorting_Raster(:, :, iSubj) = All_Sorting_Raster{iSubj, iToPlot, Sorting_Cdt(iCdt), iROI}; %#ok<*SAGROW>
+                X_sort(iSubj, :) = All_X_sort{iSubj, iToPlot, iCdt, iROI};
+                Profiles(:, :, iSubj) = All_Profiles{iSubj, iToPlot, iCdt, iROI};
             end
             
             X_sort = X_sort(Subj2Include,:);
@@ -220,13 +234,15 @@ for iToPlot = 1:2
                 axis off
                 PlotCorrCoeff(ax, slope, ToPlot{iToPlot}, 0, 0, ax.Position(3), ax.Position(4), ...
                     [0.9 1.6 -0.1 0.5], ToPermute)
-                set(gca,'tickdir', 'out', 'xtick', [],'xticklabel', [], 'fontsize',10,'yaxislocation', 'right')
+                set(gca,'tickdir', 'out', 'xtick', [],'xticklabel', [], ...
+                    'fontsize',10,'yaxislocation', 'right')
             end
             
             
             %% saves table results and figure
             SavedTxt = fullfile(FigureFolder,'CrossSensory', [fig_name '.csv']);
-            PrintTableCorrCoeff(SavedTxt, ROI(iROI).name, ToPlot{iToPlot}, [Name{iCdt} '_fV'], slope, ToPermute)
+            PrintTableCorrCoeff(SavedTxt, ROI(iROI).name, ToPlot{iToPlot}, ...
+                [Name{iCdt} '_f' NameSortingCondition{iCdt}], slope, ToPermute)
             
             
             print(gcf, fullfile(FigureFolder,'CrossSensory', [fig_name '.tif']), '-dtiff')
@@ -238,6 +254,7 @@ for iToPlot = 1:2
     
 end
 
+return
 
 %% raster Cdt = f(Percentile of V stim)
 % for extra figure to show that response to one condition does not predict

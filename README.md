@@ -48,9 +48,9 @@ Many extra matlab functions from github and the mathwork file exchange are neede
 
 ## Reproduce the figures from the paper
 You should be able to reproduce the laminar profile figures from the paper by using the following scripts on the CSV files available on [OSF](https://osf.io/63dba/).
-- `BOLDProfiles/make_figures_BOLD.m`
-- `MVPA/make_figures_MVPA.m`
-- `BOLDProfiles/Surface/make_figures_rasters.m`
+-   `BOLDProfiles/make_figures_BOLD.m`
+-   `MVPA/make_figures_MVPA.m`
+-   `BOLDProfiles/Surface/make_figures_rasters.m`
 
 ## Data analysis workflow
 
