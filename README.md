@@ -39,7 +39,7 @@ Many extra matlab functions from github and the mathwork file exchange are neede
 | [SPM-RG](https://github.com/Remi-Gau/SPM-RG)                                                                                                      | NA          | manual coregistration      |
 | [nansuite](https://fr.mathworks.com/matlabcentral/fileexchange/6837-nan-suite)                                                                    | V1.0.0       |                            |
 | [distributionPlot](https://fr.mathworks.com/matlabcentral/fileexchange/23661-violin-plots-for-plotting-multiple-distributions-distributionplot-m) | v1.15.0      | violin plots for matlab    |
-| [plotSpread](https://fr.mathworks.com/matlabcentral/fileexchange/37105-plot-spread-points-beeswarm-plot)                                          | v1.2.0       | plot data spread          |
+| [plotSpread](https://fr.mathworks.com/matlabc.mentral/fileexchange/37105-plot-spread-points-beeswarm-plot)                                          | v1.2.0       | plot data spread          |
 | [shadedErrorBar](https://fr.mathworks.com/matlabcentral/fileexchange/26311-raacampbell-shadederrorbar)                                            | v1.65.0      | shaded error bar           |
 | [herrorbar](https://fr.mathworks.com/matlabcentral/fileexchange/3963-herrorbar)                                                                   | V1.0.0       | horizontal error bar       |
 | [mtit](https://fr.mathworks.com/matlabcentral/fileexchange/3218-mtit-a-pedestrian-major-title-creator)                                            | v1.1.0       | main title for figures     |
@@ -51,6 +51,7 @@ You should be able to reproduce the laminar profile figures from the paper by us
 - `BOLDProfiles/make_figures_BOLD.m`
 - `MVPA/make_figures_MVPA.m`
 - `BOLDProfiles/Surface/make_figures_rasters.m`
+- `display_lmm_results.m`
 
 ## Data analysis workflow
 

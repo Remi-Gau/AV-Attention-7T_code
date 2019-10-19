@@ -1,6 +1,8 @@
 function display_lmm_results(DO)
 % small script to print out the results of the LMM and run the step down
-% approach
+% approach (requires the output from
+% - BOLDProfiles/Surface/make_figures_rasters.m or
+% - MVPA/make_figures_MVPA.m
 % also outputs tables (does not serve them with fries though)
 
 % 1. F-test in 2x2 (ROI X shape parameters)
@@ -29,10 +31,12 @@ close all
 clc
 
 if nargin<1 || isempty(DO)
-    DO = 2; % 1 BOLD ; 2 MVPA
+    DO = 1; % 1 BOLD ; 2 MVPA
 end
 
-CodeFolder = 'D:\github\AV-Attention-7T_code';
+CodeFolder = '/home/remi/github/AV-Attention-7T_code';
+% CodeFolder = 'D:\github\AV-Attention-7T_code';
+
 FigureFolder = fullfile(CodeFolder, 'Figures');
 
 % in case it is not running on remi's computer
@@ -121,12 +125,13 @@ for i_model = model_of_interest %1:numel(models)
     %     disp(model.lme)
     
     % display reults perm test and t-test for each s parameter for each ROI
-%     for i = 1:4
-%         model.print2file = 0;
-%         compare_results(i, model, ToPermute);
-%     end
-%     clear i
-%     fprintf('\n')
+    fprintf('\n')
+    for i = 1:4
+        model.print2file = 0;
+        compare_results(i, model, ToPermute);
+    end
+    clear i
+    fprintf('\n')
     
     % effect of either linear or constant in either ROIs
     c = [...

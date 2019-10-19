@@ -1,20 +1,22 @@
 %% uses CSV files of saved data to plot the data for the article
 
+% prints the figure and runs the linear mixed model
+
 clear; close all; clc;
 
-% CodeFolder = '/home/remi/github/AV-Attention-7T_code';
-CodeFolder = 'D:\github\AV-Attention-7T_code';
+CodeFolder = '/home/remi/github/AV-Attention-7T_code';
+% CodeFolder = 'D:\github\AV-Attention-7T_code';
 
 % inputs (where the OSF data have been downloaded: https://osf.io/63dba/)
-DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
-% DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
+% DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
+DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
 Results_Folder = fullfile(DataFolder, 'DataToExport');
 
 % output folder
 FigureFolder = fullfile(CodeFolder, 'Figures');
 mkdir(FigureFolder)
 
-PlotDo = 1;
+PlotDo = 0;
 print_pvalue = 0;
 
 PlotSubjects = 0; % can be switched off (0) to not plot subjects laminar profiles
