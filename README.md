@@ -50,8 +50,12 @@ Many extra matlab functions from github and the mathwork file exchange are neede
 You should be able to reproduce the laminar profile figures from the paper by using the following scripts on the CSV files available on [OSF](https://osf.io/63dba/).
 - `BOLDProfiles/make_figures_BOLD.m`
 - `MVPA/make_figures_MVPA.m`
-- `BOLDProfiles/make_figures_BOLD.m.m`
+- `BOLDProfiles/Surface/make_figures_rasters.m`
 - `display_lmm_results.m`
+
+You just need to specify at the top of some of those scripts where you put the .csv files from OSF and where you put the code from this repository.
+
+The linear mixed model are estimated by `make_figures_BOLD.m` and `make_figures_MVPA.m` by calling `AV-Attention-7T_code/SubFun/linear_mixed_model.m`. The contrasts of the LMM are then run by `display_lmm_results.m`. 
 
 ## Data analysis workflow
 

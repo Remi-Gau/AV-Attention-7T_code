@@ -36,7 +36,7 @@ CodeFolder = '/home/remi/github/AV-Attention-7T_code';
 
 %%
 if nargin<1 || isempty(DO)
-    DO = 1; % 1 BOLD ; 2 MVPA
+    DO = 2; % 1 BOLD ; 2 MVPA
 end
 
 FigureFolder = fullfile(CodeFolder, 'Figures');
@@ -126,21 +126,19 @@ for i_model = model_of_interest %1:numel(models)
     fprintf(fid, '\n%s\n%s', model.name, model.ROIs);
     %     disp(model.lme)
     
-    % display reults perm test and t-test for each s parameter for each ROI
-    fprintf('\n')
-    for i = 1:4
-        model.print2file = 0;
-        compare_results(i, model, ToPermute);
-    end
-    clear i
-    fprintf('\n')
+%     % display reults perm test and t-test for each s parameter for each ROI
+%     fprintf('\n')
+%     for i = 1:4
+%         model.print2file = 0;
+%         compare_results(i, model, ToPermute);
+%     end
+%     clear i
+%     fprintf('\n')
     
     % effect of either linear or constant in either ROIs
     c = [...
-        1 0 0 0 ;...
-        0 1 0 0 ;...
-        0 0 1 0 ;...
-        0 0 0 1 ];
+        1 0 1 0 ;...
+        0 1 0 1];
     message = 'effect of either linear or constant in either ROI';
     PVAL = test_and_print(model, c, pattern, message, fid);
     
@@ -183,9 +181,8 @@ for i_model = model_of_interest %1:numel(models)
             submodel.test_side = {model.test_side{i_s_param}};
             submodel.s_param = {'', ''};
            
-            c = [...
-                1 0;...
-                0 1];
+            c = [1 1];
+            
             message = ['effect of ' name_param{1}(end-2:end) ' averaged across ROIs'];
             PVAL = test_and_print(submodel, c, pattern, message, fid);
             
