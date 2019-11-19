@@ -1,19 +1,16 @@
 %% uses CSV files of saved data to plot the data for the article
 clear; close all; clc;
 
-% CodeFolder = '/home/remi/github/AV-Attention-7T_code';
-CodeFolder = 'D:\github\AV-Attention-7T_code';
+%% Things to change for each user
+CodeFolder = '/home/remi/github/AV-Attention-7T_code';
 
 % inputs (where the OSF data have been downloaded: https://osf.io/63dba/)
-DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
-% DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
-Results_Folder = fullfile(DataFolder, 'DataToExport');
+DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
 
-% output folder
-FigureFolder = fullfile(CodeFolder, 'Figures');
-mkdir(FigureFolder)
+DependenciesFolder = '/home/remi';
 
-PlotDo = 1;
+PlotDo = 0;
+
 print_pvalue = 0;
 
 PlotSubjects = 0; % can be switched off (0) to no plot subject
@@ -22,6 +19,15 @@ PlotSubjects = 0; % can be switched off (0) to no plot subject
 % 0 - (default) no pre-specified limit: use the data from the graph to specify limits
 % 11 - for MVPA
 clim_for_condition = 11;
+
+
+%%
+Results_Folder = fullfile(DataFolder, 'DataToExport');
+
+% output folder
+FigureFolder = fullfile(CodeFolder, 'Figures');
+mkdir(FigureFolder)
+
 
 
 %% define conditions to plot
@@ -46,6 +52,7 @@ Transparent = 1;
 Switch = 1;
 FontSize = 12;
 FigDim = [100 100 500 500];
+
 
 %% data files parameters
 NbLayers = 6;
@@ -110,8 +117,7 @@ NbROI = size(ROIs,1);
 
 % add dependencies
 addpath(genpath(fullfile(CodeFolder, 'SubFun')))
-Get_dependencies('/home/remi')
-Get_dependencies('D:')
+Get_dependencies(DependenciesFolder)
 
 % get the axis limits to use
 clim = set_clim(clim_for_condition);

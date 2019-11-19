@@ -1,7 +1,7 @@
 function display_lmm_results(DO)
 % small script to print out the results of the LMM and run the step down
 % approach (requires the output from
-% - BOLDProfiles/Surface/make_figures_rasters.m or
+% - BOLDProfiles/make_figures_BOLD.m or
 % - MVPA/make_figures_MVPA.m
 % also outputs tables (does not serve them with fries though)
 
@@ -30,12 +30,14 @@ clear
 close all
 clc
 
+%% Things to change for each user
+CodeFolder = '/home/remi/github/AV-Attention-7T_code';
+
+
+%%
 if nargin<1 || isempty(DO)
     DO = 1; % 1 BOLD ; 2 MVPA
 end
-
-CodeFolder = '/home/remi/github/AV-Attention-7T_code';
-% CodeFolder = 'D:\github\AV-Attention-7T_code';
 
 FigureFolder = fullfile(CodeFolder, 'Figures');
 

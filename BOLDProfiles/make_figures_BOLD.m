@@ -4,22 +4,29 @@
 
 clear; close all; clc;
 
+
+%% Things to change for each user
 CodeFolder = '/home/remi/github/AV-Attention-7T_code';
-% CodeFolder = 'D:\github\AV-Attention-7T_code';
 
 % inputs (where the OSF data have been downloaded: https://osf.io/63dba/)
-% DataFolder = 'D:\Dropbox\PhD\Experiments\AV_Integration_7T';
 DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
+
+% might not be necessarry for 
+DependenciesFolder = '/home/remi';
+
+PlotDo = 0;
+
+print_pvalue = 0;
+
+PlotSubjects = 0; % can be switched off (0) to not plot subjects laminar profiles
+
+
+%%
 Results_Folder = fullfile(DataFolder, 'DataToExport');
 
 % output folder
 FigureFolder = fullfile(CodeFolder, 'Figures');
 mkdir(FigureFolder)
-
-PlotDo = 0;
-print_pvalue = 0;
-
-PlotSubjects = 0; % can be switched off (0) to not plot subjects laminar profiles
 
 % this can be used to specify which axis limit to use
 % 0 - (default) no pre-specified limit: use the data from the graph to specify limits
@@ -141,8 +148,7 @@ NbROI = size(ROIs,1);
 
 % add dependencies
 addpath(genpath(fullfile(CodeFolder, 'SubFun')))
-Get_dependencies('/home/remi')
-Get_dependencies('D:\')
+Get_dependencies(DependenciesFolder)
 
 % get the axis limits to use
 clim = set_clim(clim_for_condition);
