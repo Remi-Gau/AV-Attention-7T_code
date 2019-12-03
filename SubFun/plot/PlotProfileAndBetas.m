@@ -21,7 +21,8 @@ if ~exist('DATA', 'var')
 end
 
 if isfield(DATA, 'Name')
-    Name = DATA.Name;
+    tmp = strfind(DATA.Name, '[');
+    Name = DATA.Name(tmp:end);
 else
     Name = 'NoName';
 end
@@ -175,7 +176,7 @@ if isfield(DATA,'YLabel')
     set(t,'fontsize', FontSize-1)
 end
 
-title(Name,'fontsize', FontSize)
+title(Name,'fontsize', FontSize+4)
 
 ax=axis;
 

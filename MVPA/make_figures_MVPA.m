@@ -228,7 +228,7 @@ for iROI = 1:NbROI
                 axis('off')
                 DATA.ax = ax.Position;
                 DATA.ToPermute = ToPermute;
-                DATA.YLabel = 'Param. est. [a u]';
+                DATA.YLabel = 'S Param. est. [a u]';
                 DATA.print_pvalue = print_pvalue;
                 PlotInsetFinal(DATA)
                 

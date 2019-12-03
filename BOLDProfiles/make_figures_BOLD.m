@@ -257,7 +257,7 @@ for iROI = 1:NbROI
             DATA.WithSubj = PlotSubjects;
             DATA.FontSize = FontSize;
             DATA.Transparent = Transparent;
-            DATA.YLabel = 'Param. est. [a u]';
+            DATA.YLabel = 'B Param. est. [a u]';
             DATA.MVPA = 0;
             
             % set plotting limits if specified
@@ -292,6 +292,7 @@ for iROI = 1:NbROI
                 DATA.ax = ax.Position;
                 DATA.ToPermute = ToPermute;
                 DATA.print_pvalue = print_pvalue;
+                DATA.YLabel = 'S Param. est. [a u]';
                 PlotInsetFinal(DATA)
                 
                 % save figure

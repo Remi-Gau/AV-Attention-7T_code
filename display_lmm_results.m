@@ -135,11 +135,12 @@ for i_model = model_of_interest %1:numel(models)
 %     clear i
 %     fprintf('\n')
     
-    % effect of either linear or constant in either ROIs
+    % effect of either linear or constant in mean of ROIs
     c = [...
         1 0 1 0 ;...
         0 1 0 1];
-    message = 'effect of either linear or constant in either ROI';
+    
+    message = 'effect of either linear or constant in mean of ROIs';
     PVAL = test_and_print(model, c, pattern, message, fid);
     
     %  run LMM on just the CST or LIN from both ROIs if signiicant
@@ -173,18 +174,40 @@ for i_model = model_of_interest %1:numel(models)
                 'RandomEffectGroups',...
                 {'Subject'});
             
-            submodel.X = X;
-            submodel.Y = Y;
+            submodel.test_side = {model.test_side{i_s_param}};
+            
             submodel.print2file = 1;
             submodel.fid = fid;
             submodel.ROIs = strsplit(model.ROIs, ' - ');
-            submodel.test_side = {model.test_side{i_s_param}};
-            submodel.s_param = {'', ''};
-           
+            submodel.s_param = {'cst', 'lin'};
+            submodel.X = X;
+            submodel.Y = Y;
             c = [1 1];
+
+            message = ['effect of ' submodel.s_param{i_s_param} ' averaged across ROIs'];
             
-            message = ['effect of ' name_param{1}(end-2:end) ' averaged across ROIs'];
-            PVAL = test_and_print(submodel, c, pattern, message, fid);
+            switch submodel.test_side{1}
+                case 'both'
+                    
+                    PVAL = test_and_print(submodel, c, pattern, message, fid);
+                    
+                otherwise
+                    
+                    Y = [Y(logical(X(:,1))), Y(logical(X(:,2)))];
+                    Y = mean(Y,2);
+                    
+                    [~, PVAL, ~, STATS] = ttest(Y, 0, 'tail', submodel.test_side{1});
+                    
+                    % display the results of perm and t-test
+                    fprintf('effect of mean(%s, %s) %s\t t(%i) = %f \t p = %f\n', ...
+                        submodel.ROIs{1}, submodel.ROIs{2}, submodel.s_param{1}, STATS.df,...
+                        STATS.tstat , PVAL);
+                    
+                    p_str = convert_pvalue(PVAL, 0);
+                    fprintf(submodel.fid, 'mean(%s, %s)\n\tt(%i)=%.3f\t%s\n', ...
+                        submodel.ROIs{1}, submodel.ROIs{2}, STATS.df, STATS.tstat, p_str);
+
+            end
             
             if PVAL<.05
                 fprintf('effect within ROI\n');
