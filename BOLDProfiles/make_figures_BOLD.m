@@ -14,7 +14,7 @@ DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
 % might not be necessarry for 
 DependenciesFolder = '/home/remi';
 
-PlotDo = 0;
+PlotDo = 1;
 
 print_pvalue = 0;
 
@@ -36,7 +36,7 @@ mkdir(FigureFolder)
 % 4 - for cross modal effects for A1-PT
 % 5 - for cross modal effects for V1-2-3
 % 6 - for attention effects
-clim_for_condition = 6;
+clim_for_condition = 0;
 
 
 %% define conditions to plot
@@ -64,6 +64,26 @@ Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
 % figure 4
 Cdt2Choose(5).name = '[Att_V - Att_A]_{A, V, AV}';
 Cdt2Choose(end).cdt = [1 2 3 4 5 6]; % auditory under A and V attention ; AV under A and V attention ;
+Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
+
+
+% extra results
+% effect of attention on activation and deactivations
+Cdt2Choose(6).name = '[A-fix]_{Att_A} - [A-fix]_{Att_V}';
+Cdt2Choose(end).cdt = [1 4 0001 ]; 
+Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'}; 
+
+Cdt2Choose(7).name = '[V-fix]_{Att_A} - [V-fix]_{Att_V}';
+Cdt2Choose(end).cdt = [2 5 0001 ];
+Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
+
+% effect of attention on crossmodal modulation
+Cdt2Choose(8).name = '[AV - A]_{Att_A} - [AV - A]_{Att_V}';
+Cdt2Choose(end).cdt = [1 4 3 6 0001]; 
+Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
+
+Cdt2Choose(9).name = '[AV - V]_{Att_A} - [AV - V]_{Att_V}';
+Cdt2Choose(end).cdt = [2 5 3 6 0001];
 Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
 
 
@@ -221,10 +241,15 @@ for iROI = 1:NbROI
                 
                 % in case we have to contrast between conditions
                 switch numel(stim)
-                    case 2
-                    case 4
-                        Subj_Data = Subj_Data(:, :, 3:4) - Subj_Data(:, :, 1:2);
-                    case 6
+                    case 2 % activation and deactivation
+                    case 3 % effect of attention on activation and deactivation
+                        Subj_Data = Subj_Data(:, :, 1) - Subj_Data(:, :, 2);
+                    case 4 % cross modal effect
+                        Subj_Data = Subj_Data(:, :, 3:4) - Subj_Data(:, :, 1:2); 
+                    case 5 % effect of attention on cross modal effect
+                        Subj_Data = (Subj_Data(:, :, 3) - Subj_Data(:, :, 1)) ...
+                                     - (Subj_Data(:, :, 4) - Subj_Data(:, :, 2))    ; 
+                    case 6 % attention effect
                         Subj_Data = Subj_Data(:, :, 4:6) - Subj_Data(:, :, 1:3);
                 end
                 

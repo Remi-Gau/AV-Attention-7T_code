@@ -9,7 +9,7 @@ DataFolder = '/home/remi/Dropbox/PhD/Experiments/AV_Integration_7T';
 
 DependenciesFolder = '/home/remi';
 
-PlotDo = 0;
+PlotDo = 1;
 
 print_pvalue = 0;
 
@@ -45,6 +45,16 @@ Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
 Cdt2Choose(3).name = '[Att_A VS Att_V]_{A, V, AV}';
 Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
 Cdt2Choose(end).filename = 'AAtt-vs-VAtt';
+
+% extra results
+% effect of attention on crossmodal modulation
+Cdt2Choose(4).name = '[AV-A]_{att A} VS [AV-A]_{att V}';
+Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
+Cdt2Choose(end).filename = '[AV-A]_Att_A-vs-[AV-A]_Att_V';
+
+Cdt2Choose(5).name = '[AV-V]_{att A} VS [AV-V]_{att V}';
+Cdt2Choose(end).test_side = {'both' 'both' 'both' 'both'};
+Cdt2Choose(end).filename = '[AV-V]_Att_A-vs-[AV-V]_Att_V';
 
 
 %% Figures parameters

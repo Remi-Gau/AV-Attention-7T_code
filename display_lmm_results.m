@@ -117,7 +117,7 @@ title('random effect group')
 %% print out results
 ToPermute = list_permutation();
 
-for i_model = model_of_interest %1:numel(models)
+for i_model = 1:numel(models) % model_of_interest %
     
     model = models(i_model);
     

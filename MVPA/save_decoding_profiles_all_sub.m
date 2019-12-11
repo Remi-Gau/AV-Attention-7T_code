@@ -32,9 +32,21 @@ ROIs = {...
     'V1';...
     'V2-3'};
 
-Analysis(1) = struct('name', 'A Stim VS AV Stim');
-Analysis(end+1) = struct('name', 'V Stim VS AV Stim');
-Analysis(end+1) = struct('name', 'A Att VS V Att');
+effect_att_on_crossmodal = 1;
+
+if effect_att_on_crossmodal
+    Analysis(1) = struct('name', '[AV-A]_Att_A VS [AV-A]_Att_V');
+    Analysis(end+1) = struct('name', '[AV-V]_Att_A VS [AV-V]_Att_V');
+    
+else
+    Analysis(1) = struct('name', 'A Stim VS AV Stim');
+    Analysis(end+1) = struct('name', 'V Stim VS AV Stim');
+    Analysis(end+1) = struct('name', 'A Att VS V Att');
+    Analysis(end+1) = struct('name', 'A Stim(A Att VS V Att)');
+    Analysis(end+1) = struct('name', 'V Stim(A Att VS V Att)');
+    
+end
+
 
 opt.acroslayer.do = 0;
 opt.leave2out.do = 0;
@@ -64,7 +76,13 @@ for iROI = 1:length(ROIs)
     end
 end
 
-SaveSufix = '_results_surf_FixedC';
+
+if effect_att_on_crossmodal
+    SaveSufix = '_results_surf';
+else
+    SaveSufix = '_results_surf_FixedC';
+end
+
 if opt.fs.do
     SaveSufix = [SaveSufix '_FS']; %#ok<*AGROW>
 end
@@ -96,7 +114,12 @@ if opt.scaling.feat.sessmean
     SaveSufix = [SaveSufix '_SessMeanCent'];
 end
 
-SaveSufix = [SaveSufix '_FWHM_' FFX{1} '_Layers_' num2str(NbLayersMVPA+2) '.mat'];
+
+if effect_att_on_crossmodal
+    SaveSufix = [SaveSufix '_FWHM_' FFX{1} '.mat'];
+else
+    SaveSufix = [SaveSufix '_FWHM_' FFX{1} '_Layers_' num2str(NbLayersMVPA+2) '.mat'];
+end
 
 
 %% Get Data for MVPA
@@ -116,18 +139,28 @@ for SubjInd = 1:NbSubject
                 '_ROI_' ROIs{iROI} SaveSufix];
             
             load(fullfile(DataFolder, 'Subjects_Data', ['Subject_' SubjID],...
-                'Transfer', 'SVM', Save_vol));
+                'Results', 'SVC', Save_vol));
             
             CV = Results.session(end).rand.perm.CV;
             
-            for iLayer= 2:NbLayersMVPA+1
+            if effect_att_on_crossmodal
+                Layers2pick = 1:NbLayersMVPA;
+            else
+                Layers2pick = 2:NbLayersMVPA+1;
+            end
+            
+            for iLayer= Layers2pick
                 Label = [];
                 Pred = [];
                 for iCV=1:numel(CV)
                     Label(:,end+1) = CV(iCV).layers.results{1}{iLayer}.label;
                     Pred(:,end+1) = CV(iCV).layers.results{1}{iLayer}.pred(:,iLayer);
                 end
-                Acc(iLayer-1,:) = mean(Pred==Label,2)';
+                if effect_att_on_crossmodal
+                    Acc(iLayer,:) = mean(Pred==Label,2)';
+                else
+                    Acc(iLayer-1,:) = mean(Pred==Label,2)';
+                end
             end
             
             AllSubjects_Data(iROI,iSVM).DATA = cat(1, ...
@@ -164,11 +197,11 @@ for iSVM=1:size(AllSubjects_Data, 2)
         % creates a label for each row
         NbBlocks = size(Data,1) / (NbSubject);
         suffix = repmat('_CV', [size(Data,1), 1]);
-%         tmp = repmat(1:NbRuns, [NbBlocks,1]);
-%         suffix = [suffix num2str(tmp(:))];
-%         suffix = [suffix repmat('_block-', [NbRuns*NbBlocks,1])];
-%         tmp = repmat((1:NbBlocks)', [NbRuns,1]);
-%         suffix = [suffix num2str(tmp)];
+        %         tmp = repmat(1:NbRuns, [NbBlocks,1]);
+        %         suffix = [suffix num2str(tmp(:))];
+        %         suffix = [suffix repmat('_block-', [NbRuns*NbBlocks,1])];
+        %         tmp = repmat((1:NbBlocks)', [NbRuns,1]);
+        %         suffix = [suffix num2str(tmp)];
         clear tmp
         
         prefix = repmat(cellstr(SubjectList)',[NbBlocks, 1]);
@@ -178,7 +211,7 @@ for iSVM=1:size(AllSubjects_Data, 2)
         labels = [prefix suffix];
         clear prefix suffix
         
-
+        
         % save to .mat
         save(fullfile(Results_Folder, [FileName '.mat']), ...
             'Data', 'labels')
