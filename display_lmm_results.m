@@ -159,9 +159,11 @@ for i_model = 1:numel(models) % model_of_interest %
                 case 1
                     name_param = {'ROI1_cst', 'ROI2_cst'};
                     reg_of_interest = [1 3];
+                    submodel.s_param = {'cst', 'cst'};
                 case 2
                     name_param = {'ROI1_lin', 'ROI2_lin'};
                     reg_of_interest = [2 4];
+                    submodel.s_param = {'lin', 'lin'};
             end
             
             Y = model.Y(any(model.X(:,reg_of_interest), 2));
@@ -179,7 +181,6 @@ for i_model = 1:numel(models) % model_of_interest %
             submodel.print2file = 1;
             submodel.fid = fid;
             submodel.ROIs = strsplit(model.ROIs, ' - ');
-            submodel.s_param = {'cst', 'lin'};
             submodel.X = X;
             submodel.Y = Y;
             c = [1 1];
