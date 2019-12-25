@@ -1,3 +1,6 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3581319.svg)](https://doi.org/10.5281/zenodo.3581319)
+
+
 # AV-Attention-7T_code
 
 Code to run the analysis of the [AV attention fMRI](https://github.com/Remi-Gau/AV_Attention-Presentation_code-fMRI) experiment (7T)
@@ -60,7 +63,7 @@ Small script to print out the results of the LMM and run the step down approach 
 
 You just need to specify at the top of some of those scripts where you put the .csv files from OSF and where you put the code from this repository.
 
-The linear mixed model are estimated by `make_figures_BOLD.m` and `make_figures_MVPA.m` by calling `AV-Attention-7T_code/SubFun/linear_mixed_model.m`. The contrasts of the LMM are then run by `display_lmm_results.m`. 
+The linear mixed model are estimated by `make_figures_BOLD.m` and `make_figures_MVPA.m` by calling `AV-Attention-7T_code/SubFun/linear_mixed_model.m`. The contrasts of the LMM are then run by `display_lmm_results.m`.
 
 ## Data analysis workflow
 
